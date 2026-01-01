@@ -1,26 +1,87 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'Outfit';
+  src: url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #020617;
+  --foreground: #f8fafc;
+  --primary: #3b82f6;
+  --accent: #8b5cf6;
+  --glass: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --aurora-1: rgba(59, 130, 246, 0.15);
+  --aurora-2: rgba(139, 92, 246, 0.15);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: 'Outfit', var(--font-geist-sans), ui-sans-serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Outfit', sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- Premium Utility Classes --- */
+
+@utility glass-panel {
+  background: var(--glass);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+@utility aurora-glow {
+  position: absolute;
+  width: 151vw;
+  height: 100vh;
+  top: -50%;
+  left: -25%;
+  background: radial-gradient(circle at center, var(--aurora-1) 0%, transparent 50%),
+    radial-gradient(circle at 70% 30%, var(--aurora-2) 0%, transparent 50%);
+  filter: blur(140px);
+  z-index: -1;
+  pointer-events: none;
+  animation: aurora-shift 20s ease-infinite alternate;
+}
+
+@keyframes aurora-shift {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+
+  100% {
+    transform: translate(25px, 20px) rotate(5deg);
+  }
+}
+
+@utility text-gradient {
+  background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@utility bento-card {
+  @apply glass-panel rounded-[2.5rem] p-8 transition-all duration-500 hover:scale-[1.02] hover:border-blue-500/30;
+}
+
+@utility shiny-button {
+  @apply relative overflow-hidden bg-white text-gray-950 font-black px-8 py-4 rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95 shadow-xl shadow-white/10;
+}
+
+.shiny-button::after {
+  content: '';
+  @apply absolute top-0 -left-[100%] w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition-all duration-500;
+}
+
+.shiny-button:hover::after {
+  @apply left-[100%];
 }
