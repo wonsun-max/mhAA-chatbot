@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { UserRole, UserStatus } from "@prisma/client";
 
 export async function POST(req: Request) {
     try {
@@ -20,11 +21,11 @@ export async function POST(req: Request) {
         } = data;
 
         // 1. Validate tempKey
-        const session = await prisma.verificationSession.findUnique({
+        const session = await prisma.verificationCode.findUnique({
             where: { tempKey },
         });
 
-        if (!session || session.expiresAt < new Date()) {
+        if (!session || !session.verified || session.expiresAt < new Date()) {
             return NextResponse.json({ error: "Invalid or expired verification session" }, { status: 400 });
         }
 
@@ -54,7 +55,7 @@ export async function POST(req: Request) {
                 email: session.email,
                 username,
                 passwordHash,
-                role: isFirstUser ? "ADMIN" : role,
+                role: isFirstUser ? UserRole.ADMIN : (role as UserRole),
                 name,
                 koreanName,
                 birthdate: new Date(birthdate),
@@ -62,15 +63,15 @@ export async function POST(req: Request) {
                 age: parseInt(age),
                 grade: grade ? parseInt(grade) : null,
                 studentName: studentName || null,
-                status: isFirstUser ? "ACTIVE" : "PENDING",
+                status: isFirstUser ? UserStatus.ACTIVE : UserStatus.PENDING,
                 emailVerified: true,
                 aiEnabled: isFirstUser ? true : false,
-            } as any, // Cast to any because the locally generated Prisma client might not have updated types yet
+            },
         });
 
         // 5. Cleanup session (Safe cleanup, don't block success)
         try {
-            await prisma.verificationSession.delete({
+            await prisma.verificationCode.delete({
                 where: { tempKey },
             });
         } catch (cleanupError) {

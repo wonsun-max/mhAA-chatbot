@@ -9,10 +9,12 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "All fields are required" }, { status: 400 });
         }
 
-        const session = await prisma.verificationSession.findFirst({
+        const session = await prisma.verificationCode.findFirst({
             where: {
                 email,
                 code,
+                purpose: "signup",
+                verified: false,
                 expiresAt: { gt: new Date() },
             },
             orderBy: { createdAt: "desc" },
@@ -21,6 +23,15 @@ export async function POST(req: Request) {
         if (!session) {
             return NextResponse.json({ error: "Invalid or expired code" }, { status: 400 });
         }
+
+        // Mark as verifies
+        await prisma.verificationCode.update({
+            where: { id: session.id },
+            data: {
+                verified: true,
+                verifiedAt: new Date()
+            }
+        });
 
         return NextResponse.json({
             success: true,

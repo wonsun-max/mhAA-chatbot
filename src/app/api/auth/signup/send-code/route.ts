@@ -15,11 +15,12 @@ export async function POST(req: Request) {
         const tempKey = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
         // Store in DB with 10 min expiry
-        await prisma.verificationSession.create({
+        await prisma.verificationCode.create({
             data: {
                 email,
                 code: verificationCode,
                 tempKey,
+                purpose: "signup",
                 expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
             },
         });

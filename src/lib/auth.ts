@@ -2,6 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "./prisma";
 import bcrypt from "bcryptjs";
+import { UserStatus } from "@prisma/client";
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -29,8 +30,8 @@ export const authOptions: NextAuthOptions = {
                 if (!isPasswordValid) return null;
 
                 // Check account status - only ACTIVE users can log in
-                if (user.status !== "ACTIVE") {
-                    throw new Error(user.status === "PENDING"
+                if (user.status !== UserStatus.ACTIVE) {
+                    throw new Error(user.status === UserStatus.PENDING
                         ? "Account pending approval."
                         : "Account suspended or inactive.");
                 }
@@ -43,7 +44,7 @@ export const authOptions: NextAuthOptions = {
                     username: user.username,
                     koreanName: user.koreanName,
                     aiEnabled: user.aiEnabled,
-                } as any;
+                };
             }
         }),
     ],
@@ -54,18 +55,19 @@ export const authOptions: NextAuthOptions = {
                     where: { id: token.sub },
                 });
                 if (user) {
-                    (session.user as any).id = (user as any).id;
-                    (session.user as any).role = (user as any).role;
-                    (session.user as any).aiEnabled = (user as any).aiEnabled;
-                    (session.user as any).koreanName = (user as any).koreanName;
-                    (session.user as any).username = (user as any).username;
+                    session.user.id = user.id;
+                    session.user.role = user.role;
+                    session.user.aiEnabled = user.aiEnabled;
+                    session.user.koreanName = user.koreanName;
+                    session.user.username = user.username;
                 }
             }
             return session;
         },
         async jwt({ token, user }) {
             if (user) {
-                token.role = (user as any).role;
+                token.role = user.role;
+                token.id = user.id;
             }
             return token;
         }

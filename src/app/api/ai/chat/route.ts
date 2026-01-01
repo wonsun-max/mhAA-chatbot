@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import { openai, CHATBOT_SYSTEM_PROMPT } from "@/lib/openai";
 import { aiTools, toolDefinitions } from "@/lib/ai/tools";
-import { getStudentContext } from "@/lib/airtable";
+import { UserStatus } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
@@ -21,19 +21,18 @@ export async function POST(req: Request) {
             where: { email: session.user.email },
         });
 
-        if (!user || (user as any).status !== "ACTIVE" || !(user as any).aiEnabled) {
+        if (!user || user.status !== UserStatus.ACTIVE || !user.aiEnabled) {
             return NextResponse.json({ error: "Access Denied" }, { status: 403 });
         }
 
         // 2. Identity Masking & Context Enrichment
-        const studentContext = user.studentRefId
-            ? await getStudentContext(user.studentRefId)
-            : null;
+        // Note: Airtable context skipped as studentRefId is not in current schema
+        const studentContext = null;
 
-        // Prioritize: Airtable Context -> DB Korean Name -> DB Name -> "Member"
-        const displayName = studentContext?.displayName || user.koreanName || user.name || "Member";
-        const grade = String(studentContext?.grade || user.grade || "N/A");
-        const country = studentContext?.country || "N/A";
+        // Prioritize: DB Korean Name -> DB Name -> "Member"
+        const displayName = user.koreanName || user.name || "Member";
+        const grade = String(user.grade || "N/A");
+        const country = "N/A"; // Country not in User model
 
         const { messages } = await req.json();
 

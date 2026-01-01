@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
+import { UserStatus } from "@prisma/client";
 
 async function ensureAdmin() {
     const session = await getServerSession(authOptions);
@@ -36,7 +37,7 @@ export async function approveUser(userId: string) {
 
     await prisma.user.update({
         where: { id: userId },
-        data: { status: "ACTIVE" },
+        data: { status: UserStatus.ACTIVE },
     });
 
     revalidatePath("/admin");
@@ -47,7 +48,7 @@ export async function rejectUser(userId: string) {
 
     await prisma.user.update({
         where: { id: userId },
-        data: { status: "REJECTED" },
+        data: { status: UserStatus.INACTIVE },
     });
 
     revalidatePath("/admin");

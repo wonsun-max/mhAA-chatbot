@@ -416,5 +416,3 @@ model ChatLog {
   @@index([userId])
   @@index([createdAt])
 }
-
-
