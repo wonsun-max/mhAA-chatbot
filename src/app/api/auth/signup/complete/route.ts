@@ -50,7 +50,7 @@ export async function POST(req: Request) {
         const userCount = await prisma.user.count();
         const isFirstUser = userCount === 0;
 
-        const user = await prisma.user.create({
+        await prisma.user.create({
             data: {
                 email: session.email,
                 username,

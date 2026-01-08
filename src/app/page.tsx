@@ -1,60 +1,60 @@
 "use client"
 
 import Link from "next/link"
-import { Bot, Shield, Zap, GraduationCap, ChevronRight, ArrowRight, Sparkles, Globe, Brain } from "lucide-react"
+import { Shield, Zap, ChevronRight, ArrowRight, Sparkles, Globe, Brain } from "lucide-react"
 import { motion } from "framer-motion"
 
 export default function Home() {
   return (
-    <div className="flex flex-col relative">
-      <div className="aurora-glow" />
+    <div className="flex flex-col relative min-h-screen overflow-hidden">
+      <div className="ambient-bg" />
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-40 px-4">
-        <div className="max-w-7xl mx-auto text-center space-y-12">
+      <section className="relative pt-32 pb-40 px-6 sm:px-8">
+        <div className="max-w-6xl mx-auto text-center space-y-10">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center space-x-3 px-6 py-2 rounded-full glass-panel text-blue-400 text-xs font-black uppercase tracking-[0.3em]"
+            className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-widest"
           >
-            <Sparkles size={14} className="animate-pulse" />
-            <span>Academic Intelligence 2.0</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+            <span>MissionLink Platform</span>
           </motion.div>
 
-          <div className="space-y-8">
+          <div className="space-y-6">
             <motion.h1
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, duration: 0.8 }}
-              className="text-7xl md:text-9xl font-black tracking-tighter leading-[0.9] text-gradient"
+              transition={{ delay: 0.1, duration: 0.6 }}
+              className="text-6xl md:text-8xl font-bold tracking-tight text-white leading-[1.1]"
             >
               School Life, <br />
-              <span className="text-blue-500">Redefined.</span>
+              <span className="text-gray-500">Intelligently Managed.</span>
             </motion.h1>
 
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="text-xl text-gray-400 font-medium max-w-2xl mx-auto leading-relaxed"
+              transition={{ delay: 0.2 }}
+              className="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed font-light"
             >
-              The ultimate AI companion for the modern student. Secure, private, and deeply integrated with your academic journey.
+              The central operating system for your academic journey. Seamlessly access schedules, meals, and student data in one secure environment.
             </motion.p>
           </div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-8"
+            transition={{ delay: 0.3 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4"
           >
-            <Link href="/chatbot" className="shiny-button flex items-center group">
+            <Link href="/chatbot" className="btn-primary flex items-center group">
               Launch Assistant
-              <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
+              <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" size={16} />
             </Link>
             <Link
               href="/signup"
-              className="px-8 py-4 glass-panel text-white font-black rounded-2xl hover:bg-white/5 transition-all active:scale-95"
+              className="btn-secondary"
             >
               Initialize Profile
             </Link>
@@ -62,114 +62,98 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Stats Section - Bento Style */}
-      <section className="max-w-7xl mx-auto w-full px-4 py-20">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Stats Section - Clean Grid */}
+      <section className="max-w-6xl mx-auto w-full px-6 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 border-y border-white/5 py-12">
           {[
             { label: "Active Nodes", value: "200+", icon: Globe },
-            { label: "AI Operations", value: "15k+", icon: Zap },
-            { label: "Data Integrity", value: "100%", icon: Shield },
+            { label: "Daily Operations", value: "1.5k", icon: Zap },
+            { label: "Uptime", value: "99.9%", icon: Shield },
           ].map((stat, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ delay: i * 0.1 }}
+              viewport={{ once: true }}
+              className="flex flex-col items-center text-center space-y-2"
+            >
+              <div className="text-4xl font-bold text-white tracking-tight">{stat.value}</div>
+              <div className="text-xs font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2">
+                <stat.icon size={12} /> {stat.label}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* Features - Minimalist Cards */}
+      <section className="max-w-6xl mx-auto px-6 py-32 space-y-16 w-full">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-8">
+          <div className="space-y-4 max-w-xl">
+            <h2 className="text-sm font-bold text-blue-500 uppercase tracking-widest">Core Capabilities</h2>
+            <h3 className="text-4xl font-bold text-white tracking-tight">Engineered for Efficiency.</h3>
+          </div>
+          <p className="text-gray-400 max-w-xs text-sm leading-relaxed pb-2">
+            Advanced tools designed to reduce friction in your daily academic routine.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[
+            {
+              icon: Brain,
+              title: "Contextual Awareness",
+              desc: "Understands your specific grade level and schedule for precise assistance.",
+            },
+            {
+              icon: Shield,
+              title: "Privacy First",
+              desc: "Enterprise-grade security masking your identity from external AI models.",
+            },
+            {
+              icon: Zap,
+              title: "Real-time Sync",
+              desc: "Instant connection to school databases for up-to-the-minute information.",
+            }
+          ].map((feature, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
               viewport={{ once: true }}
-              className="bento-card flex flex-col items-center text-center space-y-2 group"
-            >
-              <div className="p-3 bg-blue-500/10 text-blue-500 rounded-2xl group-hover:scale-110 transition-transform mb-2">
-                <stat.icon size={24} />
-              </div>
-              <div className="text-4xl font-black text-white">{stat.value}</div>
-              <div className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">{stat.label}</div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* Features - High Fidelity */}
-      <section className="max-w-7xl mx-auto px-4 py-32 space-y-20 w-full">
-        <div className="space-y-4">
-          <h2 className="text-sm font-black text-blue-500 uppercase tracking-[0.4em]">Core Capabilities</h2>
-          <h3 className="text-5xl font-black text-white tracking-tight">Built for Intelligence.</h3>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {[
-            {
-              icon: Brain,
-              title: "Neural Context",
-              desc: "The assistant understands your specific grade, schedule, and school history for personalized answers.",
-              color: "blue"
-            },
-            {
-              icon: Shield,
-              title: "Privacy Locked",
-              desc: "Your identity is masked. Personal data never touches global AI processing units.",
-              color: "purple"
-            },
-            {
-              icon: Zap,
-              title: "Instant Sync",
-              desc: "Airtable connectivity ensures you get real-time meal plans and schedule updates.",
-              color: "indigo"
-            }
-          ].map((feature, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ delay: i * 0.1 }}
-              viewport={{ once: true }}
-              className="bento-card group flex flex-col justify-between"
+              className="bento-card group flex flex-col justify-between min-h-[280px]"
             >
               <div className="space-y-6">
-                <div className="w-14 h-14 glass-panel rounded-2xl flex items-center justify-center text-blue-500 group-hover:rotate-12 transition-transform">
-                  <feature.icon size={28} />
+                <div className="w-12 h-12 bg-slate-800/50 rounded-xl flex items-center justify-center text-blue-400 group-hover:text-white transition-colors">
+                  <feature.icon size={20} />
                 </div>
                 <div className="space-y-3">
-                  <h4 className="text-2xl font-black text-white">{feature.title}</h4>
-                  <p className="text-gray-400 font-medium leading-relaxed">{feature.desc}</p>
+                  <h4 className="text-xl font-bold text-white">{feature.title}</h4>
+                  <p className="text-sm text-gray-400 leading-relaxed">{feature.desc}</p>
                 </div>
-              </div>
-              <div className="pt-8">
-                <button className="flex items-center text-[10px] font-black text-blue-500 uppercase tracking-widest group/btn">
-                  Analyze Protocol <ArrowRight className="ml-2 group-hover/btn:translate-x-2 transition-transform" size={12} />
-                </button>
               </div>
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="max-w-7xl mx-auto px-4 py-40 w-full">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="relative glass-panel rounded-[4rem] p-16 md:p-32 overflow-hidden text-center space-y-12"
-        >
-          <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-blue-600/10 blur-[120px]" />
-          <div className="absolute bottom-0 left-0 w-[50%] h-[50%] bg-indigo-600/10 blur-[120px]" />
-
-          <div className="space-y-6 relative">
-            <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-none">
-              Initialize Your <br />
-              Digital Experience.
-            </h2>
-            <p className="text-gray-400 text-lg max-w-xl mx-auto font-medium">
-              Join the official school AI network and streamline your life with high-fidelity automation.
-            </p>
-          </div>
-
-          <div className="pt-6 relative">
-            <Link href="/signup" className="shiny-button uppercase tracking-widest text-sm inline-block">
-              Begin Onboarding
+      {/* CTA Section - Simple & Direct */}
+      <section className="max-w-4xl mx-auto px-6 py-32 w-full text-center">
+        <div className="space-y-8">
+          <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
+            Ready to optimize your workflow?
+          </h2>
+          <p className="text-gray-400 text-lg max-w-xl mx-auto">
+            Join the platform today and experience the next generation of school management tools.
+          </p>
+          <div className="pt-4">
+            <Link href="/signup" className="btn-primary inline-flex items-center gap-2 px-10 py-4 text-lg">
+              Get Started <ArrowRight size={18} />
             </Link>
           </div>
-        </motion.div>
+        </div>
       </section>
     </div>
   )

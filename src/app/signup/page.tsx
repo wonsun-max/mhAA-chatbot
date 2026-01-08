@@ -7,10 +7,8 @@ import {
     Mail,
     Lock,
     User,
-    Calendar,
     CheckCircle,
     ArrowRight,
-    ChevronLeft,
     School,
     GraduationCap,
     Users,
@@ -18,7 +16,7 @@ import {
     Send,
     Loader2
 } from "lucide-react";
-import Image from "next/image";
+
 import Link from "next/link";
 
 type SignupStep = "email" | "verify" | "role" | "account" | "details";

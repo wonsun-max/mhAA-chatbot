@@ -78,7 +78,7 @@ export const aiTools = {
             }
 
             return response;
-        } catch (error) {
+        } catch {
             return "Error fetching meal data.";
         }
     },
@@ -116,7 +116,7 @@ export const aiTools = {
             if (upcoming.length === 0) return "No student birthdays found in the directory.";
 
             return upcoming.map(s => `- ${s.name}: ${s.month}/${s.day}`).join("\n");
-        } catch (error) {
+        } catch {
             return "Error fetching birthday data.";
         }
     },
@@ -131,7 +131,7 @@ export const aiTools = {
                 .select({ filterByFormula: formula })
                 .all();
             return `Count: ${records.length}`;
-        } catch (error) {
+        } catch {
             return "Error fetching statistics.";
         }
     },
@@ -156,7 +156,7 @@ export const aiTools = {
                 if (summary) line += `\n  - ${summary}`;
                 return line;
             }).join("\n");
-        } catch (error) {
+        } catch {
             return "Error fetching schedule.";
         }
     },
@@ -191,7 +191,7 @@ export const aiTools = {
                 if (desc) line += `\n  - ${desc}`;
                 return line;
             }).join("\n");
-        } catch (error) {
+        } catch {
             return "Error fetching event data.";
         }
     },

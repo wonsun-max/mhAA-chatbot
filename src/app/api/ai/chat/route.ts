@@ -26,8 +26,7 @@ export async function POST(req: Request) {
         }
 
         // 2. Identity Masking & Context Enrichment
-        // Note: Airtable context skipped as studentRefId is not in current schema
-        const studentContext = null;
+
 
         // Prioritize: DB Korean Name -> DB Name -> "Member"
         const displayName = user.koreanName || user.name || "Member";
@@ -47,7 +46,7 @@ export async function POST(req: Request) {
         // 4. Initial AI Request
         console.log(`[AI Request] User: ${user.email}, Prompt: ${messages[messages.length - 1].content}`);
 
-        let response = await openai.chat.completions.create({
+        const response = await openai.chat.completions.create({
             model: "gpt-4o", // Upgraded for better tool calling
             messages: [
                 { role: "system", content: systemPrompt },

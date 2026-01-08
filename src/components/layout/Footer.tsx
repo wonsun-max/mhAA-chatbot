@@ -1,76 +1,67 @@
 "use client"
 
-import { Bot, Mail, Github, Globe } from "lucide-react"
+import { Bot, Mail, Globe } from "lucide-react"
 import Link from "next/link"
 
 export function Footer() {
     return (
-        <footer className="relative bg-background border-t border-white/5 py-24 overflow-hidden">
-            {/* Ambient Background Glow */}
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full -z-10 overflow-hidden pointer-events-none">
-                <div className="absolute bottom-[-20%] left-[-10%] w-[40%] h-[60%] bg-blue-900/20 rounded-full blur-[120px]" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[30%] h-[50%] bg-indigo-900/10 rounded-full blur-[100px]" />
-            </div>
-
+        <footer className="relative bg-black/20 backdrop-blur-sm border-t border-white/5 py-16 overflow-hidden">
             <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-16 mb-20">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
                     {/* Brand Section */}
-                    <div className="col-span-1 md:col-span-1 space-y-8">
-                        <Link href="/" className="flex items-center space-x-4 group">
-                            <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-xl shadow-blue-500/20 group-hover:scale-105 transition-transform">
-                                <Bot className="text-white" size={24} />
+                    <div className="col-span-1 md:col-span-1 space-y-6">
+                        <Link href="/" className="flex items-center space-x-3 group">
+                            <div className="w-10 h-10 relative flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
+                                <img src="/site-logo.png" alt="MHA Logo" className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
                             </div>
-                            <div className="flex flex-col">
-                                <span className="text-xl font-black text-white leading-none tracking-tight uppercase">MHA</span>
-                                <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest mt-1">AI Interface</span>
-                            </div>
+                            <span className="text-lg font-bold text-white tracking-tight">MissionLink</span>
                         </Link>
-                        <p className="text-sm text-gray-500 leading-relaxed font-medium">
-                            Architecting the future of academic intelligence with secure, private, and localized AI assistance.
+                        <p className="text-sm text-gray-400 leading-relaxed font-medium max-w-xs">
+                            Secure, private, and localized academic intelligence for the modern educational environment.
                         </p>
                     </div>
 
                     {/* Platform Links */}
                     <div className="space-y-6">
-                        <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] pl-1">Platform</h4>
-                        <ul className="space-y-4">
-                            <li><Link href="/chatbot" className="text-sm font-bold text-gray-500 hover:text-white transition-colors">AI Uplink</Link></li>
-                            <li><Link href="/signup" className="text-sm font-bold text-gray-500 hover:text-white transition-colors">Personnel Registry</Link></li>
-                            <li><Link href="/login" className="text-sm font-bold text-gray-500 hover:text-white transition-colors">Security Login</Link></li>
+                        <h4 className="text-xs font-bold text-gray-200 uppercase tracking-widest">Platform</h4>
+                        <ul className="space-y-3">
+                            <li><Link href="/chatbot" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">AI Assistant</Link></li>
+                            <li><Link href="/signup" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Register</Link></li>
+                            <li><Link href="/login" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Login</Link></li>
                         </ul>
                     </div>
 
                     {/* Support Links */}
                     <div className="space-y-6">
-                        <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] pl-1">Support</h4>
-                        <ul className="space-y-4">
-                            <li><a href="#" className="text-sm font-bold text-gray-500 hover:text-white transition-colors">Protocols</a></li>
-                            <li><a href="#" className="text-sm font-bold text-gray-500 hover:text-white transition-colors">Privacy Charter</a></li>
-                            <li><a href="#" className="text-sm font-bold text-gray-500 hover:text-white transition-colors">Master Agreement</a></li>
+                        <h4 className="text-xs font-bold text-gray-200 uppercase tracking-widest">Support</h4>
+                        <ul className="space-y-3">
+                            <li><a href="#" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Privacy Policy</a></li>
+                            <li><a href="#" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Terms of Service</a></li>
+                            <li><a href="#" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Contact Admin</a></li>
                         </ul>
                     </div>
 
                     {/* Connection Section */}
                     <div className="space-y-6">
-                        <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] pl-1">Terminal</h4>
-                        <div className="flex space-x-5">
-                            <a href="wonsunpro123444@gmail.com" className="p-3.5 bg-white/5 rounded-2xl border border-white/5 text-gray-500 hover:text-blue-500 hover:bg-white/10 hover:border-blue-500/30 transition-all">
-                                <Mail size={22} />
+                        <h4 className="text-xs font-bold text-gray-200 uppercase tracking-widest">Connect</h4>
+                        <div className="flex space-x-4">
+                            <a href="mailto:wonsunpro123444@gmail.com" className="p-2.5 bg-white/5 rounded-xl border border-white/10 text-gray-400 hover:text-white hover:border-white/20 transition-all">
+                                <Mail size={18} />
                             </a>
-                            <a href="https://mhawebsitess.vercel.app/" target="_blank" className="p-3.5 bg-white/5 rounded-2xl border border-white/5 text-gray-500 hover:text-blue-500 hover:bg-white/10 hover:border-blue-500/30 transition-all">
-                                <Globe size={22} />
+                            <a href="https://mhawebsitess.vercel.app/" target="_blank" className="p-2.5 bg-white/5 rounded-xl border border-white/10 text-gray-400 hover:text-white hover:border-white/20 transition-all">
+                                <Globe size={18} />
                             </a>
                         </div>
                     </div>
                 </div>
 
-                <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-                    <p className="text-[10px] font-black text-gray-600 uppercase tracking-[0.2em]">
-                        &copy; 2025 MissionLink Intelligence Unit • All Rights Reserved
+                <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <p className="text-xs font-medium text-gray-500">
+                        &copy; 2025 MissionLink Intelligence Unit. All Rights Reserved.
                     </p>
-                    <div className="flex items-center space-x-3 bg-white/5 px-5 py-2.5 rounded-full border border-white/5 shadow-inner">
-                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>
-                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Uplink Status: Optimal</span>
+                    <div className="flex items-center space-x-2">
+                        <div className="w-1.5 h-1.5 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>
+                        <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Systems Operational</span>
                     </div>
                 </div>
             </div>

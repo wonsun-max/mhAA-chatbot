@@ -13,7 +13,7 @@ export function ApprovalActions({ userId }: { userId: string }) {
         try {
             await approveUser(userId)
             setStatus("approved")
-        } catch (err) {
+        } catch {
             alert("Failed to approve")
         } finally {
             setIsLoading(false)
@@ -25,7 +25,7 @@ export function ApprovalActions({ userId }: { userId: string }) {
         try {
             await rejectUser(userId)
             setStatus("rejected")
-        } catch (err) {
+        } catch {
             alert("Failed to reject")
         } finally {
             setIsLoading(false)

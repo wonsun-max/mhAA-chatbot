@@ -12,7 +12,7 @@ export function AccessToggle({ userId, initialValue }: { userId: string, initial
         try {
             await toggleChatbotAccess(userId)
             setEnabled(!enabled)
-        } catch (error) {
+        } catch {
             alert("Failed to toggle access")
         } finally {
             setIsLoading(false)

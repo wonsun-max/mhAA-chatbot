@@ -45,7 +45,6 @@ function LoginContent() {
             >
                 <div className="text-center space-y-6">
                     <div className="inline-flex items-center justify-center w-20 h-20 bg-blue-600 rounded-[2rem] shadow-2xl shadow-blue-500/20">
-                        <Bot className="text-white" size={40} />
                     </div>
                     <div className="space-y-2">
                         <h2 className="text-5xl font-black text-white tracking-tighter uppercase leading-none">Login</h2>
