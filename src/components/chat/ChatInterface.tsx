@@ -108,8 +108,11 @@ export function ChatInterface() {
                         ))}
                         {isLoading && (
                             <motion.div
+                                key="loading-indicator"
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.2 }}
                                 className="flex items-center space-x-3 px-4"
                             >
                                 <div className="w-8 h-8 flex items-center justify-center">
