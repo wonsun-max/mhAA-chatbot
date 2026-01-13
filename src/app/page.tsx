@@ -1,160 +1,98 @@
 "use client"
 
 import Link from "next/link"
-import { Shield, Zap, ChevronRight, ArrowRight, Sparkles, Globe, Brain } from "lucide-react"
+import { ChevronRight, Sparkles } from "lucide-react"
 import { motion } from "framer-motion"
 
 export default function Home() {
   return (
-    <div className="flex flex-col relative min-h-screen overflow-hidden">
-      <div className="ambient-bg" />
+    <div className="flex flex-col relative min-h-screen bg-[#020617] text-white overflow-hidden selection:bg-blue-500/30">
 
-      {/* Hero Section */}
-      <section className="relative pt-32 pb-40 px-6 sm:px-8">
-        <div className="max-w-6xl mx-auto text-center space-y-10">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-widest"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-            <span>MissionLink Platform</span>
-          </motion.div>
+      {/* Background Ambience - Optimized for performance */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-blue-600/10 blur-[120px] mix-blend-screen animate-pulse-slow" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-purple-600/10 blur-[120px] mix-blend-screen animate-pulse-slow delay-1000" />
+      </div>
 
+      <main className="flex-1 flex flex-col items-center justify-center relative z-10 p-6 min-h-screen">
+
+        {/* Floating AI Showcase - The "Centerpiece" */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 1, ease: "easeOut" }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-gradient-to-tr from-blue-500/20 to-purple-500/20 rounded-[40px] blur-[80px] -z-10 opacity-60"
+        />
+
+        <div className="max-w-4xl mx-auto w-full text-center space-y-12">
+
+          {/* Header Group */}
           <div className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.8 }}
+              className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-gray-300 text-xs font-medium tracking-wide backdrop-blur-sm"
+            >
+              <Sparkles size={12} className="text-blue-400" />
+              <span>Next Gen School Platform</span>
+            </motion.div>
+
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, duration: 0.6 }}
-              className="text-6xl md:text-8xl font-bold tracking-tight text-white leading-[1.1]"
+              transition={{ delay: 0.3, duration: 0.8 }}
+              className="text-5xl md:text-8xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-gray-500 leading-[1.05]"
             >
-              School Life, <br />
-              <span className="text-gray-500">Intelligently Managed.</span>
+              All Your School Life.<br />
+              <span className="text-blue-500/90">One Interface.</span>
             </motion.h1>
 
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed font-light"
+              transition={{ delay: 0.5, duration: 1 }}
+              className="text-lg md:text-xl text-gray-400 max-w-xl mx-auto font-light leading-relaxed"
             >
-              The central operating system for your academic journey. Seamlessly access schedules, meals, and student data in one secure environment.
+              Access schedules, meals, and real-time student data.
+              <br className="hidden md:block" />
+              Simple. Intelligent. Designed for you.
             </motion.p>
           </div>
 
+          {/* Actions */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4"
+            transition={{ delay: 0.6, duration: 0.8 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Link href="/chatbot" className="btn-primary flex items-center group">
-              Launch Assistant
-              <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" size={16} />
+            <Link href="/chatbot" className="group relative px-8 py-4 bg-white text-black rounded-full font-bold text-lg tracking-tight transition-all hover:scale-105 hover:shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)]">
+              <span className="relative z-10 flex items-center">
+                Launch System
+                <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" size={18} />
+              </span>
             </Link>
-            <Link
-              href="/signup"
-              className="btn-secondary"
-            >
-              Initialize Profile
+
+            <Link href="/signup" className="px-8 py-4 rounded-full text-gray-400 font-medium hover:text-white transition-colors">
+              Create Profile
             </Link>
           </motion.div>
         </div>
-      </section>
 
-      {/* Stats Section - Clean Grid */}
-      <section className="max-w-6xl mx-auto w-full px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 border-y border-white/5 py-12">
-          {[
-            { label: "Active Nodes", value: "200+", icon: Globe },
-            { label: "Daily Operations", value: "1.5k", icon: Zap },
-            { label: "Uptime", value: "99.9%", icon: Shield },
-          ].map((stat, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ delay: i * 0.1 }}
-              viewport={{ once: true }}
-              className="flex flex-col items-center text-center space-y-2"
-            >
-              <div className="text-4xl font-bold text-white tracking-tight">{stat.value}</div>
-              <div className="text-xs font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2">
-                <stat.icon size={12} /> {stat.label}
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* Features - Minimalist Cards */}
-      <section className="max-w-6xl mx-auto px-6 py-32 space-y-16 w-full">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-8">
-          <div className="space-y-4 max-w-xl">
-            <h2 className="text-sm font-bold text-blue-500 uppercase tracking-widest">Core Capabilities</h2>
-            <h3 className="text-4xl font-bold text-white tracking-tight">Engineered for Efficiency.</h3>
-          </div>
-          <p className="text-gray-400 max-w-xs text-sm leading-relaxed pb-2">
-            Advanced tools designed to reduce friction in your daily academic routine.
+        {/* Floating UI Elements (Decorative) */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1, duration: 2 }}
+          className="absolute bottom-10 left-0 right-0 text-center"
+        >
+          <p className="text-[10px] uppercase tracking-[0.2em] text-gray-600 font-semibold">
+            MissionLink™ Systems Active
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[
-            {
-              icon: Brain,
-              title: "Contextual Awareness",
-              desc: "Understands your specific grade level and schedule for precise assistance.",
-            },
-            {
-              icon: Shield,
-              title: "Privacy First",
-              desc: "Enterprise-grade security masking your identity from external AI models.",
-            },
-            {
-              icon: Zap,
-              title: "Real-time Sync",
-              desc: "Instant connection to school databases for up-to-the-minute information.",
-            }
-          ].map((feature, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-              viewport={{ once: true }}
-              className="bento-card group flex flex-col justify-between min-h-[280px]"
-            >
-              <div className="space-y-6">
-                <div className="w-12 h-12 bg-slate-800/50 rounded-xl flex items-center justify-center text-blue-400 group-hover:text-white transition-colors">
-                  <feature.icon size={20} />
-                </div>
-                <div className="space-y-3">
-                  <h4 className="text-xl font-bold text-white">{feature.title}</h4>
-                  <p className="text-sm text-gray-400 leading-relaxed">{feature.desc}</p>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* CTA Section - Simple & Direct */}
-      <section className="max-w-4xl mx-auto px-6 py-32 w-full text-center">
-        <div className="space-y-8">
-          <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
-            Ready to optimize your workflow?
-          </h2>
-          <p className="text-gray-400 text-lg max-w-xl mx-auto">
-            Join the platform today and experience the next generation of school management tools.
-          </p>
-          <div className="pt-4">
-            <Link href="/signup" className="btn-primary inline-flex items-center gap-2 px-10 py-4 text-lg">
-              Get Started <ArrowRight size={18} />
-            </Link>
-          </div>
-        </div>
-      </section>
+      </main>
     </div>
   )
 }

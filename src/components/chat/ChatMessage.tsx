@@ -1,5 +1,4 @@
-"use client"
-
+import { forwardRef } from "react"
 import { motion } from "framer-motion"
 import { User } from "lucide-react"
 
@@ -8,11 +7,12 @@ interface ChatMessageProps {
     content: string
 }
 
-export function ChatMessage({ role, content }: ChatMessageProps) {
+export const ChatMessage = forwardRef<HTMLDivElement, ChatMessageProps>(function ChatMessage({ role, content }, ref) {
     const isAssistant = role === "assistant"
 
     return (
         <motion.div
+            ref={ref}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             className={`flex w-full ${isAssistant ? "justify-start" : "justify-end"} py-2`}
@@ -43,4 +43,4 @@ export function ChatMessage({ role, content }: ChatMessageProps) {
             </div>
         </motion.div>
     )
-}
+})
