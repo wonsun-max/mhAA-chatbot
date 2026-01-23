@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { useSession, signOut } from "next-auth/react"
 import { Bot, LogOut, Menu, X, LayoutDashboard, Globe } from "lucide-react"
 import { useState, useEffect } from "react"
@@ -42,7 +43,13 @@ export function Navbar() {
                     {/* Logo Section */}
                     <Link href="/" className="flex items-center space-x-3 group">
                         <div className="w-10 h-10 relative flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
-                            <img src="/site-logo.png" alt="MHA Logo" className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
+                            <Image
+                                src="/site-logo.png"
+                                alt="MHA Logo"
+                                fill
+                                className="object-contain drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]"
+                                priority
+                            />
                         </div>
                         <div className="flex flex-col">
                             <span className="text-lg font-bold text-white leading-none tracking-tight">MissionLink</span>

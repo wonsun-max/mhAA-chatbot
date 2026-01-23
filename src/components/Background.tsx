@@ -22,6 +22,7 @@ export default function Background() {
                     rotate: [0, 45, 0],
                 }}
                 transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+                style={{ willChange: "transform, opacity" }}
                 className="absolute -top-[20%] -left-[10%] w-[80vw] h-[80vw] rounded-full bg-blue-900/30 blur-[80px] z-[-1]"
             />
             <motion.div
@@ -32,6 +33,7 @@ export default function Background() {
                     y: [0, -30, 0],
                 }}
                 transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+                style={{ willChange: "transform, opacity" }}
                 className="absolute top-[20%] right-0 w-[60vw] h-[60vw] rounded-full bg-[#D4AF37]/10 blur-[60px]"
             />
         </div>

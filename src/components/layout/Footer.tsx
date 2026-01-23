@@ -2,6 +2,7 @@
 
 import { Bot, Mail, Globe } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 
 export function Footer() {
     return (
@@ -12,7 +13,12 @@ export function Footer() {
                     <div className="col-span-1 md:col-span-1 space-y-6">
                         <Link href="/" className="flex items-center space-x-3 group">
                             <div className="w-10 h-10 relative flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
-                                <img src="/site-logo.png" alt="MHA Logo" className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
+                                <Image
+                                    src="/site-logo.png"
+                                    alt="MHA Logo"
+                                    fill
+                                    className="object-contain drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]"
+                                />
                             </div>
                             <span className="text-lg font-bold text-white tracking-tight">MissionLink</span>
                         </Link>

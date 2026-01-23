@@ -24,6 +24,12 @@
 
   --font-sans: 'Outfit', var(--font-outfit), system-ui, sans-serif;
   --font-serif: 'Cormorant Garamond', var(--font-cormorant), Georgia, serif;
+
+  @keyframes pulse-slow {
+    0%, 100% { opacity: 0.1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(1.05); }
+  }
+  --animate-pulse-slow: pulse-slow 8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 body {

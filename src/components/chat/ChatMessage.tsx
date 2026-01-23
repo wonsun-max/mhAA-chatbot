@@ -1,6 +1,7 @@
 import { forwardRef } from "react"
 import { motion } from "framer-motion"
 import { User } from "lucide-react"
+import Image from "next/image"
 
 interface ChatMessageProps {
     role: "user" | "assistant"
@@ -22,8 +23,13 @@ export const ChatMessage = forwardRef<HTMLDivElement, ChatMessageProps>(function
                 {/* Avatar */}
                 {isAssistant && (
                     <div className="flex-shrink-0 w-8 h-8 mt-1">
-                        <div className="w-8 h-8 flex items-center justify-center rounded-full overflow-hidden">
-                            <img src="/site-logo.png" alt="AI" className="w-full h-full object-contain" />
+                        <div className="w-8 h-8 flex items-center justify-center rounded-full overflow-hidden relative">
+                            <Image
+                                src="/site-logo.png"
+                                alt="AI"
+                                fill
+                                className="object-contain"
+                            />
                         </div>
                     </div>
                 )}
