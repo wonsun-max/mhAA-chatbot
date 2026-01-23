@@ -1,4 +1,3 @@
-// @ts-nocheck
 "use client"
 
 import { useRef, useLayoutEffect } from "react"
@@ -10,13 +9,15 @@ import { useSession } from "next-auth/react"
 import { useChat } from "@ai-sdk/react"
 
 export function ChatInterface() {
-    const { data: session, status } = useSession()
-    const { messages, append, isLoading } = useChat({
+    const { data: session, status: authStatus } = useSession()
+    const { messages, sendMessage, status: chatStatus } = useChat({
         api: "/api/ai/chat",
         onFinish: () => {
             scrollToBottom();
         }
     })
+
+    const isChatLoading = chatStatus === "submitting" || chatStatus === "streaming"
 
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const containerRef = useRef<HTMLDivElement>(null)
@@ -29,12 +30,12 @@ export function ChatInterface() {
 
     useLayoutEffect(() => {
         scrollToBottom()
-    }, [messages, isLoading])
+    }, [messages, isChatLoading])
 
     const handleSend = async (text: string) => {
-        if (status !== "authenticated" || !text.trim() || isLoading) return
+        if (authStatus !== "authenticated" || !text.trim() || isChatLoading) return
 
-        await append({
+        sendMessage({
             role: "user",
             content: text,
         })
@@ -73,8 +74,8 @@ export function ChatInterface() {
                                     key={i}
                                     onClick={() => handleSend(chip.text)}
                                     // Disable interaction if not logged in, visually dimmed
-                                    disabled={status !== "authenticated"}
-                                    className={`flex flex-col items-start p-4 bg-white/5 border border-white/5 rounded-2xl transition-all text-left ${status === "authenticated"
+                                    disabled={authStatus !== "authenticated"}
+                                    className={`flex flex-col items-start p-4 bg-white/5 border border-white/5 rounded-2xl transition-all text-left ${authStatus === "authenticated"
                                         ? "hover:bg-white/10 hover:scale-[1.02] cursor-pointer group"
                                         : "opacity-50 cursor-not-allowed"
                                         }`}
@@ -92,7 +93,7 @@ export function ChatInterface() {
                         {messages.map((m, i) => (
                             <ChatMessage key={m.id || i} role={m.role as "user" | "assistant"} content={m.content} />
                         ))}
-                        {isLoading && messages[messages.length - 1]?.role !== "assistant" && (
+                        {isChatLoading && messages[messages.length - 1]?.role !== "assistant" && (
                             <motion.div
                                 key="loading-indicator"
                                 initial={{ opacity: 0 }}
@@ -114,8 +115,8 @@ export function ChatInterface() {
 
             {/* Floating Input Bar */}
             <ChatInput
-                status={status === "authenticated" ? "authenticated" : "unauthenticated"}
-                isLoading={isLoading}
+                status={authStatus === "authenticated" ? "authenticated" : "unauthenticated"}
+                isLoading={isChatLoading}
                 onSend={handleSend}
             />
         </div>
