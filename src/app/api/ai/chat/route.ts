@@ -130,7 +130,17 @@ export async function POST(req: Request) {
             },
         });
 
-        return result.toDataStreamResponse();
+        // Robust fallback for response generation
+        if (typeof result.toDataStreamResponse === 'function') {
+            return result.toDataStreamResponse();
+        } else if (typeof (result as any).toAIStreamResponse === 'function') {
+            return (result as any).toAIStreamResponse();
+        } else if (typeof (result as any).toTextStreamResponse === 'function') {
+            return (result as any).toTextStreamResponse();
+        }
+
+        // If all else fails, return a JSON error (should not happen in valid SDK)
+        throw new Error("Stream response method incorrect on result object");
 
     } catch (error: any) {
         console.error("Chat API Error:", error);
