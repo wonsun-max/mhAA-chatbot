@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { streamText, createUIMessageStreamResponse } from "ai";
+import { streamText, createUIMessageStreamResponse, tool } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -57,26 +57,34 @@ export async function POST(req: Request) {
             system: systemPrompt,
             messages: coreMessages,
             tools: {
-                get_meals: {
+                get_meals: tool({
                     description: "Get the school meal menu.",
-                    parameters: z.object({ date: z.string().optional() }),
+                    parameters: z.object({ 
+                        date: z.string().describe("Optional: Date in YYYY-MM-DD format").optional() 
+                    }),
                     execute: async ({ date }) => aiTools.get_meals({ date }),
-                },
-                get_upcoming_birthdays: {
+                }),
+                get_upcoming_birthdays: tool({
                     description: "Get upcoming student birthdays.",
-                    parameters: z.object({ limit: z.number().optional() }),
+                    parameters: z.object({ 
+                        limit: z.number().describe("Number of birthdays to show").optional() 
+                    }),
                     execute: async ({ limit }) => aiTools.get_upcoming_birthdays({ limit }),
-                },
-                get_schedule: {
+                }),
+                get_schedule: tool({
                     description: "Get school schedule.",
-                    parameters: z.object({ Grade: z.string() }),
+                    parameters: z.object({ 
+                        Grade: z.string().describe("The grade level (e.g., 'Grade 11')") 
+                    }),
                     execute: async ({ Grade }) => aiTools.get_schedule({ Grade }),
-                },
-                get_upcoming_events: {
+                }),
+                get_upcoming_events: tool({
                     description: "Get upcoming school events.",
-                    parameters: z.object({}),
+                    parameters: z.object({
+                        includeDescription: z.boolean().describe("Whether to include event descriptions").optional()
+                    }),
                     execute: async () => aiTools.get_upcoming_events(),
-                },
+                }),
             },
             maxSteps: 5,
         });
