@@ -26,7 +26,7 @@ export function ChatInterface() {
     })
 
     const messagesEndRef = useRef<HTMLDivElement>(null)
-    const isChatLoading = chatStatus === "in_progress" || chatStatus === "pending"
+    const isChatLoading = chatStatus === "streaming"
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
