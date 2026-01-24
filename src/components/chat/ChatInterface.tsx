@@ -98,8 +98,21 @@ export function ChatInterface() {
                 ) : (
                     <>
                         {messages.map((m: any, i) => {
-                            // AI SDK v6 uses 'parts' array structure
-                            const textContent = m.parts?.[0]?.text || m.content || "";
+                            // Robust text extraction
+                            let textContent = "";
+                            if (typeof m.content === 'string') {
+                                textContent = m.content;
+                            } else if (Array.isArray(m.parts)) {
+                                textContent = m.parts
+                                    .filter((p: any) => p.type === 'text' || p.text)
+                                    .map((p: any) => p.text)
+                                    .join("");
+                            } else if (m.parts?.[0]?.text) {
+                                textContent = m.parts[0].text;
+                            }
+
+                            // Skip rendering empty messages (like tool calls without text)
+                            if (!textContent && m.role !== 'user') return null;
 
                             return (
                                 <motion.div
@@ -112,7 +125,7 @@ export function ChatInterface() {
                                 </motion.div>
                             );
                         })}
-                        {isChatLoading && messages[messages.length - 1]?.role !== "assistant" && (
+                        {isChatLoading && (
                             <motion.div
                                 key="loading-indicator"
                                 initial={{ opacity: 0 }}

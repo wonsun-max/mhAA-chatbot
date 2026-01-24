@@ -14,10 +14,10 @@ async function testAirtable() {
     const base = airtable.base(process.env.AIRTABLE_BASE_ID);
 
     const tables = [
-        { name: "Student_Directory", fields: ["Email", "Student_Ref_ID", "Display_Name"] },
-        { name: "Meals", fields: ["Date", "Menu"] },
-        { name: "Schedules", fields: ["Grade", "Subject", "Period"] },
-        { name: "Events", fields: ["Name", "Start_Date"] }
+        { name: "Student_Directory", fields: ["Grade", "English_name", "Korean_Name", "Birth(birthday)"] },
+        { name: "Meals", fields: ["Date", "Menu", "Day of Week"] },
+        { name: "Schedules", fields: ["Grade", "Subject", "Period", "Time", "Teacher", "Day of week"] },
+        { name: "Events", fields: ["Name", "Start_Date", "End_Date", "Event_Type"] }
     ];
 
     for (const table of tables) {

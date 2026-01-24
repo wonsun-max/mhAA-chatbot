@@ -11,7 +11,7 @@ import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 30; // Recommended for tool calls
+export const maxDuration = 30;
 
 export async function POST(req: Request) {
     try {
@@ -20,16 +20,20 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        // 1. Validate Environment Constraints (CRITICAL FIX)
-        if (!process.env.OPENAI_API_KEY) {
-            console.error("CRITICAL: Missing OPENAI_API_KEY");
-            return NextResponse.json(
-                { error: "Server Error: Missing OPENAI_API_KEY. Please add it to .env" },
-                { status: 500 }
-            );
+        const body = await req.json();
+        console.log("Chat Request Body:", JSON.stringify(body).slice(0, 200));
+
+        // Handle both { messages } and { text } (for some versions of sendMessage)
+        let originalMessages = body.messages;
+        if (!originalMessages && body.text) {
+            originalMessages = [{ role: 'user', content: body.text }];
         }
 
-        // 2. Validate User & Chatbot Access (Case-Insensitive)
+        if (!originalMessages || !Array.isArray(originalMessages)) {
+            console.error("Invalid messages format", body);
+            return NextResponse.json({ error: "Invalid messages format" }, { status: 400 });
+        }
+
         const user = await prisma.user.findFirst({
             where: {
                 email: {
@@ -40,32 +44,18 @@ export async function POST(req: Request) {
         });
 
         if (!user) {
-            console.log("Chat Error: User not found for email:", session.user.email);
-            return NextResponse.json({ error: "Access Denied - User Not Found. Try signing out and back in." }, { status: 403 });
-        }
-
-        console.log("Chat Access Granted:", { email: user.email, status: user.status });
-
-        // Checks user status (Must be ACTIVE for production)
-        if (user.status !== UserStatus.ACTIVE) {
-            console.log("Chat Warning: Non-active user accessed chat", user.status);
-            // In strict mode, uncomment below:
-            // return NextResponse.json({ error: "Access Denied - Account Not Active" }, { status: 403 });
+            return NextResponse.json({ error: "Access Denied" }, { status: 403 });
         }
 
         const displayName = user.koreanName || user.name || "Member";
         const grade = String(user.grade || "N/A");
-        const country = "N/A"; // Placeholder for future missionary country logic
+        const country = "N/A";
 
-        const { messages: originalMessages } = await req.json();
-
-        // Compatibility fix: transform message format from { parts: ... } to { content: ... }
         const messages = originalMessages.map((m: any) => ({
             role: m.role,
-            content: m.parts?.[0]?.text ?? m.content,
+            content: typeof m.content === 'string' ? m.content : (m.parts?.[0]?.text ?? ""),
         }));
 
-        // Prepare System Prompt with Context
         const currentTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Seoul" });
         const systemPrompt = CHATBOT_SYSTEM_PROMPT
             .replace("{{currentTime}}", currentTime)
@@ -73,38 +63,35 @@ export async function POST(req: Request) {
             .replace("{{grade}}", grade)
             .replace("{{country}}", country);
 
-        // Define Tools matching src/lib/ai/tools.ts
         const tools = {
             get_meals: tool({
-                description: "Get the school meal menu. Defaults to today if no date provided.",
+                description: "Get the school meal menu.",
                 parameters: z.object({
-                    date: z.string().optional().describe("Date in YYYY-MM-DD format"),
+                    date: z.string().describe("YYYY-MM-DD").optional(),
                 }),
-                execute: async (args) => aiTools.get_meals(args),
+                execute: async ({ date }) => aiTools.get_meals({ date }),
             }),
             get_upcoming_birthdays: tool({
-                description: "Get a list of upcoming student birthdays for the next week or month.",
+                description: "Get upcoming student birthdays.",
                 parameters: z.object({
-                    limit: z.number().optional().describe("Number of birthdays to show (default 5)"),
+                    limit: z.number().optional(),
                 }),
-                execute: async (args) => aiTools.get_upcoming_birthdays(args),
+                execute: async ({ limit }) => aiTools.get_upcoming_birthdays({ limit }),
             }),
             get_schedule: tool({
-                description: "Get the school schedule for a specific grade.",
+                description: "Get school schedule.",
                 parameters: z.object({
-                    Grade: z.string().describe("The grade level (e.g., 'Grade 11')"),
+                    Grade: z.string(),
                 }),
-                execute: async (args) => aiTools.get_schedule(args),
+                execute: async ({ Grade }) => aiTools.get_schedule({ Grade }),
             }),
             get_upcoming_events: tool({
-                description: "Get the list of upcoming school events or holidays.",
-                parameters: z.object({
-                    Grade: z.string().optional().describe("Filter events by grade"),
-                }),
-                execute: async (args) => aiTools.get_upcoming_events(args),
+                description: "Get upcoming school events.",
+                parameters: z.object({}),
+                execute: async () => aiTools.get_upcoming_events(),
             }),
             get_stats: tool({
-                description: "Get statistics about the student body.",
+                description: "Get student statistics.",
                 parameters: z.object({
                     grade: z.string().optional(),
                     country: z.string().optional(),
@@ -118,35 +105,10 @@ export async function POST(req: Request) {
             system: systemPrompt,
             messages,
             tools,
-            maxSteps: 5, // Allow multi-step tool calls
-            onFinish: async ({ text, toolCalls, response }) => {
-                try {
-                    // Async audit logging
-                    await prisma.chatLog.create({
-                        data: {
-                            userId: user.id,
-                            query: messages[messages.length - 1]?.content || "System Trigger",
-                            response: text || "Tool execution result",
-                            toolsCalled: toolCalls && toolCalls.length > 0 ? JSON.stringify(toolCalls) : null,
-                        }
-                    });
-                } catch (e) {
-                    console.error("Audit log failed", e);
-                }
-            },
+            maxSteps: 5,
         });
 
-        // Robust fallback for response generation
-        if (typeof result.toDataStreamResponse === 'function') {
-            return result.toDataStreamResponse();
-        } else if (typeof (result as any).toAIStreamResponse === 'function') {
-            return (result as any).toAIStreamResponse();
-        } else if (typeof (result as any).toTextStreamResponse === 'function') {
-            return (result as any).toTextStreamResponse();
-        }
-
-        // If all else fails, return a JSON error (should not happen in valid SDK)
-        throw new Error("Stream response method incorrect on result object");
+        return result.toDataStreamResponse();
 
     } catch (error: any) {
         console.error("Chat API Error:", error);

@@ -48,9 +48,7 @@ export const toolDefinitions = [
         description: "Get the list of upcoming school events or holidays (학교 일정).",
         parameters: {
             type: "object",
-            properties: {
-                Grade: { type: "string", description: "Optional: Filter events by grade" },
-            },
+            properties: {},
         },
     },
 ];
@@ -66,16 +64,10 @@ export const aiTools = {
 
             const record = records[0];
             const menu = record.get("Menu");
-            const summary = record.get("Meal Summary");
-            const tags = record.get("Meal Tags");
             const day = record.get("Day of Week");
 
-            let response = `**${day || 'Menu'} (${targetDate})**\n`;
-            if (summary) response += `✨ *${summary}* (Summary)\n\n`;
+            let response = `**${day || 'Menu'} (${targetDate})**\n\n`;
             response += `${menu}\n`;
-            if (tags && (tags as string[]).length > 0) {
-                response += `\n🏷️ Tags: ${(tags as string[]).join(", ")}`;
-            }
 
             return response;
         } catch {
@@ -85,20 +77,27 @@ export const aiTools = {
 
     get_upcoming_birthdays: async ({ limit = 5 }: { limit?: number }) => {
         try {
-            // Fetch all students and filter/sort in JS since Airtable complex date math is tricky
             const records = await base(tables.STUDENT_DIRECTORY).select({
-                fields: ["Display_Name", "Birthday_Month", "Birthday_Day"],
+                fields: ["English_name", "Korean_Name", "Birth(birthday)"],
             }).all();
 
             const today = new Date();
             const currentMonth = today.getMonth() + 1;
             const currentDay = today.getDate();
 
-            const students = records.map(r => ({
-                name: r.get("Display_Name") as string,
-                month: r.get("Birthday_Month") as number,
-                day: r.get("Birthday_Day") as number,
-            })).filter(s => s.month && s.day);
+            const students = records.map(r => {
+                const birthStr = r.get("Birth(birthday)") as string;
+                if (!birthStr) return null;
+                // Airtable dates are YYYY-MM-DD
+                const parts = birthStr.split('-');
+                if (parts.length < 3) return null;
+                
+                return {
+                    name: (r.get("English_name") || r.get("Korean_Name")) as string,
+                    month: parseInt(parts[1], 10),
+                    day: parseInt(parts[2], 10),
+                };
+            }).filter((s): s is { name: string; month: number; day: number } => s !== null);
 
             // Sort by month then day, relative to today
             students.sort((a, b) => {
@@ -116,7 +115,8 @@ export const aiTools = {
             if (upcoming.length === 0) return "No student birthdays found in the directory.";
 
             return upcoming.map(s => `- ${s.name}: ${s.month}/${s.day}`).join("\n");
-        } catch {
+        } catch (error) {
+            console.error("Birthday fetch error:", error);
             return "Error fetching birthday data.";
         }
     },
@@ -139,36 +139,30 @@ export const aiTools = {
     get_schedule: async ({ Grade }: { Grade: string }) => {
         try {
             const records = await base(tables.SCHEDULES)
-                .select({ filterByFormula: `{Grade} = '${Grade}'` })
+                .select({
+                    filterByFormula: `{Grade} = '${Grade}'`,
+                    sort: [{ field: "Period", direction: "asc" }]
+                })
                 .all();
-            if (records.length === 0) return "No schedule data available for this grade.";
+            if (records.length === 0) return `No schedule data available for grade ${Grade}.`;
+            
             return records.map(r => {
                 const subject = r.get("Subject");
                 const period = r.get("Period");
                 const time = r.get("Time");
                 const teacher = r.get("Teacher");
-                const room = r.get("Room");
-                const summary = r.get("Schedule Summary");
+                const day = r.get("Day of week");
 
-                let line = `- **${subject}**${time ? ` (${time})` : ""}${teacher ? ` - ${teacher}` : ""}`;
-                if (room) line += ` @ ${room}`;
-                line += ` [Period ${period}]`;
-                if (summary) line += `\n  - ${summary}`;
-                return line;
+                return `- [${day}] Period ${period}${time ? ` (${time})` : ""}: **${subject}**${teacher ? ` - ${teacher}` : ""}`;
             }).join("\n");
         } catch {
             return "Error fetching schedule.";
         }
     },
 
-    get_upcoming_events: async ({ Grade }: { Grade?: string }) => {
+    get_upcoming_events: async () => {
         try {
-            let formula = "OR(IS_AFTER({Start_Date}, TODAY()), AND(IS_BEFORE({Start_Date}, TODAY()), IS_AFTER({End_Date}, TODAY())))";
-
-            if (Grade) {
-                // Check if the event's Associated_Grades contains the requested Grade
-                formula = `AND(${formula}, SEARCH('${Grade}', {Associated_Grades}))`;
-            }
+            const formula = "OR(IS_AFTER({Start_Date}, TODAY()), IS_SAME({Start_Date}, TODAY()))";
 
             const records = await base(tables.EVENTS)
                 .select({
@@ -178,18 +172,15 @@ export const aiTools = {
                 })
                 .firstPage();
 
-            if (records.length === 0) return Grade ? `No upcoming school events found for Grade ${Grade}.` : "No upcoming school events found.";
+            if (records.length === 0) return "No upcoming school events found.";
 
             return records.map(r => {
                 const name = r.get("Name");
                 const type = r.get("Event_Type");
                 const start = r.get("Start_Date");
                 const end = r.get("End_Date");
-                const desc = r.get("Description");
 
-                let line = `- [${type || 'Event'}] ${name}: ${start}${end ? ` to ${end}` : ""}`;
-                if (desc) line += `\n  - ${desc}`;
-                return line;
+                return `- [${type || 'Event'}] ${name}: ${start}${end ? ` to ${end}` : ""}`;
             }).join("\n");
         } catch {
             return "Error fetching event data.";
