@@ -57,7 +57,13 @@ export async function POST(req: Request) {
         const grade = String(user.grade || "N/A");
         const country = "N/A"; // Placeholder for future missionary country logic
 
-        const { messages } = await req.json();
+        const { messages: originalMessages } = await req.json();
+
+        // Compatibility fix: transform message format from { parts: ... } to { content: ... }
+        const messages = originalMessages.map((m: any) => ({
+            role: m.role,
+            content: m.parts?.[0]?.text ?? m.content,
+        }));
 
         // Prepare System Prompt with Context
         const currentTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Seoul" });
