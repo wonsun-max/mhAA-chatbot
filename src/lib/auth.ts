@@ -57,6 +57,8 @@ export const authOptions: NextAuthOptions = {
                 if (user) {
                     session.user.id = user.id;
                     session.user.role = user.role;
+                    session.user.email = user.email; // Add this line
+                    session.user.name = user.name; // Add this line
                     session.user.aiEnabled = user.aiEnabled;
                     session.user.koreanName = user.koreanName;
                     session.user.username = user.username;
