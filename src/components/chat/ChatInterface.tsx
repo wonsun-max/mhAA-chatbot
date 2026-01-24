@@ -7,13 +7,16 @@ import { ChatInput } from "./ChatInput"
 import { motion } from "framer-motion"
 import { useSession } from "next-auth/react"
 import { useChat } from "@ai-sdk/react"
+import { DefaultChatTransport } from "ai"
 
 export function ChatInterface() {
     const { data: session, status: authStatus } = useSession()
 
     // AI SDK v6+ Initialization
     const { messages, sendMessage, status: chatStatus } = useChat({
-        api: "/api/ai/chat",
+        transport: new DefaultChatTransport({
+            api: "/api/ai/chat",
+        }),
         onError: (error) => {
             console.error("Chat Interaction Error:", error);
         },
