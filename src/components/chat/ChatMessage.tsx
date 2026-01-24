@@ -1,5 +1,3 @@
-import { forwardRef } from "react"
-import { motion } from "framer-motion"
 import { User } from "lucide-react"
 import Image from "next/image"
 
@@ -8,16 +6,11 @@ interface ChatMessageProps {
     content: string
 }
 
-export const ChatMessage = forwardRef<HTMLDivElement, ChatMessageProps>(function ChatMessage({ role, content }, ref) {
+export function ChatMessage({ role, content }: ChatMessageProps) {
     const isAssistant = role === "assistant"
 
     return (
-        <motion.div
-            ref={ref}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={`flex w-full ${isAssistant ? "justify-start" : "justify-end"} py-2`}
-        >
+        <div className={`flex w-full ${isAssistant ? "justify-start" : "justify-end"} py-2`}>
             <div className={`flex max-w-[85%] md:max-w-[75%] ${isAssistant ? "flex-row gap-4" : "flex-row-reverse"}`}>
 
                 {/* Avatar */}
@@ -47,6 +40,6 @@ export const ChatMessage = forwardRef<HTMLDivElement, ChatMessageProps>(function
                     </div>
                 </div>
             </div>
-        </motion.div>
+        </div>
     )
-})
+}

@@ -4,28 +4,29 @@ import { useRef, useLayoutEffect } from "react"
 import { Coffee, Calendar, MapPin } from "lucide-react"
 import { ChatMessage } from "./ChatMessage"
 import { ChatInput } from "./ChatInput"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 import { useSession } from "next-auth/react"
 import { useChat } from "@ai-sdk/react"
 
 export function ChatInterface() {
     const { data: session, status: authStatus } = useSession()
+
+    // AI SDK v6+ Initialization
     const { messages, sendMessage, status: chatStatus } = useChat({
         api: "/api/ai/chat",
+        onError: (error) => {
+            console.error("Chat Interaction Error:", error);
+        },
         onFinish: () => {
             scrollToBottom();
         }
     })
 
-    const isChatLoading = chatStatus === "submitting" || chatStatus === "streaming"
-
     const messagesEndRef = useRef<HTMLDivElement>(null)
-    const containerRef = useRef<HTMLDivElement>(null)
+    const isChatLoading = chatStatus === "in_progress" || chatStatus === "pending"
 
     const scrollToBottom = () => {
-        if (containerRef.current) {
-            containerRef.current.scrollTop = containerRef.current.scrollHeight
-        }
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
     }
 
     useLayoutEffect(() => {
@@ -36,49 +37,52 @@ export function ChatInterface() {
         if (authStatus !== "authenticated" || !text.trim() || isChatLoading) return
 
         sendMessage({
-            role: "user",
-            content: text,
+            text: text,
         })
     }
 
     const starterChips = [
         { label: "Today's Menu", icon: Coffee, text: "What's on the menu for today?" },
-        { label: "My Schedule", icon: Calendar, text: "Show me my class schedule for today." },
+        { label: "My Schedule", icon: Calendar, text: "Show me my class schedule for today?" },
         { label: "School Events", icon: MapPin, text: "What upcoming events are happening?" },
     ]
 
     return (
         <div className="flex flex-col h-full w-full max-w-4xl mx-auto relative">
+            {/* Chat Header */}
+            <div className="text-center py-8 border-b border-white/5">
+                <h1 className="text-3xl font-bold text-white mb-2">MissionLink AI Assistant</h1>
+                <p className="text-gray-400 text-sm">Ask me anything about school, meals, schedules, and more!</p>
+            </div>
 
-            {/* Messages Area - Fills space */}
-            <div
-                ref={containerRef}
-                className="flex-1 overflow-y-auto px-4 pb-32 space-y-6 scrollbar-hide scroll-smooth"
-            >
+            {/* Messages Area */}
+            <div className="flex-1 overflow-y-auto px-4 pb-32 space-y-6 scrollbar-hide [&::-webkit-scrollbar]:hidden">
                 {messages.length === 0 ? (
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="flex flex-col items-center justify-center h-full space-y-8 text-center"
+                        className="flex flex-col items-center justify-center h-full space-y-8 px-6"
                     >
-                        <div className="w-16 h-16 relative mb-4">
-                        </div>
-                        <div className="flex flex-col items-center justify-center space-y-2">
-                            <h2 className="text-4xl font-bold text-white tracking-tight">Hi there,</h2>
-                            <h2 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-white">How can I help you today?</h2>
+                        <div className="text-center space-y-3">
+                            <h2 className="text-2xl font-bold text-white">Welcome to MissionLink AI</h2>
+                            <p className="text-gray-400 max-w-md mx-auto">
+                                Your intelligent school companion. Ask about meals, schedules, birthdays, or prayer requests.
+                            </p>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-2xl px-4">
-                            {starterChips.map((chip, i) => (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-3xl">
+                            {starterChips.map((chip) => (
                                 <button
-                                    key={i}
+                                    key={chip.label}
                                     onClick={() => handleSend(chip.text)}
-                                    // Disable interaction if not logged in, visually dimmed
                                     disabled={authStatus !== "authenticated"}
-                                    className={`flex flex-col items-start p-4 bg-white/5 border border-white/5 rounded-2xl transition-all text-left ${authStatus === "authenticated"
-                                        ? "hover:bg-white/10 hover:scale-[1.02] cursor-pointer group"
-                                        : "opacity-50 cursor-not-allowed"
-                                        }`}
+                                    className={`
+                                        group flex flex-col items-center p-6 rounded-2xl border 
+                                        ${authStatus === "authenticated"
+                                            ? "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 cursor-pointer"
+                                            : "bg-white/5 border-white/5 opacity-50 cursor-not-allowed"}
+                                        transition-all duration-300
+                                    `}
                                 >
                                     <div className="p-2 bg-blue-500/10 rounded-lg text-blue-400 mb-3 group-hover:text-blue-300">
                                         <chip.icon size={20} />
@@ -89,33 +93,44 @@ export function ChatInterface() {
                         </div>
                     </motion.div>
                 ) : (
-                    <AnimatePresence mode="popLayout">
-                        {messages.map((m, i) => (
-                            <ChatMessage key={m.id || i} role={m.role as "user" | "assistant"} content={m.content} />
-                        ))}
+                    <>
+                        {messages.map((m: any, i) => {
+                            // AI SDK v6 uses 'parts' array structure
+                            const textContent = m.parts?.[0]?.text || m.content || "";
+
+                            return (
+                                <motion.div
+                                    key={m.id || i}
+                                    initial={{ opacity: 1, y: 0 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0 }}
+                                >
+                                    <ChatMessage role={m.role as "user" | "assistant"} content={textContent} />
+                                </motion.div>
+                            );
+                        })}
                         {isChatLoading && messages[messages.length - 1]?.role !== "assistant" && (
                             <motion.div
                                 key="loading-indicator"
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 0.2 }}
-                                className="flex items-center space-x-3 px-4"
+                                className="flex justify-start py-2"
                             >
-                                <div className="w-8 h-8 flex items-center justify-center">
-                                    <div className="w-5 h-5 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
+                                <div className="flex items-center space-x-2 text-gray-400">
+                                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
                                 </div>
-                                <span className="text-xs font-medium text-gray-500 animate-pulse">Thinking...</span>
                             </motion.div>
                         )}
-                        <div ref={messagesEndRef} className="h-4" />
-                    </AnimatePresence>
+                    </>
                 )}
+                <div ref={messagesEndRef} />
             </div>
 
-            {/* Floating Input Bar */}
+            {/* Input Area */}
             <ChatInput
-                status={authStatus === "authenticated" ? "authenticated" : "unauthenticated"}
+                status={authStatus}
                 isLoading={isChatLoading}
                 onSend={handleSend}
             />
