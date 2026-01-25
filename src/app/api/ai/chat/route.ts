@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { streamText, createUIMessageStreamResponse, tool, jsonSchema } from "ai";
+import { streamText, tool } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -59,55 +59,46 @@ export async function POST(req: Request) {
             tools: {
                 get_meals: tool({
                     description: "Get the school meal menu for a specific date (YYYY-MM-DD).",
-                    parameters: jsonSchema({
-                        type: "object",
-                        properties: {
-                            date: { type: "string", description: "The date in YYYY-MM-DD format" }
-                        },
-                        required: []
+                    parameters: z.object({ 
+                        date: z.string().describe("The date in YYYY-MM-DD format").optional() 
                     }),
-                    execute: async ({ date }: { date?: string }) => aiTools.get_meals({ date }),
+                    execute: async ({ date }) => aiTools.get_meals({ date }),
                 }),
                 get_upcoming_birthdays: tool({
                     description: "Get upcoming student birthdays.",
-                    parameters: jsonSchema({
-                        type: "object",
-                        properties: {
-                            limit: { type: "number", description: "Number of birthdays to show" }
-                        },
-                        required: []
+                    parameters: z.object({ 
+                        limit: z.number().describe("Number of birthdays to show").optional() 
                     }),
-                    execute: async ({ limit }: { limit?: number }) => aiTools.get_upcoming_birthdays({ limit }),
+                    execute: async ({ limit }) => aiTools.get_upcoming_birthdays({ limit }),
                 }),
                 get_schedule: tool({
                     description: "Get school schedule for a specific grade.",
-                    parameters: jsonSchema({
-                        type: "object",
-                        properties: {
-                            Grade: { type: "string", description: "The grade level" }
-                        },
-                        required: ["Grade"]
+                    parameters: z.object({ 
+                        Grade: z.string().describe("The grade level") 
                     }),
-                    execute: async ({ Grade }: { Grade: string }) => aiTools.get_schedule({ Grade }),
+                    execute: async ({ Grade }) => aiTools.get_schedule({ Grade }),
                 }),
                 get_upcoming_events: tool({
                     description: "Get upcoming school events.",
-                    parameters: jsonSchema({
-                        type: "object",
-                        properties: {
-                            includeDescription: { type: "boolean", description: "Whether to include description" }
-                        },
-                        required: []
+                    parameters: z.object({
+                        includeDescription: z.boolean().describe("Whether to include description").optional()
                     }),
-                    execute: async ({ includeDescription }: { includeDescription?: boolean }) => aiTools.get_upcoming_events(),
+                    execute: async () => aiTools.get_upcoming_events(),
                 }),
             },
             maxSteps: 5,
         });
 
-        return createUIMessageStreamResponse({
-            stream: result.toUIMessageStream()
+        return result.toDataStreamResponse();
+    } catch (error: any) {
+        console.error("Chat Error:", error);
+        return new Response(JSON.stringify({ error: error.message }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' }
         });
+    }
+}
+
     } catch (error: any) {
         console.error("Chat Error:", error);
         return new Response(JSON.stringify({ error: error.message }), {
