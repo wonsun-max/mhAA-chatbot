@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { streamText, createUIMessageStreamResponse, tool } from "ai";
+import { streamText, createUIMessageStreamResponse, tool, jsonSchema } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -58,32 +58,48 @@ export async function POST(req: Request) {
             messages: coreMessages,
             tools: {
                 get_meals: tool({
-                    description: "Get the school meal menu.",
-                    parameters: z.object({ 
-                        date: z.string().describe("Optional: Date in YYYY-MM-DD format").optional() 
+                    description: "Get the school meal menu for a specific date (YYYY-MM-DD).",
+                    parameters: jsonSchema({
+                        type: "object",
+                        properties: {
+                            date: { type: "string", description: "The date in YYYY-MM-DD format" }
+                        },
+                        required: []
                     }),
-                    execute: async ({ date }) => aiTools.get_meals({ date }),
+                    execute: async ({ date }: { date?: string }) => aiTools.get_meals({ date }),
                 }),
                 get_upcoming_birthdays: tool({
                     description: "Get upcoming student birthdays.",
-                    parameters: z.object({ 
-                        limit: z.number().describe("Number of birthdays to show").optional() 
+                    parameters: jsonSchema({
+                        type: "object",
+                        properties: {
+                            limit: { type: "number", description: "Number of birthdays to show" }
+                        },
+                        required: []
                     }),
-                    execute: async ({ limit }) => aiTools.get_upcoming_birthdays({ limit }),
+                    execute: async ({ limit }: { limit?: number }) => aiTools.get_upcoming_birthdays({ limit }),
                 }),
                 get_schedule: tool({
-                    description: "Get school schedule.",
-                    parameters: z.object({ 
-                        Grade: z.string().describe("The grade level (e.g., 'Grade 11')") 
+                    description: "Get school schedule for a specific grade.",
+                    parameters: jsonSchema({
+                        type: "object",
+                        properties: {
+                            Grade: { type: "string", description: "The grade level" }
+                        },
+                        required: ["Grade"]
                     }),
-                    execute: async ({ Grade }) => aiTools.get_schedule({ Grade }),
+                    execute: async ({ Grade }: { Grade: string }) => aiTools.get_schedule({ Grade }),
                 }),
                 get_upcoming_events: tool({
                     description: "Get upcoming school events.",
-                    parameters: z.object({
-                        includeDescription: z.boolean().describe("Whether to include event descriptions").optional()
+                    parameters: jsonSchema({
+                        type: "object",
+                        properties: {
+                            includeDescription: { type: "boolean", description: "Whether to include description" }
+                        },
+                        required: []
                     }),
-                    execute: async () => aiTools.get_upcoming_events(),
+                    execute: async ({ includeDescription }: { includeDescription?: boolean }) => aiTools.get_upcoming_events(),
                 }),
             },
             maxSteps: 5,
