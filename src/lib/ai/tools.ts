@@ -53,29 +53,44 @@ export const toolDefinitions = [
     },
 ];
 
+/**
+ * Retrieval tools for the MissionLink School Assistant.
+ * These tools bridge the Large Language Model with Airtable data sources.
+ */
 export const aiTools = {
-    get_meals: async ({ date }: { date?: string }) => {
+    /**
+     * Fetches the school meal menu for a specific date or today.
+     * @param {Object} params - Tool parameters.
+     * @param {string} [params.date] - Optional date in YYYY-MM-DD format.
+     * @returns {Promise<string>} Formatted meal description or error message.
+     */
+    get_meals: async ({ date }: { date?: string }): Promise<string> => {
         try {
             const targetDate = date || new Date().toISOString().split('T')[0];
             const records = await base(tables.MEALS)
                 .select({ filterByFormula: `IS_SAME({Date}, '${targetDate}', 'day')` })
                 .firstPage();
-            if (records.length === 0) return `No meal data available for ${targetDate}.`;
+
+            if (records.length === 0) return `System Report: No meal data found for ${targetDate}.`;
 
             const record = records[0];
-            const menu = record.get("Menu");
-            const day = record.get("Day of Week");
+            const menu = record.get("Menu") as string;
+            const day = record.get("Day of Week") as string;
 
-            let response = `**${day || 'Menu'} (${targetDate})**\n\n`;
-            response += `${menu}\n`;
-
-            return response;
-        } catch {
-            return "Error fetching meal data.";
+            return `**${day || 'Menu'} (${targetDate})**\n\n${menu}`;
+        } catch (error) {
+            console.error("[aiTools] get_meals error:", error);
+            return "System Error: Unable to retrieve meal data at this time.";
         }
     },
 
-    get_upcoming_birthdays: async ({ limit = 5 }: { limit?: number }) => {
+    /**
+     * Retrieves a list of upcoming student birthdays.
+     * @param {Object} params - Tool parameters.
+     * @param {number} [params.limit=5] - Number of birthdays to return.
+     * @returns {Promise<string>} List of upcoming birthdays or error message.
+     */
+    get_upcoming_birthdays: async ({ limit = 5 }: { limit?: number }): Promise<string> => {
         try {
             const records = await base(tables.STUDENT_DIRECTORY).select({
                 fields: ["English_name", "Korean_Name", "Birth(birthday)"],
@@ -88,18 +103,16 @@ export const aiTools = {
             const students = records.map(r => {
                 const birthStr = r.get("Birth(birthday)") as string;
                 if (!birthStr) return null;
-                // Airtable dates are YYYY-MM-DD
                 const parts = birthStr.split('-');
                 if (parts.length < 3) return null;
-                
+
                 return {
-                    name: (r.get("English_name") || r.get("Korean_Name")) as string,
+                    name: (r.get("English_name") || r.get("Korean_Name") || "Unknown Student") as string,
                     month: parseInt(parts[1], 10),
                     day: parseInt(parts[2], 10),
                 };
             }).filter((s): s is { name: string; month: number; day: number } => s !== null);
 
-            // Sort by month then day, relative to today
             students.sort((a, b) => {
                 const aVal = a.month * 100 + a.day;
                 const bVal = b.month * 100 + b.day;
@@ -112,16 +125,23 @@ export const aiTools = {
             });
 
             const upcoming = students.slice(0, limit);
-            if (upcoming.length === 0) return "No student birthdays found in the directory.";
+            if (upcoming.length === 0) return "System Report: No student birthdays found in the directory.";
 
             return upcoming.map(s => `- ${s.name}: ${s.month}/${s.day}`).join("\n");
         } catch (error) {
-            console.error("Birthday fetch error:", error);
-            return "Error fetching birthday data.";
+            console.error("[aiTools] get_upcoming_birthdays error:", error);
+            return "System Error: Unable to fetch birthday data.";
         }
     },
 
-    get_stats: async ({ grade, country }: { grade?: string; country?: string }) => {
+    /**
+     * Fetches basic student body statistics.
+     * @param {Object} params - Tool parameters.
+     * @param {string} [params.grade] - Filter by grade level.
+     * @param {string} [params.country] - Filter by missionary country.
+     * @returns {Promise<string>} Textual representation of the stats.
+     */
+    get_stats: async ({ grade, country }: { grade?: string; country?: string }): Promise<string> => {
         try {
             let formula = "TRUE()";
             if (grade) formula = `AND(${formula}, {Grade} = '${grade}')`;
@@ -130,13 +150,20 @@ export const aiTools = {
             const records = await base(tables.STUDENT_DIRECTORY)
                 .select({ filterByFormula: formula })
                 .all();
-            return `Count: ${records.length}`;
-        } catch {
-            return "Error fetching statistics.";
+            return `System Statistics: Total matching students: ${records.length}`;
+        } catch (error) {
+            console.error("[aiTools] get_stats error:", error);
+            return "System Error: Unable to calculate statistics.";
         }
     },
 
-    get_schedule: async ({ Grade }: { Grade: string }) => {
+    /**
+     * Retrieves the school schedule for a specific grade level.
+     * @param {Object} params - Tool parameters.
+     * @param {string} params.Grade - The target grade level.
+     * @returns {Promise<string>} Formatted schedule list.
+     */
+    get_schedule: async ({ Grade }: { Grade: string }): Promise<string> => {
         try {
             const records = await base(tables.SCHEDULES)
                 .select({
@@ -144,8 +171,9 @@ export const aiTools = {
                     sort: [{ field: "Period", direction: "asc" }]
                 })
                 .all();
-            if (records.length === 0) return `No schedule data available for grade ${Grade}.`;
-            
+
+            if (records.length === 0) return `System Report: No schedule data available for grade ${Grade}.`;
+
             return records.map(r => {
                 const subject = r.get("Subject");
                 const period = r.get("Period");
@@ -155,12 +183,17 @@ export const aiTools = {
 
                 return `- [${day}] Period ${period}${time ? ` (${time})` : ""}: **${subject}**${teacher ? ` - ${teacher}` : ""}`;
             }).join("\n");
-        } catch {
-            return "Error fetching schedule.";
+        } catch (error) {
+            console.error("[aiTools] get_schedule error:", error);
+            return "System Error: Failed to retrieve schedule.";
         }
     },
 
-    get_upcoming_events: async () => {
+    /**
+     * Fetches upcoming school events and holidays.
+     * @returns {Promise<string>} List of upcoming events.
+     */
+    get_upcoming_events: async (): Promise<string> => {
         try {
             const formula = "OR(IS_AFTER({Start_Date}, TODAY()), IS_SAME({Start_Date}, TODAY()))";
 
@@ -172,7 +205,7 @@ export const aiTools = {
                 })
                 .firstPage();
 
-            if (records.length === 0) return "No upcoming school events found.";
+            if (records.length === 0) return "System Report: No upcoming school events or holidays found.";
 
             return records.map(r => {
                 const name = r.get("Name");
@@ -182,8 +215,10 @@ export const aiTools = {
 
                 return `- [${type || 'Event'}] ${name}: ${start}${end ? ` to ${end}` : ""}`;
             }).join("\n");
-        } catch {
-            return "Error fetching event data.";
+        } catch (error) {
+            console.error("[aiTools] get_upcoming_events error:", error);
+            return "System Error: Unable to fetch school calendar events.";
         }
     },
 };
+
