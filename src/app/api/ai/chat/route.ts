@@ -1,4 +1,4 @@
-import { streamText } from "ai";
+import { streamText, tool, type ModelMessage, stepCountIs } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -9,6 +9,41 @@ import { z } from "zod";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
+
+/**
+ * Represents a raw message from the client.
+ * The client may send either UIMessage (with parts) or a simple format (with content).
+ */
+interface RawClientMessage {
+    id?: string;
+    role: 'system' | 'user' | 'assistant';
+    content?: string;
+    parts?: Array<{ type: string; text?: string }>;
+}
+
+/**
+ * Converts raw client messages to ModelMessage format for streamText.
+ * Handles both UIMessage (with parts) and simple message formats.
+ */
+function convertToModelMessages(rawMessages: RawClientMessage[]): ModelMessage[] {
+    return rawMessages.map((msg): ModelMessage => {
+        // Extract content from parts if present, otherwise use content directly
+        let content: string;
+        if (msg.parts && Array.isArray(msg.parts)) {
+            content = msg.parts
+                .filter((p) => p.type === 'text' && p.text)
+                .map((p) => p.text!)
+                .join('');
+        } else {
+            content = msg.content || '';
+        }
+
+        return {
+            role: msg.role,
+            content,
+        } as ModelMessage;
+    });
+}
 
 /**
  * POST handler for the MissionLink AI Assistant chat endpoint.
@@ -32,17 +67,20 @@ export async function POST(req: Request) {
         const { messages: rawMessages, text } = body;
 
         // Normalize messages for different input formats
-        let messages = rawMessages;
-        if (!messages && text) {
-            messages = [{ role: 'user', content: text }];
+        let clientMessages: RawClientMessage[] = rawMessages;
+        if (!clientMessages && text) {
+            clientMessages = [{ role: 'user', content: text }];
         }
 
-        if (!messages || !Array.isArray(messages)) {
+        if (!clientMessages || !Array.isArray(clientMessages)) {
             return new Response(
                 JSON.stringify({ error: "Bad Request: Missing or invalid message payload." }),
                 { status: 400, headers: { 'Content-Type': 'application/json' } }
             );
         }
+
+        // Convert to ModelMessage format for streamText
+        const messages: ModelMessage[] = convertToModelMessages(clientMessages);
 
         // Retrieve full user profile for rich prompt context
         const user = await prisma.user.findUnique({
@@ -74,46 +112,36 @@ export async function POST(req: Request) {
             .replace("{{grade}}", gradeLabel)
             .replace("{{country}}", "Global Mission Field");
 
-        // Map messages to core AI SDK format
-        const coreMessages = messages.map((m: any) => ({
-            role: m.role,
-            content: typeof m.content === 'string' ? m.content : (m.parts?.[0]?.text ?? m.text ?? ""),
-        }));
-
         const result = streamText({
             model: openai("gpt-4o"),
             system: systemPrompt,
-            messages: coreMessages,
+            messages,
             tools: {
-                get_meals: {
+                get_meals: tool({
                     description: "Get the school meal menu for a specific date (YYYY-MM-DD).",
-                    parameters: z.object({ date: z.string().optional() }),
+                    inputSchema: z.object({ date: z.string().optional() }),
                     execute: async ({ date }: { date?: string }) => aiTools.get_meals({ date }),
-                },
-                get_upcoming_birthdays: {
+                }),
+                get_upcoming_birthdays: tool({
                     description: "Get list of students with upcoming birthdays.",
-                    parameters: z.object({ limit: z.number().optional() }),
+                    inputSchema: z.object({ limit: z.number().optional() }),
                     execute: async ({ limit }: { limit?: number }) => aiTools.get_upcoming_birthdays({ limit }),
-                },
-                get_schedule: {
+                }),
+                get_schedule: tool({
                     description: "Retrieve class schedules.",
-                    parameters: z.object({ Grade: z.string() }),
+                    inputSchema: z.object({ Grade: z.string() }),
                     execute: async ({ Grade }: { Grade: string }) => aiTools.get_schedule({ Grade }),
-                },
-                get_upcoming_events: {
+                }),
+                get_upcoming_events: tool({
                     description: "Get upcoming school events.",
-                    parameters: z.object({}),
+                    inputSchema: z.object({}),
                     execute: async () => aiTools.get_upcoming_events(),
-                },
+                }),
             },
-            maxSteps: 5,
-        } as any);
-
-
-
-        return result.toUIMessageStreamResponse({
-            originalMessages: messages,
+            stopWhen: stepCountIs(5),
         });
+
+        return result.toUIMessageStreamResponse();
 
     } catch (error: any) {
         console.error("[ChatAPI] Processing Error:", error);
