@@ -7,7 +7,6 @@ import { ChatInput } from "./ChatInput"
 import { motion } from "framer-motion"
 import { useSession } from "next-auth/react"
 import { useChat } from "@ai-sdk/react"
-
 import { DefaultChatTransport } from "ai"
 
 export function ChatInterface() {
@@ -28,9 +27,16 @@ export function ChatInterface() {
 
 
     const messagesEndRef = useRef<HTMLDivElement>(null)
+    const messagesContainerRef = useRef<HTMLDivElement>(null)
 
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+        // Use container scrollTop instead of scrollIntoView to prevent full page scroll
+        if (messagesContainerRef.current) {
+            messagesContainerRef.current.scrollTo({
+                top: messagesContainerRef.current.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
     }
 
     useLayoutEffect(() => {
@@ -58,7 +64,7 @@ export function ChatInterface() {
             </div>
 
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto px-4 pb-32 space-y-6 scrollbar-hide [&::-webkit-scrollbar]:hidden">
+            <div ref={messagesContainerRef} className="flex-1 overflow-y-auto px-4 pb-32 space-y-6 scrollbar-hide [&::-webkit-scrollbar]:hidden">
                 {messages.length === 0 ? (
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
