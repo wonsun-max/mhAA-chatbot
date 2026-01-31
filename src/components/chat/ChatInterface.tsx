@@ -8,12 +8,14 @@ import { motion } from "framer-motion"
 import { useSession } from "next-auth/react"
 import { useChat } from "@ai-sdk/react"
 
+import { DefaultChatTransport } from "ai"
+
 export function ChatInterface() {
     const { data: session, status: authStatus } = useSession()
 
-    // AI SDK v6+ Initialization with type safety bypass for unstable v6 types
-    const { messages, append, isLoading: isChatLoading } = useChat({
-        api: "/api/ai/chat",
+    // AI SDK v6+ Initialization with stable v6 Transport and Status APIs
+    const { messages, sendMessage, status } = useChat({
+        transport: new DefaultChatTransport({ api: "/api/ai/chat" }),
         onError: (error: any) => {
             console.error("Chat Interaction Error:", error);
         },
@@ -21,6 +23,8 @@ export function ChatInterface() {
             scrollToBottom();
         }
     } as any) as any;
+
+    const isChatLoading = status !== 'ready';
 
 
     const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -36,10 +40,7 @@ export function ChatInterface() {
     const handleSend = async (text: string) => {
         if (authStatus !== "authenticated" || !text.trim() || isChatLoading) return
 
-        append({
-            role: 'user',
-            content: text,
-        })
+        sendMessage({ text })
     }
 
     const starterChips = [
