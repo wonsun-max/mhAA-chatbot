@@ -112,6 +112,15 @@ export async function POST(req: Request) {
             .replace("{{grade}}", gradeLabel)
             .replace("{{country}}", "Global Mission Field");
 
+        // Extract the latest user query for logging
+        const latestUserMessage = messages
+            .filter(m => m.role === 'user')
+            .pop();
+        const userQuery = typeof latestUserMessage?.content === 'string'
+            ? latestUserMessage.content
+            : '';
+        const userId = session.user.id;
+
         const result = streamText({
             model: openai("gpt-4o"),
             system: systemPrompt,
@@ -139,6 +148,32 @@ export async function POST(req: Request) {
                 }),
             },
             stopWhen: stepCountIs(5),
+            /**
+             * onFinish callback - Persists chat log to Neon database.
+             * Runs after streaming completes, captures full response and tools used.
+             */
+            onFinish: async ({ text, steps }) => {
+                try {
+                    // Extract tools called from all steps
+                    const toolsCalled = steps
+                        .flatMap(step => step.toolCalls || [])
+                        .map(tc => tc.toolName);
+
+                    await prisma.chatLog.create({
+                        data: {
+                            userId,
+                            query: userQuery,
+                            response: text || '',
+                            toolsCalled: toolsCalled.length > 0 ? JSON.stringify(toolsCalled) : null,
+                            status: 'success',
+                        },
+                    });
+                    console.log(`[ChatLog] Saved for user ${userId}`);
+                } catch (logError) {
+                    // Non-blocking: log error but don't fail the request
+                    console.error('[ChatLog] Failed to save:', logError);
+                }
+            },
         });
 
         return result.toUIMessageStreamResponse();
