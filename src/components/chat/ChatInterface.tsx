@@ -108,46 +108,71 @@ export function ChatInterface() {
                     </motion.div>
                 ) : (
                     <>
-                        {isChatLoading && (
-                            <motion.div
-                                key="loading-indicator"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="flex justify-start py-2"
-                            >
-                                <div className="flex items-center space-x-2 text-gray-400">
-                                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
+                        {(() => {
+                            // Group messages into turns (User then Assistant)
+                            const turns: any[][] = [];
+                            messages.forEach((m: any) => {
+                                if (m.role === 'user') {
+                                    turns.push([m]);
+                                } else if (turns.length > 0) {
+                                    turns[turns.length - 1].push(m);
+                                } else {
+                                    // Edge case: assistant message without user message
+                                    turns.push([m]);
+                                }
+                            });
+
+                            // If loading, add current loading state as part of the latest turn (or new turn)
+                            // But actually, the loading indicator should be below the latest user message.
+
+                            return turns.slice().reverse().map((turn, turnIndex) => (
+                                <div key={`turn-${turnIndex}`} className="space-y-6">
+                                    {turn.map((m, i) => {
+                                        let textContent = "";
+                                        if (typeof m.content === 'string') {
+                                            textContent = m.content;
+                                        } else if (Array.isArray(m.parts)) {
+                                            textContent = m.parts
+                                                .filter((p: any) => p.type === 'text' || p.text)
+                                                .map((p: any) => p.text)
+                                                .join("");
+                                        } else if (m.parts?.[0]?.text) {
+                                            textContent = m.parts[0].text;
+                                        }
+
+                                        if (!textContent && m.role !== 'user') return null;
+
+                                        return (
+                                            <motion.div
+                                                key={m.id || `${turnIndex}-${i}`}
+                                                initial={{ opacity: 1, y: 0 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ duration: 0 }}
+                                                className="mb-6"
+                                            >
+                                                <ChatMessage role={m.role as "user" | "assistant"} content={textContent} />
+                                            </motion.div>
+                                        );
+                                    })}
+
+                                    {/* If this is the newest turn and we are loading, show indicator here (below the user input) */}
+                                    {turnIndex === 0 && isChatLoading && (
+                                        <motion.div
+                                            key="loading-indicator"
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            className="flex justify-start py-2"
+                                        >
+                                            <div className="flex items-center space-x-2 text-gray-400">
+                                                <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                                                <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                                                <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
+                                            </div>
+                                        </motion.div>
+                                    )}
                                 </div>
-                            </motion.div>
-                        )}
-                        {messages.slice().reverse().map((m: any, i: number) => {
-                            let textContent = "";
-                            if (typeof m.content === 'string') {
-                                textContent = m.content;
-                            } else if (Array.isArray(m.parts)) {
-                                textContent = m.parts
-                                    .filter((p: any) => p.type === 'text' || p.text)
-                                    .map((p: any) => p.text)
-                                    .join("");
-                            } else if (m.parts?.[0]?.text) {
-                                textContent = m.parts[0].text;
-                            }
-
-                            if (!textContent && m.role !== 'user') return null;
-
-                            return (
-                                <motion.div
-                                    key={m.id || i}
-                                    initial={{ opacity: 1, y: 0 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0 }}
-                                >
-                                    <ChatMessage role={m.role as "user" | "assistant"} content={textContent} />
-                                </motion.div>
-                            );
-                        })}
+                            ));
+                        })()}
                     </>
                 )}
                 <div ref={messagesEndRef} />
