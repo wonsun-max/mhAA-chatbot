@@ -33,8 +33,11 @@ export function ChatInterface() {
     const messagesContainerRef = useRef<HTMLDivElement>(null)
 
     const scrollToBottom = () => {
-        if (messagesEndRef.current) {
-            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        if (messagesContainerRef.current) {
+            messagesContainerRef.current.scrollTo({
+                top: messagesContainerRef.current.scrollHeight,
+                behavior: 'smooth'
+            });
         }
     }
 

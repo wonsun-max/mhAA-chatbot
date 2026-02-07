@@ -3,8 +3,12 @@
 import { Bot, Mail, Globe } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { usePathname } from "next/navigation"
 
 export function Footer() {
+    const pathname = usePathname()
+    if (pathname === "/chatbot") return null
+
     return (
         <footer className="relative bg-black/20 backdrop-blur-sm border-t border-white/5 py-16 overflow-hidden">
             <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
