@@ -55,7 +55,7 @@ export function ChatInput({ status, isLoading, onSend, variant = "sticky" }: Cha
                             onKeyDown={handleKeyDown}
                             onFocus={() => setIsFocused(true)}
                             onBlur={() => setIsFocused(false)}
-                            placeholder="Ask Gemini..."
+                            placeholder="Ask Mha bot..."
                             className="w-full bg-transparent border-none text-[#e3e3e3] placeholder:text-[#8e9196] focus:ring-0 outline-none resize-none py-4 px-6 min-h-[64px] max-h-[400px] scrollbar-hide [&::-webkit-scrollbar]:hidden text-[1.125rem] font-normal leading-relaxed tracking-wide"
                             rows={1}
                             style={{ height: input ? 'auto' : '64px' }}

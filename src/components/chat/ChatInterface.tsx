@@ -134,7 +134,12 @@ export function ChatInterface() {
                         </div>
                     </motion.div>
                 ) : (
-                    <div className="max-w-4xl mx-auto w-full flex flex-col">
+                    <div className="max-w-4xl mx-auto w-full flex flex-col min-h-full">
+                        {/* Spacer to push content down if there are few messages, 
+                            creating that 'starts from bottom' feel if desired, 
+                            but standard Gemini/Web starts from top. 
+                            We'll follow standard Web but ensure smooth bottom anchoring. */}
+                        <div className="flex-1" />
                         <AnimatePresence mode="popLayout">
                             {messages.map((m: any, i: number) => {
                                 let textContent = "";
