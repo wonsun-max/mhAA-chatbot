@@ -35,7 +35,7 @@ export function ChatInterface() {
     const scrollToBottom = () => {
         if (messagesContainerRef.current) {
             messagesContainerRef.current.scrollTo({
-                top: messagesContainerRef.current.scrollHeight,
+                top: 0,
                 behavior: 'smooth'
             });
         }
@@ -44,8 +44,10 @@ export function ChatInterface() {
     // Monitor scroll position to show/hide "Scroll to Bottom" button
     const handleScroll = () => {
         if (messagesContainerRef.current) {
-            const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current
-            const isNearBottom = scrollHeight - scrollTop - clientHeight < 200
+            const { scrollTop } = messagesContainerRef.current
+            // In flex-col-reverse, scrollTop is 0 at bottom and increases as you scroll UP.
+            // Math.abs handles browsers that might use negative values.
+            const isNearBottom = Math.abs(scrollTop) < 200
             setShowScrollButton(!isNearBottom && messages.length > 0)
         }
     }
@@ -134,39 +136,15 @@ export function ChatInterface() {
                         </div>
                     </motion.div>
                 ) : (
-                    <div className="max-w-4xl mx-auto w-full flex flex-col min-h-full">
-                        {/* Spacer to push content down if there are few messages, 
-                            creating that 'starts from bottom' feel if desired, 
-                            but standard Gemini/Web starts from top. 
-                            We'll follow standard Web but ensure smooth bottom anchoring. */}
-                        <div className="flex-1" />
-                        <AnimatePresence mode="popLayout">
-                            {messages.map((m: any, i: number) => {
-                                let textContent = "";
-                                if (typeof m.content === 'string') {
-                                    textContent = m.content;
-                                } else if (Array.isArray(m.parts)) {
-                                    textContent = m.parts
-                                        .filter((p: any) => p.type === 'text' || p.text)
-                                        .map((p: any) => p.text)
-                                        .join("");
-                                } else if (m.parts?.[0]?.text) {
-                                    textContent = m.parts[0].text;
-                                }
-
-                                if (!textContent && m.role !== 'user') return null;
-
-                                return (
-                                    <ChatMessage key={m.id || i} role={m.role as "user" | "assistant"} content={textContent} />
-                                );
-                            })}
-                        </AnimatePresence>
+                    <div className="max-w-4xl mx-auto w-full flex flex-col-reverse justify-start min-h-full">
+                        {/* Anchor point for scrolling to bottom - stays visually at bottom */}
+                        <div ref={messagesEndRef} className="h-4" />
 
                         {isChatLoading && (
                             <motion.div
                                 key="loading-indicator"
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
                                 className="flex justify-start py-6 px-12"
                             >
                                 <div className="flex items-center space-x-3 text-blue-400 opacity-80">
@@ -188,7 +166,35 @@ export function ChatInterface() {
                                 </div>
                             </motion.div>
                         )}
-                        <div ref={messagesEndRef} className="h-4" />
+
+                        <AnimatePresence mode="popLayout">
+                            {[...messages].reverse().map((m: any, i: number) => {
+                                let textContent = "";
+                                if (typeof m.content === 'string') {
+                                    textContent = m.content;
+                                } else if (Array.isArray(m.parts)) {
+                                    textContent = m.parts
+                                        .filter((p: any) => p.type === 'text' || p.text)
+                                        .map((p: any) => p.text)
+                                        .join("");
+                                } else if (m.parts?.[0]?.text) {
+                                    textContent = m.parts[0].text;
+                                }
+
+                                if (!textContent && m.role !== 'user') return null;
+
+                                return (
+                                    <ChatMessage
+                                        key={m.id || `msg-${messages.length - i}`}
+                                        role={m.role as "user" | "assistant"}
+                                        content={textContent}
+                                    />
+                                );
+                            })}
+                        </AnimatePresence>
+
+                        {/* Spacer to allow scrolling when few messages */}
+                        <div className="flex-1" />
                     </div>
                 )}
             </div>
