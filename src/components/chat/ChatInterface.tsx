@@ -19,7 +19,7 @@ export function ChatInterface() {
             console.error("Chat Interaction Error:", error);
         },
         onFinish: () => {
-            scrollToBottom();
+            scrollToTop();
         }
     } as any) as any;
 
@@ -28,17 +28,17 @@ export function ChatInterface() {
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const messagesContainerRef = useRef<HTMLDivElement>(null)
 
-    const scrollToBottom = () => {
+    const scrollToTop = () => {
         if (messagesContainerRef.current) {
             messagesContainerRef.current.scrollTo({
-                top: messagesContainerRef.current.scrollHeight,
+                top: 0,
                 behavior: 'smooth'
             });
         }
     }
 
     useLayoutEffect(() => {
-        scrollToBottom()
+        scrollToTop()
     }, [messages, isChatLoading])
 
     const handleSend = async (text: string) => {
@@ -108,7 +108,21 @@ export function ChatInterface() {
                     </motion.div>
                 ) : (
                     <>
-                        {messages.map((m: any, i: number) => {
+                        {isChatLoading && (
+                            <motion.div
+                                key="loading-indicator"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="flex justify-start py-2"
+                            >
+                                <div className="flex items-center space-x-2 text-gray-400">
+                                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
+                                </div>
+                            </motion.div>
+                        )}
+                        {messages.slice().reverse().map((m: any, i: number) => {
                             let textContent = "";
                             if (typeof m.content === 'string') {
                                 textContent = m.content;
@@ -134,20 +148,6 @@ export function ChatInterface() {
                                 </motion.div>
                             );
                         })}
-                        {isChatLoading && (
-                            <motion.div
-                                key="loading-indicator"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="flex justify-start py-2"
-                            >
-                                <div className="flex items-center space-x-2 text-gray-400">
-                                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
-                                </div>
-                            </motion.div>
-                        )}
                     </>
                 )}
                 <div ref={messagesEndRef} />
