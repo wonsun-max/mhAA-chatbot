@@ -1,18 +1,22 @@
 "use client"
 
-import { useRef, useLayoutEffect } from "react"
-import { Coffee, Calendar, MapPin } from "lucide-react"
+import { useRef, useLayoutEffect, useState, useEffect } from "react"
+import { Coffee, Calendar, MapPin, ChevronDown } from "lucide-react"
 import { ChatMessage } from "./ChatMessage"
 import { ChatInput } from "./ChatInput"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { useSession } from "next-auth/react"
 import { useChat } from "@ai-sdk/react"
 import { DefaultChatTransport } from "ai"
 
+/**
+ * Main ChatInterface component.
+ * Orchestrates the chat experience with premium Gemini-inspired layout.
+ */
 export function ChatInterface() {
     const { data: session, status: authStatus } = useSession()
+    const [showScrollButton, setShowScrollButton] = useState(false)
 
-    // AI SDK v6+ Initialization with stable v6 Transport and Status APIs
     const { messages, sendMessage, status } = useChat({
         transport: new DefaultChatTransport({ api: "/api/ai/chat" }),
         onError: (error: any) => {
@@ -29,11 +33,17 @@ export function ChatInterface() {
     const messagesContainerRef = useRef<HTMLDivElement>(null)
 
     const scrollToBottom = () => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    // Monitor scroll position to show/hide "Scroll to Bottom" button
+    const handleScroll = () => {
         if (messagesContainerRef.current) {
-            messagesContainerRef.current.scrollTo({
-                top: messagesContainerRef.current.scrollHeight,
-                behavior: 'smooth'
-            });
+            const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current
+            const isNearBottom = scrollHeight - scrollTop - clientHeight < 200
+            setShowScrollButton(!isNearBottom && messages.length > 0)
         }
     }
 
@@ -43,7 +53,6 @@ export function ChatInterface() {
 
     const handleSend = async (text: string) => {
         if (authStatus !== "authenticated" || !text.trim() || isChatLoading) return
-
         sendMessage({ text })
     }
 
@@ -54,30 +63,42 @@ export function ChatInterface() {
     ]
 
     return (
-        <div className="flex flex-col h-full w-full max-w-4xl mx-auto relative px-4">
+        <div className="flex flex-col h-full w-full max-w-5xl mx-auto relative px-4 md:px-8">
             {/* Messages Area */}
             <div
                 ref={messagesContainerRef}
-                className={`flex-1 overflow-y-auto pt-8 pb-32 space-y-6 scrollbar-hide [&::-webkit-scrollbar]:hidden ${messages.length === 0 ? 'flex items-center justify-center' : ''}`}
+                onScroll={handleScroll}
+                className={`flex-1 overflow-y-auto pt-12 pb-40 space-y-2 scrollbar-hide [&::-webkit-scrollbar]:hidden ${messages.length === 0 ? 'flex items-center justify-center' : ''}`}
             >
                 {messages.length === 0 ? (
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="w-full max-w-3xl flex flex-col items-center justify-center space-y-12"
+                        transition={{ duration: 0.6, ease: "easeOut" }}
+                        className="w-full max-w-3xl flex flex-col items-center justify-center space-y-16"
                     >
-                        <div className="text-left w-full space-y-2">
-                            <h1 className="text-5xl font-medium tracking-tight">
-                                <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                        <div className="text-left w-full space-y-3">
+                            <motion.h1
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.2 }}
+                                className="text-6xl font-semibold tracking-tight leading-tight"
+                            >
+                                <span className="bg-gradient-to-r from-[#4285f4] via-[#9b72cb] to-[#d96570] bg-clip-text text-transparent">
                                     Hello, {session?.user?.name || "Student"}
                                 </span>
-                            </h1>
-                            <h2 className="text-5xl font-medium text-gray-500 tracking-tight">
-                                Where should we do?
-                            </h2>
+                            </motion.h1>
+                            <motion.h2
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.3 }}
+                                className="text-6xl font-semibold text-[#444746] tracking-tight leading-tight"
+                            >
+                                How can I help you today?
+                            </motion.h2>
                         </div>
 
-                        <div className="w-full">
+                        <div className="w-full space-y-10">
                             <ChatInput
                                 status={authStatus}
                                 isLoading={isChatLoading}
@@ -85,85 +106,118 @@ export function ChatInterface() {
                                 variant="centered"
                             />
 
-                            <div className="flex flex-wrap items-center justify-center gap-2 mt-8">
-                                {starterChips.map((chip) => (
-                                    <button
+                            <div className="flex flex-wrap items-center justify-center gap-3">
+                                {starterChips.map((chip, idx) => (
+                                    <motion.button
                                         key={chip.label}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.4 + idx * 0.1 }}
                                         onClick={() => handleSend(chip.text)}
                                         disabled={authStatus !== "authenticated"}
                                         className={`
-                                            px-4 py-2 rounded-full border text-sm font-medium
+                                            px-5 py-2.5 rounded-xl border text-sm font-medium
                                             ${authStatus === "authenticated"
-                                                ? "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 text-gray-300"
-                                                : "bg-white/5 border-white/5 opacity-50 cursor-not-allowed text-gray-500"}
-                                            transition-all duration-300 flex items-center gap-2
+                                                ? "bg-[#1e1f20] border-[#303134] hover:bg-[#2a2b2d] hover:border-[#424242] text-[#e3e3e3]"
+                                                : "bg-[#1e1f20]/50 border-white/5 opacity-50 cursor-not-allowed text-gray-500"}
+                                            transition-all duration-300 flex items-center gap-2.5 shadow-sm
                                         `}
                                     >
-                                        <chip.icon size={16} className="text-blue-400" />
+                                        <chip.icon size={18} className="text-[#4285f4]" />
                                         {chip.label}
-                                    </button>
+                                    </motion.button>
                                 ))}
                             </div>
                         </div>
                     </motion.div>
                 ) : (
-                    <>
-                        {messages.map((m: any, i: number) => {
-                            let textContent = "";
-                            if (typeof m.content === 'string') {
-                                textContent = m.content;
-                            } else if (Array.isArray(m.parts)) {
-                                textContent = m.parts
-                                    .filter((p: any) => p.type === 'text' || p.text)
-                                    .map((p: any) => p.text)
-                                    .join("");
-                            } else if (m.parts?.[0]?.text) {
-                                textContent = m.parts[0].text;
-                            }
+                    <div className="max-w-4xl mx-auto w-full flex flex-col">
+                        <AnimatePresence mode="popLayout">
+                            {messages.map((m: any, i: number) => {
+                                let textContent = "";
+                                if (typeof m.content === 'string') {
+                                    textContent = m.content;
+                                } else if (Array.isArray(m.parts)) {
+                                    textContent = m.parts
+                                        .filter((p: any) => p.type === 'text' || p.text)
+                                        .map((p: any) => p.text)
+                                        .join("");
+                                } else if (m.parts?.[0]?.text) {
+                                    textContent = m.parts[0].text;
+                                }
 
-                            if (!textContent && m.role !== 'user') return null;
+                                if (!textContent && m.role !== 'user') return null;
 
-                            return (
-                                <motion.div
-                                    key={m.id || i}
-                                    initial={{ opacity: 1, y: 0 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0 }}
-                                >
-                                    <ChatMessage role={m.role as "user" | "assistant"} content={textContent} />
-                                </motion.div>
-                            );
-                        })}
+                                return (
+                                    <ChatMessage key={m.id || i} role={m.role as "user" | "assistant"} content={textContent} />
+                                );
+                            })}
+                        </AnimatePresence>
+
                         {isChatLoading && (
                             <motion.div
                                 key="loading-indicator"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="flex justify-start py-2"
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="flex justify-start py-6 px-12"
                             >
-                                <div className="flex items-center space-x-2 text-gray-400">
-                                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
+                                <div className="flex items-center space-x-3 text-blue-400 opacity-80">
+                                    <motion.div
+                                        animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
+                                        transition={{ duration: 1.5, repeat: Infinity }}
+                                        className="w-2.5 h-2.5 bg-current rounded-full"
+                                    />
+                                    <motion.div
+                                        animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
+                                        transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }}
+                                        className="w-2.5 h-2.5 bg-current rounded-full"
+                                    />
+                                    <motion.div
+                                        animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
+                                        transition={{ duration: 1.5, repeat: Infinity, delay: 0.4 }}
+                                        className="w-2.5 h-2.5 bg-current rounded-full"
+                                    />
                                 </div>
                             </motion.div>
                         )}
-                    </>
+                        <div ref={messagesEndRef} className="h-4" />
+                    </div>
                 )}
-                <div ref={messagesEndRef} />
             </div>
+
+            {/* Floaties / Controls */}
+            <AnimatePresence>
+                {showScrollButton && (
+                    <motion.button
+                        initial={{ opacity: 0, scale: 0.5, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.5, y: 20 }}
+                        onClick={scrollToBottom}
+                        className="fixed bottom-32 right-8 md:right-12 z-50 p-3 rounded-full bg-[#1e1f20] border border-[#303134] text-[#e3e3e3] shadow-2xl hover:bg-[#2a2b2d] transition-all group"
+                    >
+                        <ChevronDown size={24} className="group-hover:translate-y-0.5 transition-transform" />
+                    </motion.button>
+                )}
+            </AnimatePresence>
 
             {/* Sticky Input Area for Chat View */}
             {messages.length > 0 && (
-                <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-[#0b0c0d] via-[#0b0c0d]/90 to-transparent pt-12">
-                    <div className="max-w-4xl mx-auto px-4 pb-6">
+                <div className="fixed bottom-0 left-0 right-0 z-40">
+                    {/* Gradient background for text legibility */}
+                    <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#0b0c0d] via-[#0b0c0d]/90 to-transparent pointer-events-none" />
+
+                    <motion.div
+                        initial={{ y: 100 }}
+                        animate={{ y: 0 }}
+                        className="relative max-w-4xl mx-auto px-4 pb-8"
+                    >
                         <ChatInput
                             status={authStatus}
                             isLoading={isChatLoading}
                             onSend={handleSend}
                             variant="sticky"
                         />
-                    </div>
+                    </motion.div>
                 </div>
             )}
         </div>

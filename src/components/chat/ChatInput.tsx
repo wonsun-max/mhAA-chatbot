@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { ArrowUp, ShieldCheck, Lock } from "lucide-react"
 import Link from "next/link"
+import { motion } from "framer-motion"
 
 interface ChatInputProps {
     status: "authenticated" | "loading" | "unauthenticated"
@@ -11,8 +12,13 @@ interface ChatInputProps {
     variant?: "centered" | "sticky"
 }
 
+/**
+ * ChatInput component with premium Gemini styling.
+ * Features glassmorphism, glow effects, and smooth focus transitions.
+ */
 export function ChatInput({ status, isLoading, onSend, variant = "sticky" }: ChatInputProps) {
     const [input, setInput] = useState("")
+    const [isFocused, setIsFocused] = useState(false)
 
     const handleSendClick = () => {
         if (!input.trim() || isLoading) return
@@ -31,44 +37,65 @@ export function ChatInput({ status, isLoading, onSend, variant = "sticky" }: Cha
         <div className={`w-full ${variant === 'centered' ? 'max-w-3xl mx-auto' : ''}`}>
             <div className="relative group">
                 {status === "authenticated" ? (
-                    <div className="relative bg-[#1e1f20] border border-[#303134] rounded-[2rem] shadow-xl flex flex-col p-2 transition-all hover:border-[#424242] focus-within:border-[#424242] focus-within:bg-[#252627]">
+                    <motion.div
+                        initial={false}
+                        animate={{
+                            borderColor: isFocused ? "#4285f4" : "#303134",
+                            backgroundColor: isFocused ? "#202124" : "#1e1f20"
+                        }}
+                        className={`
+                            relative border rounded-[1.75rem] shadow-2xl flex flex-col p-2 
+                            transition-all duration-300 ease-out backdrop-blur-xl
+                            ${isFocused ? "shadow-[0_0_20px_rgba(66,133,244,0.15)]" : "shadow-black/50"}
+                        `}
+                    >
                         <textarea
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             onKeyDown={handleKeyDown}
-                            placeholder="Message AI..."
-                            className="w-full bg-transparent border-none text-[#e3e3e3] placeholder:text-[#9aa0a6] focus:ring-0 outline-none resize-none py-4 px-6 min-h-[60px] max-h-[200px] scrollbar-hide [&::-webkit-scrollbar]:hidden text-lg font-normal leading-relaxed"
+                            onFocus={() => setIsFocused(true)}
+                            onBlur={() => setIsFocused(false)}
+                            placeholder="Ask Gemini..."
+                            className="w-full bg-transparent border-none text-[#e3e3e3] placeholder:text-[#8e9196] focus:ring-0 outline-none resize-none py-4 px-6 min-h-[64px] max-h-[400px] scrollbar-hide [&::-webkit-scrollbar]:hidden text-[1.125rem] font-normal leading-relaxed tracking-wide"
                             rows={1}
-                            style={{ height: input ? 'auto' : '60px' }}
+                            style={{ height: input ? 'auto' : '64px' }}
                         />
-                        <div className="flex justify-end px-2 pb-1">
+                        <div className="flex items-center justify-between px-4 pb-2">
+                            <div className="flex gap-1 text-[10px] text-gray-500 font-medium">
+                                <span className="px-2 py-0.5 rounded-full bg-white/5 border border-white/5 uppercase tracking-tighter">Markdown</span>
+                                <span className="px-2 py-0.5 rounded-full bg-white/5 border border-white/5 uppercase tracking-tighter">Shift+Enter for New Line</span>
+                            </div>
                             <button
                                 onClick={handleSendClick}
                                 disabled={!input.trim() || isLoading}
-                                className={`p-2 rounded-full transition-all duration-200 flex-shrink-0 ${input.trim() && !isLoading
-                                    ? "bg-[#e3e3e3] text-[#1e1f20] hover:bg-[#ffffff] shadow-lg"
-                                    : "bg-transparent text-[#5f6368] cursor-not-allowed"
-                                    }`}
+                                className={`
+                                    p-2 rounded-[1rem] transition-all duration-300 flex-shrink-0
+                                    ${input.trim() && !isLoading
+                                        ? "bg-blue-600 text-white hover:bg-blue-500 shadow-[0_4px_12px_rgba(66,133,244,0.3)] scale-100 opacity-100"
+                                        : "bg-white/5 text-[#5f6368] cursor-not-allowed scale-95 opacity-50"
+                                    }
+                                `}
                             >
                                 <ArrowUp size={24} strokeWidth={2.5} />
                             </button>
                         </div>
-                    </div>
+                    </motion.div>
                 ) : (
-                    <div className="relative bg-[#1e1f20] border border-[#303134] rounded-[2.5rem] shadow-2xl p-8 flex flex-col items-center justify-center space-y-6 text-center">
-                        <div className="p-4 bg-yellow-400/10 rounded-full text-yellow-400">
+                    <div className="relative bg-[#1e1f20]/80 border border-white/10 rounded-[2.5rem] shadow-2xl p-8 backdrop-blur-2xl flex flex-col items-center justify-center space-y-6 text-center overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-pink-500/5 pointer-events-none" />
+                        <div className="relative z-10 p-4 bg-yellow-400/10 rounded-full text-yellow-500 ring-4 ring-yellow-400/5">
                             <Lock size={32} />
                         </div>
-                        <div className="space-y-2">
-                            <h3 className="text-xl font-medium text-[#e3e3e3]">Sign in to start chatting</h3>
-                            <p className="text-[#9aa0a6] max-w-sm">Please login to access the AI Assistant and start getting things done.</p>
+                        <div className="relative z-10 space-y-2">
+                            <h3 className="text-2xl font-semibold text-white tracking-tight">Ready to collaborate?</h3>
+                            <p className="text-[#9aa0a6] max-w-sm mx-auto">Sign in to unlock the full potential of your AI Assistant.</p>
                         </div>
-                        <div className="flex gap-4 w-full justify-center pt-2">
-                            <Link href="/login" className="px-8 py-3 rounded-full bg-white/5 hover:bg-white/10 text-white font-medium transition-colors border border-white/10">
+                        <div className="relative z-10 flex gap-4 w-full justify-center pt-2">
+                            <Link href="/login" className="px-10 py-3.5 rounded-full bg-white/5 hover:bg-white/10 text-white font-semibold transition-all border border-white/10 hover:border-white/20">
                                 Login
                             </Link>
-                            <Link href="/signup" className="px-8 py-3 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-medium transition-colors shadow-lg shadow-blue-500/20">
-                                Get Access
+                            <Link href="/signup" className="px-10 py-3.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-semibold transition-all shadow-lg shadow-blue-500/20 active:scale-95">
+                                Sign Up
                             </Link>
                         </div>
                     </div>
@@ -77,8 +104,9 @@ export function ChatInput({ status, isLoading, onSend, variant = "sticky" }: Cha
 
             {variant === 'centered' && (
                 <div className="text-center mt-6">
-                    <p className="text-xs text-[#9aa0a6] opacity-60">
-                        AI Assistant may display inaccurate info, so double-check its responses.
+                    <p className="text-xs text-[#8e9196] font-light tracking-wide">
+                        Gemini may provide inaccurate info, so double-check its responses.
+                        <span className="ml-1 opacity-50 underline cursor-help">Learn more</span>
                     </p>
                 </div>
             )}
