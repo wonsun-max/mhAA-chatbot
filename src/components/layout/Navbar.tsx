@@ -47,7 +47,10 @@ export function Navbar() {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-lg font-bold text-white leading-none tracking-tight">MissionLink</span>
+                            <div className="flex items-center gap-2">
+                                <span className="text-lg font-bold text-white leading-none tracking-tight">MissionLink</span>
+                                <span className="px-1.5 py-0.5 rounded-md bg-blue-600/20 border border-blue-500/30 text-[10px] font-black text-blue-400 uppercase tracking-tighter">Beta</span>
+                            </div>
                         </div>
                     </Link>
 

@@ -56,6 +56,33 @@ export default function Home() {
     <div className="flex flex-col relative min-h-screen bg-black text-white selection:bg-blue-500/30">
       <Navbar />
 
+      {/* Beta Announcement Banner */}
+      <div className="fixed top-20 left-0 right-0 z-40 px-6">
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-3xl mx-auto glass border border-blue-500/20 rounded-2xl p-4 flex items-center justify-between gap-4 shadow-2xl shadow-blue-500/10"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-blue-600/20 flex items-center justify-center text-blue-400">
+              <Sparkles size={16} />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-white tracking-tight">Beta Test Live</p>
+              <p className="text-[10px] text-gray-400 font-medium">현재 AI 어시스턴트 베타 테스트 중입니다. 자유롭게 이용해보세요!</p>
+            </div>
+          </div>
+          <a 
+            href="https://mhawebsitess.vercel.app/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] font-bold text-white transition-all whitespace-nowrap"
+          >
+            공식 사이트 방문
+          </a>
+        </motion.div>
+      </div>
+
       {/* Background Ambience */}
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-blue-600/5 blur-[120px]" />

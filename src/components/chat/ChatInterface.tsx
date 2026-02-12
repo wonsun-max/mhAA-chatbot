@@ -108,6 +108,14 @@ export function ChatInterface() {
                             >
                                 How can I help you today?
                             </motion.h2>
+                            <motion.p
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 0.5 }}
+                                transition={{ delay: 0.5 }}
+                                className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 pt-2"
+                            >
+                                MissionLink AI Unit • Public Beta 1.0
+                            </motion.p>
                         </div>
 
                         <div className="w-full space-y-10">
