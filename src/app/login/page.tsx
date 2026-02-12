@@ -113,13 +113,13 @@ function LoginContent() {
 
                         <div className="pt-8 border-t border-white/5 text-center">
                             <a 
-                                href="https://mhawebsitess.vercel.app/auth/login" 
+                                href="https://mhawebsitess.vercel.app/auth/signup" 
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-[10px] font-black text-gray-500 hover:text-blue-400 uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
                             >
                                 <Globe size={12} />
-                                Official Account Portal
+                                Request Access via Official Portal
                             </a>
                         </div>
                     </form>

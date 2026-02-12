@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useSession } from "next-auth/react"
 import { useChat } from "@ai-sdk/react"
 import { DefaultChatTransport } from "ai"
+import { AccessGate } from "../layout/AccessGate"
 
 /**
  * Main ChatInterface component.
@@ -67,6 +68,14 @@ export function ChatInterface() {
 
     return (
         <div className="flex flex-col h-full w-full max-w-5xl mx-auto relative px-4 md:px-8">
+            {/* Access Gate Overlay */}
+            {authStatus !== "authenticated" && (
+                <AccessGate 
+                    title="대화를 시작하려면"
+                    description="MissionLink 지능형 어시스턴트와 대화하려면 로그인이 필요합니다."
+                />
+            )}
+
             {/* Messages Area */}
             <div
                 ref={messagesContainerRef}
