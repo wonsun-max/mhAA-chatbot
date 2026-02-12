@@ -29,24 +29,6 @@ export default function Home() {
     }
   }
 
-  const funPrompts = [
-    {
-      icon: <Ghost className="text-purple-400" size={20} />,
-      text: "급식 메뉴로 랩 가사 써줘 🔥",
-      color: "from-purple-500/20 to-transparent"
-    },
-    {
-      icon: <Coffee className="text-yellow-400" size={20} />,
-      text: "아 졸려... 잠 깨는 법 알려줘 🥱",
-      color: "from-yellow-500/20 to-transparent"
-    },
-    {
-      icon: <Code className="text-blue-400" size={20} />,
-      text: "코드 에러 났는데 좀 봐줄래? 👨‍💻",
-      color: "from-blue-500/20 to-transparent"
-    }
-  ]
-
   return (
     <div className="flex flex-col relative min-h-screen bg-black text-white selection:bg-blue-500/30 overflow-x-hidden">
       <Navbar />
@@ -64,67 +46,69 @@ export default function Home() {
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="max-w-5xl mx-auto w-full text-center space-y-12 mb-20"
+          className="max-w-5xl mx-auto w-full text-center space-y-16 mb-24"
         >
-          <motion.div variants={itemVariants} className="space-y-8">
+          <motion.div variants={itemVariants} className="space-y-10">
             <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-blue-400 text-[11px] font-black tracking-[0.2em] uppercase backdrop-blur-md">
               <Sparkles size={12} />
               <span>MHA STUDENTS ONLY</span>
             </div>
 
-            <h1 className="text-6xl md:text-[6.5rem] font-black tracking-[-0.04em] leading-[0.95] text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/20">
-              MHA 애들만 아는<br />
-              <span className="text-white">비밀 아지트.</span>
-            </h1>
+            <div className="flex flex-col items-center">
+              <h1 className="text-5xl md:text-[5.5rem] font-black tracking-[-0.04em] leading-none text-white/40">
+                MHA 애들만 아는
+              </h1>
+              {/* 타이틀 사이 간격 (mt-8 ~ mt-12) 조정 */}
+              <h1 className="text-6xl md:text-[7.5rem] font-black tracking-[-0.04em] leading-none text-white mt-10 md:mt-14">
+                프라이빗 딥챗 라운지
+              </h1>
+            </div>
 
-            <p className="text-lg md:text-2xl text-gray-400 max-w-2xl mx-auto font-medium leading-relaxed">
-              딱딱한 챗봇 말고, 우리끼리만 아는<br className="hidden md:block" /> 
-              가장 똑똑하고 재밌는 AI 친구를 만나봐. 
-            </p>
+            <div className="space-y-3 pt-6">
+              <p className="text-lg md:text-2xl text-gray-400 font-bold leading-tight">
+                🔥 오늘 급식 메뉴로 찢어버리는 랩 가사 쓰고
+              </p>
+              <p className="text-lg md:text-2xl text-gray-400 font-bold leading-tight">
+                💻 밤새 고민하던 코딩 숙제 힌트도 바로 얻고
+              </p>
+              <p className="text-lg md:text-2xl text-gray-400 font-bold leading-tight">
+                🥱 심심할 때 의식의 흐름대로 대화하는 우리만의 공간
+              </p>
+            </div>
           </motion.div>
 
-          <motion.div variants={itemVariants} className="flex flex-col items-center gap-8">
-            <Link href="/chatbot" className="group relative px-12 py-5 bg-white text-black rounded-2xl font-black text-xl tracking-tight transition-all hover:scale-[1.05] active:scale-[0.95] shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+          <motion.div variants={itemVariants} className="pt-10">
+            <Link href="/chatbot" className="group relative px-16 py-6 bg-white text-black rounded-3xl font-black text-2xl tracking-tight transition-all hover:scale-[1.05] active:scale-[0.95] shadow-[0_0_50px_rgba(255,255,255,0.2)]">
               <span className="flex items-center">
-                대화 시작하기
-                <MessageCircle className="ml-3 group-hover:rotate-12 transition-transform" size={24} />
+                지금 들어가기
+                <MessageCircle className="ml-3 group-hover:rotate-12 transition-transform" size={28} />
               </span>
             </Link>
-
-            {/* Fun Prompt Cards */}
-            <div className="flex flex-wrap justify-center gap-4 mt-8">
-              {funPrompts.map((prompt, i) => (
-                <motion.div
-                  key={i}
-                  variants={itemVariants}
-                  className={`px-6 py-4 rounded-2xl bg-gradient-to-br ${prompt.color} border border-white/5 backdrop-blur-sm flex items-center gap-3 text-sm font-bold text-gray-300`}
-                >
-                  {prompt.icon}
-                  {prompt.text}
-                </motion.div>
-              ))}
-            </div>
           </motion.div>
         </motion.section>
 
-        {/* Simplified Cards */}
+        {/* Info Cards */}
         <motion.section
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="max-w-4xl mx-auto w-full mt-20"
+          className="max-w-4xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-6"
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-10 rounded-[2.5rem] bg-white/[0.03] border border-white/5 space-y-4">
-              <Zap className="text-blue-400" size={32} />
-              <h3 className="text-2xl font-bold">진짜 빠름</h3>
-              <p className="text-gray-500 font-medium">숙제 힌트가 필요할 때나 심심할 때,<br />망설이지 말고 바로 물어봐.</p>
-            </div>
-            <div className="p-10 rounded-[2.5rem] bg-white/[0.03] border border-white/5 space-y-4">
-              <Shield className="text-purple-400" size={32} />
-              <h3 className="text-2xl font-bold">우리만 씀</h3>
-              <p className="text-gray-500 font-medium">MHA 학생 계정으로만 들어올 수 있는<br />프라이빗한 우리만의 공간이야.</p>
-            </div>
+          <div className="p-12 rounded-[3rem] bg-white/[0.03] border border-white/5 space-y-4 hover:bg-white/[0.05] transition-colors">
+            <Zap className="text-blue-400" size={32} />
+            <h3 className="text-2xl font-bold">압도적인 속도</h3>
+            <p className="text-gray-500 font-medium leading-relaxed">
+              기다림은 사치. 어떤 질문이든<br />
+              1초 안에 딥한 답변을 꽂아줄게.
+            </p>
+          </div>
+          <div className="p-12 rounded-[3rem] bg-white/[0.03] border border-white/5 space-y-4 hover:bg-white/[0.05] transition-colors">
+            <Shield className="text-purple-400" size={32} />
+            <h3 className="text-2xl font-bold">철저한 프라이빗</h3>
+            <p className="text-gray-500 font-medium leading-relaxed">
+              MHA 학생 계정 없이는 절대 불가.<br />
+              우리끼리만 노는 안전한 아지트야.
+            </p>
           </div>
         </motion.section>
 
