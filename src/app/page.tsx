@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { ChevronRight, Sparkles, MessageCircle, Zap, Shield, Ghost, Coffee, Code } from "lucide-react"
+import { ChevronRight, Sparkles, MessageCircle, Zap, Shield, Calendar, Info, Star } from "lucide-react"
 import { motion, Variants } from "framer-motion"
 import { Navbar } from "@/components/layout/Navbar"
 
@@ -58,31 +58,28 @@ export default function Home() {
               <h1 className="text-5xl md:text-[5.5rem] font-black tracking-[-0.04em] leading-none text-white/40">
                 MHA 애들만 아는
               </h1>
-              {/* 타이틀 사이 간격 (mt-8 ~ mt-12) 조정 */}
               <h1 className="text-6xl md:text-[7.5rem] font-black tracking-[-0.04em] leading-none text-white mt-10 md:mt-14">
                 프라이빗 딥챗 라운지
               </h1>
             </div>
 
-            <div className="space-y-3 pt-6">
+            <div className="space-y-4 pt-6">
               <p className="text-lg md:text-2xl text-gray-400 font-bold leading-tight">
-                🔥 오늘 급식 메뉴로 찢어버리는 랩 가사 쓰고
+                📅 오늘 학교 일정부터 시험기간 정보까지 한눈에
               </p>
               <p className="text-lg md:text-2xl text-gray-400 font-bold leading-tight">
-                💻 밤새 고민하던 코딩 숙제 힌트도 바로 얻고
+                🏫 학교생활 궁금한 건 뭐든 물어봐 (알아서 척척)
               </p>
               <p className="text-lg md:text-2xl text-gray-400 font-bold leading-tight">
-                🥱 심심할 때 의식의 흐름대로 대화하는 우리만의 공간
+                ✨ 복잡한 질문도 알잘딱깔센하게 대답해주는 전용 AI
               </p>
             </div>
           </motion.div>
 
           <motion.div variants={itemVariants} className="pt-10">
-            <Link href="/chatbot" className="group relative px-16 py-6 bg-white text-black rounded-3xl font-black text-2xl tracking-tight transition-all hover:scale-[1.05] active:scale-[0.95] shadow-[0_0_50px_rgba(255,255,255,0.2)]">
-              <span className="flex items-center">
-                지금 들어가기
-                <MessageCircle className="ml-3 group-hover:rotate-12 transition-transform" size={28} />
-              </span>
+            <Link href="/chatbot" className="group relative inline-flex items-center justify-center px-16 py-6 bg-white text-black rounded-3xl font-black text-2xl tracking-tighter transition-all hover:scale-[1.05] active:scale-[0.95] shadow-[0_0_50px_rgba(255,255,255,0.2)]">
+                채팅룸 입장하기
+                <ChevronRight className="ml-2 group-hover:translate-x-2 transition-transform" size={28} strokeWidth={3} />
             </Link>
           </motion.div>
         </motion.section>
@@ -95,19 +92,19 @@ export default function Home() {
           className="max-w-4xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-6"
         >
           <div className="p-12 rounded-[3rem] bg-white/[0.03] border border-white/5 space-y-4 hover:bg-white/[0.05] transition-colors">
-            <Zap className="text-blue-400" size={32} />
-            <h3 className="text-2xl font-bold">압도적인 속도</h3>
+            <Calendar className="text-blue-400" size={32} />
+            <h3 className="text-2xl font-bold">스마트한 일정</h3>
             <p className="text-gray-500 font-medium leading-relaxed">
-              기다림은 사치. 어떤 질문이든<br />
-              1초 안에 딥한 답변을 꽂아줄게.
+              학교의 모든 공지와 일정을<br />
+              누구보다 빠르게 확인해봐.
             </p>
           </div>
           <div className="p-12 rounded-[3rem] bg-white/[0.03] border border-white/5 space-y-4 hover:bg-white/[0.05] transition-colors">
-            <Shield className="text-purple-400" size={32} />
-            <h3 className="text-2xl font-bold">철저한 프라이빗</h3>
+            <Star className="text-purple-400" size={32} />
+            <h3 className="text-2xl font-bold">알잘딱깔센 답변</h3>
             <p className="text-gray-500 font-medium leading-relaxed">
-              MHA 학생 계정 없이는 절대 불가.<br />
-              우리끼리만 노는 안전한 아지트야.
+              길게 말 안 해도 찰떡같이<br />
+              네 의도를 파악해서 대답해줄게.
             </p>
           </div>
         </motion.section>
