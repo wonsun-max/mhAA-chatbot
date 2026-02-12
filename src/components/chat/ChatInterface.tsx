@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useLayoutEffect, useState, useEffect } from "react"
-import { Coffee, Calendar, MapPin, ChevronDown } from "lucide-react"
+import { MessageSquare, Sparkles, Brain, ChevronDown } from "lucide-react"
 import { ChatMessage } from "./ChatMessage"
 import { ChatInput } from "./ChatInput"
 import { motion, AnimatePresence } from "framer-motion"
@@ -60,9 +60,9 @@ export function ChatInterface() {
     }
 
     const starterChips = [
-        { label: "Today's Menu", icon: Coffee, text: "What's on the menu for today?" },
-        { label: "My Schedule", icon: Calendar, text: "Show me my class schedule for today?" },
-        { label: "School Events", icon: MapPin, text: "What upcoming events are happening?" },
+        { label: "Creative Ideas", icon: Sparkles, text: "Give me some creative project ideas." },
+        { label: "Code Help", icon: MessageSquare, text: "Can you help me with a coding problem?" },
+        { label: "Summarize", icon: Brain, text: "Help me summarize a complex topic." },
     ]
 
     return (
@@ -88,7 +88,7 @@ export function ChatInterface() {
                                 className="text-6xl font-semibold tracking-tight leading-tight"
                             >
                                 <span className="bg-gradient-to-r from-[#4285f4] via-[#9b72cb] to-[#d96570] bg-clip-text text-transparent">
-                                    Hello, {session?.user?.name || "Student"}
+                                    Hello, {session?.user?.name || "Member"}
                                 </span>
                             </motion.h1>
                             <motion.h2

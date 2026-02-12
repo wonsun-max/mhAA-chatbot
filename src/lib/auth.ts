@@ -2,7 +2,6 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "./prisma";
 import bcrypt from "bcryptjs";
-import { UserStatus } from "@prisma/client";
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -19,7 +18,7 @@ export const authOptions: NextAuthOptions = {
                     where: {
                         OR: [
                             { email: credentials.identifier },
-                            { username: credentials.identifier }
+                            { nickname: credentials.identifier }
                         ]
                     },
                 });
@@ -29,22 +28,14 @@ export const authOptions: NextAuthOptions = {
                 const isPasswordValid = await bcrypt.compare(credentials.password, user.passwordHash);
                 if (!isPasswordValid) return null;
 
-                // Check account status - only ACTIVE users can log in
-                if (user.status !== UserStatus.ACTIVE) {
-                    throw new Error(user.status === UserStatus.PENDING
-                        ? "Account pending approval."
-                        : "Account suspended or inactive.");
-                }
-
                 return {
                     id: user.id,
                     email: user.email,
                     name: user.name,
-                    role: user.role,
-                    username: user.username,
+                    nickname: user.nickname,
                     koreanName: user.koreanName,
                     aiEnabled: user.aiEnabled,
-                };
+                } as any;
             }
         }),
     ],
@@ -56,19 +47,17 @@ export const authOptions: NextAuthOptions = {
                 });
                 if (user) {
                     session.user.id = user.id;
-                    session.user.role = user.role;
-                    session.user.email = user.email; // Add this line
-                    session.user.name = user.name; // Add this line
+                    session.user.email = user.email;
+                    session.user.name = user.name;
                     session.user.aiEnabled = user.aiEnabled;
                     session.user.koreanName = user.koreanName;
-                    session.user.username = user.username;
+                    (session.user as any).nickname = user.nickname;
                 }
             }
             return session;
         },
         async jwt({ token, user }) {
             if (user) {
-                token.role = user.role;
                 token.id = user.id;
             }
             return token;

@@ -4,7 +4,7 @@ import { useState, Suspense } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
-import { Loader2, AlertCircle, Bot, User, Lock, ChevronRight } from "lucide-react"
+import { Loader2, Bot, User, Lock, ChevronRight, Globe } from "lucide-react"
 import { motion } from "framer-motion"
 
 function LoginContent() {
@@ -55,17 +55,6 @@ function LoginContent() {
                 <div className="glass-panel p-10 rounded-[3rem] shadow-2xl border border-white/5 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 blur-3xl" />
 
-                    {(message || searchParams.get("message") === "signup_success") && (
-                        <motion.div
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className="p-4 mb-8 bg-blue-500/10 text-blue-400 text-[10px] rounded-2xl font-black uppercase tracking-widest flex items-center border border-blue-500/20"
-                        >
-                            <AlertCircle className="mr-3" size={18} />
-                            {message || "Registration Successful. Awaiting Admin Review."}
-                        </motion.div>
-                    )}
-
                     <form className="space-y-6 relative" onSubmit={handleSubmit}>
                         {error && (
                             <motion.div
@@ -85,7 +74,7 @@ function LoginContent() {
                                 <input
                                     type="text"
                                     required
-                                    placeholder="Email or Username"
+                                    placeholder="Email or Nickname"
                                     className="w-full pl-14 pr-6 py-5 bg-white/5 border border-white/10 rounded-2xl text-sm font-medium text-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none placeholder-gray-600"
                                     value={identifier}
                                     onChange={(e) => setIdentifier(e.target.value)}
@@ -122,13 +111,16 @@ function LoginContent() {
                             )}
                         </button>
 
-                        <div className="pt-6 text-center">
-                            <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] leading-loose">
-                                Missing Authentication?{" "}
-                                <Link href="/signup" className="text-blue-500 hover:text-blue-400 transition-colors">
-                                    Request Access
-                                </Link>
-                            </p>
+                        <div className="pt-8 border-t border-white/5 text-center">
+                            <a 
+                                href="https://mhawebsitess.vercel.app/auth/login" 
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[10px] font-black text-gray-500 hover:text-blue-400 uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
+                            >
+                                <Globe size={12} />
+                                Official Account Portal
+                            </a>
                         </div>
                     </form>
                 </div>

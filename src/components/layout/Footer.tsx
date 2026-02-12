@@ -36,7 +36,6 @@ export function Footer() {
                         <h4 className="text-xs font-bold text-gray-200 uppercase tracking-widest">Platform</h4>
                         <ul className="space-y-3">
                             <li><Link href="/chatbot" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">AI Assistant</Link></li>
-                            <li><Link href="/signup" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Register</Link></li>
                             <li><Link href="/login" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Login</Link></li>
                         </ul>
                     </div>
@@ -47,7 +46,6 @@ export function Footer() {
                         <ul className="space-y-3">
                             <li><a href="#" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Privacy Policy</a></li>
                             <li><a href="#" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Terms of Service</a></li>
-                            <li><a href="#" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Contact Admin</a></li>
                         </ul>
                     </div>
 

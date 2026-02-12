@@ -32,23 +32,23 @@ export default function Home() {
   const features = [
     {
       icon: <Zap className="text-yellow-400" size={24} />,
-      title: "Real-time Data",
-      description: "Instant access to schedules, grades, and school-wide announcements."
+      title: "Intelligent Chat",
+      description: "Experience natural, context-aware conversations with our advanced AI assistant."
     },
     {
       icon: <Shield className="text-blue-400" size={24} />,
-      title: "Secure Access",
-      description: "Advanced authentication ensuring your student data stays private."
+      title: "Secure Privacy",
+      description: "Your conversations are private and encrypted, ensuring your data stays yours."
     },
     {
       icon: <Globe className="text-purple-400" size={24} />,
-      title: "Hybrid Learning",
-      description: "Seamlessly connect your physical and digital school life."
+      title: "Global Context",
+      description: "Connect your AI assistant to the global knowledge base seamlessly."
     },
     {
       icon: <Users className="text-green-400" size={24} />,
-      title: "Shared Identity",
-      description: "A unified platform for students, teachers, and administrators."
+      title: "Instant Support",
+      description: "Get immediate answers to your questions, anytime and anywhere."
     }
   ]
 
@@ -74,7 +74,7 @@ export default function Home() {
           <motion.div variants={itemVariants} className="space-y-6">
             <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-400 text-[11px] font-bold tracking-[0.2em] uppercase backdrop-blur-md">
               <Sparkles size={12} className="text-blue-400" />
-              <span>Next Generation Platform</span>
+              <span>Next Generation AI Chat</span>
             </div>
 
             <h1 className="text-5xl md:text-[5.5rem] font-bold tracking-[-0.03em] leading-[1.05] text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/40">
@@ -83,21 +83,17 @@ export default function Home() {
             </h1>
 
             <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto font-medium leading-relaxed">
-              Designed for the modern student. MissionLink simplifies your daily schedule,
-              meals, and data into one fluid, beautiful interface.
+              Experience the future of communication. MissionLink provides a fluid,
+              beautiful interface for all your AI chat needs.
             </p>
           </motion.div>
 
           <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-center gap-6">
             <Link href="/chatbot" className="group relative px-10 py-4.5 bg-white text-black rounded-full font-bold text-lg tracking-tight transition-all hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-white/10">
               <span className="flex items-center">
-                Get Started
+                Start Chatting
                 <ChevronRight className="ml-2 group-hover:translate-x-0.5 transition-transform" size={20} />
               </span>
-            </Link>
-
-            <Link href="/signup" className="px-10 py-4.5 rounded-full text-white/70 font-bold text-lg hover:text-white hover:bg-white/5 transition-all active:scale-[0.98]">
-              Join the Academy
             </Link>
           </motion.div>
         </motion.section>

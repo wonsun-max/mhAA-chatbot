@@ -1,11 +1,9 @@
-import { streamText, tool, type ModelMessage, stepCountIs } from "ai";
+import { streamText, type ModelMessage, stepCountIs } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { aiTools } from "@/lib/ai/tools";
 import { CHATBOT_SYSTEM_PROMPT } from "@/lib/openai";
-import { z } from "zod";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -82,14 +80,12 @@ export async function POST(req: Request) {
         // Convert to ModelMessage format for streamText
         const messages: ModelMessage[] = convertToModelMessages(clientMessages);
 
-        // Retrieve full user profile for rich prompt context
+        // Retrieve user profile for prompt context
         const user = await prisma.user.findUnique({
             where: { id: session.user.id },
             select: {
                 koreanName: true,
                 name: true,
-                grade: true,
-                role: true,
             }
         });
 
@@ -101,16 +97,13 @@ export async function POST(req: Request) {
         }
 
         const displayName = user.koreanName || user.name || "Member";
-        const gradeLabel = user.grade ? String(user.grade) : "N/A";
 
-        // Precise localized time for schedule/meal queries
+        // Precise localized time
         const currentTime = new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" });
 
         const systemPrompt = CHATBOT_SYSTEM_PROMPT
             .replace("{{currentTime}}", currentTime)
-            .replace("{{displayName}}", displayName)
-            .replace("{{grade}}", gradeLabel)
-            .replace("{{country}}", "Global Mission Field");
+            .replace("{{displayName}}", displayName);
 
         // Extract the latest user query for logging
         const latestUserMessage = messages
@@ -125,52 +118,22 @@ export async function POST(req: Request) {
             model: openai("gpt-4o"),
             system: systemPrompt,
             messages,
-            tools: {
-                get_meals: tool({
-                    description: "Get the school meal menu for a specific date (YYYY-MM-DD).",
-                    inputSchema: z.object({ date: z.string().optional() }),
-                    execute: async ({ date }: { date?: string }) => aiTools.get_meals({ date }),
-                }),
-                get_upcoming_birthdays: tool({
-                    description: "Get list of students with upcoming birthdays.",
-                    inputSchema: z.object({ limit: z.number().optional() }),
-                    execute: async ({ limit }: { limit?: number }) => aiTools.get_upcoming_birthdays({ limit }),
-                }),
-                get_schedule: tool({
-                    description: "Retrieve class schedules.",
-                    inputSchema: z.object({ Grade: z.string() }),
-                    execute: async ({ Grade }: { Grade: string }) => aiTools.get_schedule({ Grade }),
-                }),
-                get_upcoming_events: tool({
-                    description: "Get upcoming school events.",
-                    inputSchema: z.object({}),
-                    execute: async () => aiTools.get_upcoming_events(),
-                }),
-            },
             stopWhen: stepCountIs(5),
             /**
-             * onFinish callback - Persists chat log to Neon database.
-             * Runs after streaming completes, captures full response and tools used.
+             * onFinish callback - Persists chat log to database.
              */
             onFinish: async ({ text, steps }) => {
                 try {
-                    // Extract tools called from all steps
-                    const toolsCalled = steps
-                        .flatMap(step => step.toolCalls || [])
-                        .map(tc => tc.toolName);
-
                     await prisma.chatLog.create({
                         data: {
                             userId,
                             query: userQuery,
                             response: text || '',
-                            toolsCalled: toolsCalled.length > 0 ? JSON.stringify(toolsCalled) : null,
                             status: 'success',
                         },
                     });
                     console.log(`[ChatLog] Saved for user ${userId}`);
                 } catch (logError) {
-                    // Non-blocking: log error but don't fail the request
                     console.error('[ChatLog] Failed to save:', logError);
                 }
             },

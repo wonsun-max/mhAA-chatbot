@@ -9,7 +9,7 @@ import { Footer } from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
   title: "MHA AI Assistant",
-  description: "Official School AI Assistant",
+  description: "Advanced AI Assistant Platform",
   icons: {
     icon: "/site-favicon.png",
     apple: "/site-favicon.png",

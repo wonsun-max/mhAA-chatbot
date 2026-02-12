@@ -18,18 +18,13 @@ export function Navbar() {
         return () => window.removeEventListener("scroll", handleScroll)
     }, [])
 
-    // Support both casings for admin role during session transition
-    const userRole = (session?.user as any)?.role?.toUpperCase()
-    const isAdmin = userRole === "ADMIN"
+    const displayName = (session?.user as any)?.koreanName || session?.user?.name || session?.user?.email
 
     const navLinks = [
         { name: "Home", href: "/" },
         { name: "AI Assistant", href: "/chatbot" },
         { name: "Official Site", href: "https://mhawebsitess.vercel.app/", external: true, icon: Globe },
-        ...(isAdmin ? [{ name: "Dashboard", href: "/admin", icon: LayoutDashboard }] : []),
     ]
-
-    const displayName = (session?.user as any)?.koreanName || session?.user?.name || session?.user?.email
 
     return (
         <nav
@@ -75,7 +70,6 @@ export function Navbar() {
                             <div className="flex items-center space-x-6 pl-8 border-l border-white/10 ml-8">
                                 <div className="text-right flex flex-col items-end">
                                     <p className="text-sm font-bold text-white">{displayName}</p>
-                                    <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">{userRole}</p>
                                 </div>
                                 <button
                                     onClick={() => signOut()}
@@ -88,12 +82,6 @@ export function Navbar() {
                             <div className="flex items-center space-x-4 ml-4">
                                 <Link href="/login" className="text-sm font-bold text-slate-400 hover:text-white transition-colors">
                                     Login
-                                </Link>
-                                <Link
-                                    href="/signup"
-                                    className="text-sm font-bold text-white bg-blue-600 px-5 py-2.5 rounded-lg hover:bg-blue-500 transition-colors"
-                                >
-                                    Get Access
                                 </Link>
                             </div>
                         )}
@@ -147,20 +135,13 @@ export function Navbar() {
                                         <span>Personnel Exit</span>
                                     </button>
                                 ) : (
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 gap-4">
                                         <Link
                                             href="/login"
                                             onClick={() => setIsOpen(false)}
                                             className="flex items-center justify-center py-5 rounded-2xl border border-white/10 text-[10px] font-black text-gray-400 uppercase tracking-widest"
                                         >
                                             Login
-                                        </Link>
-                                        <Link
-                                            href="/signup"
-                                            onClick={() => setIsOpen(false)}
-                                            className="flex items-center justify-center py-5 rounded-2xl bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest"
-                                        >
-                                            Access
                                         </Link>
                                     </div>
                                 )}
