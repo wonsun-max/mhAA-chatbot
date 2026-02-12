@@ -80,7 +80,7 @@ export function ChatInterface() {
                         transition={{ duration: 0.6, ease: "easeOut" }}
                         className="w-full max-w-3xl flex flex-col items-center justify-center space-y-16"
                     >
-                        <div className="text-left w-full space-y-3">
+                        <div className={`w-full space-y-3 ${authStatus !== "authenticated" ? "text-center" : "text-left"}`}>
                             <motion.h1
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
@@ -88,7 +88,7 @@ export function ChatInterface() {
                                 className="text-6xl font-semibold tracking-tight leading-tight"
                             >
                                 <span className="bg-gradient-to-r from-[#4285f4] via-[#9b72cb] to-[#d96570] bg-clip-text text-transparent">
-                                    Hello, {session?.user?.name || "Member"}
+                                    Hello, {authStatus === "authenticated" ? (session?.user?.name || "Member") : "Guest"}
                                 </span>
                             </motion.h1>
                             <motion.h2

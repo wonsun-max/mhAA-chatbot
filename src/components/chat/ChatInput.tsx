@@ -91,12 +91,17 @@ export function ChatInput({ status, isLoading, onSend, variant = "sticky" }: Cha
                             <p className="text-[#9aa0a6] max-w-sm mx-auto">Sign in to unlock the full potential of your AI Assistant.</p>
                         </div>
                         <div className="relative z-10 flex gap-4 w-full justify-center pt-2">
-                            <Link href="/login" className="px-10 py-3.5 rounded-full bg-white/5 hover:bg-white/10 text-white font-semibold transition-all border border-white/10 hover:border-white/20">
-                                Login
+                            <Link href="/login" className="px-10 py-3.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-semibold transition-all shadow-lg shadow-blue-500/20 active:scale-95">
+                                Login to Chat
                             </Link>
-                            <Link href="/signup" className="px-10 py-3.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-semibold transition-all shadow-lg shadow-blue-500/20 active:scale-95">
-                                Sign Up
-                            </Link>
+                            <a 
+                                href="https://mhawebsitess.vercel.app/auth/login" 
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-10 py-3.5 rounded-full bg-white/5 hover:bg-white/10 text-white font-semibold transition-all border border-white/10 hover:border-white/20"
+                            >
+                                Official Portal
+                            </a>
                         </div>
                     </div>
                 )}

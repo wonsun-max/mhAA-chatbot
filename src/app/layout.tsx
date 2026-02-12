@@ -23,7 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-[#0A1929] text-white">
+      <body className="min-h-screen bg-black text-white font-sans selection:bg-blue-500/30">
         <AuthProvider>
           {/* 3. Background Component */}
           <Background />

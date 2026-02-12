@@ -35,16 +35,16 @@ function LoginContent() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background px-4 py-20 relative overflow-hidden">
-            <div className="aurora-glow opacity-60" />
-
+        <div className="min-h-screen flex items-center justify-center px-4 py-20 relative overflow-hidden">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="max-w-md w-full space-y-12 relative"
+                className="max-w-md w-full space-y-12 relative z-10"
             >
                 <div className="text-center space-y-6">
-                    <div className="inline-flex items-center justify-center w-20 h-20 bg-blue-600 rounded-[2rem] shadow-2xl shadow-blue-500/20">
+                    <div className="inline-flex items-center justify-center w-20 h-20 bg-blue-600 rounded-[2rem] shadow-2xl shadow-blue-500/20 mx-auto relative overflow-hidden group">
+                        <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        <Bot className="text-white w-10 h-10 relative z-10" />
                     </div>
                     <div className="space-y-2">
                         <h2 className="text-5xl font-black text-white tracking-tighter uppercase leading-none">Login</h2>
