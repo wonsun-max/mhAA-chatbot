@@ -84,29 +84,27 @@ export function ChatInterface() {
             >
                 {messages.length === 0 ? (
                     <motion.div
-                        initial={{ opacity: 0, y: 30 }}
+                        initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, ease: "easeOut" }}
-                        className="w-full max-w-3xl flex flex-col items-center justify-center space-y-16"
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                        className="w-full max-w-3xl flex flex-col items-center justify-center space-y-12"
                     >
-                        <div className={`w-full space-y-3 ${authStatus !== "authenticated" ? "text-center" : "text-left"}`}>
+                        <div className={`w-full space-y-4 ${authStatus !== "authenticated" ? "text-center" : "text-left"}`}>
                             <motion.h1
-                                initial={{ opacity: 0, x: -20 }}
+                                initial={{ opacity: 0, x: -10 }}
                                 animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.2 }}
-                                className="text-6xl font-semibold tracking-tight leading-tight"
+                                transition={{ delay: 0.1 }}
+                                className="text-4xl md:text-5xl font-bold tracking-tight leading-tight text-white"
                             >
-                                <span className="bg-gradient-to-r from-[#4285f4] via-[#9b72cb] to-[#d96570] bg-clip-text text-transparent">
-                                    Hello, {authStatus === "authenticated" ? (session?.user?.name || "Member") : "Guest"}
-                                </span>
+                                안녕하세요, {authStatus === "authenticated" ? (session?.user?.name || "사용자") : "Guest"}님
                             </motion.h1>
                             <motion.h2
-                                initial={{ opacity: 0, x: -20 }}
+                                initial={{ opacity: 0, x: -10 }}
                                 animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.3 }}
-                                className="text-6xl font-semibold text-[#444746] tracking-tight leading-tight"
+                                transition={{ delay: 0.2 }}
+                                className="text-3xl md:text-4xl font-semibold text-zinc-600 tracking-tight leading-tight"
                             >
-                                How can I help you today?
+                                무엇을 도와드릴까요?
                             </motion.h2>
                         </div>
 
@@ -124,18 +122,18 @@ export function ChatInterface() {
                                         key={chip.label}
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.4 + idx * 0.1 }}
+                                        transition={{ delay: 0.3 + idx * 0.1 }}
                                         onClick={() => handleSend(chip.text)}
                                         disabled={authStatus !== "authenticated"}
                                         className={`
                                             px-5 py-2.5 rounded-xl border text-sm font-medium
                                             ${authStatus === "authenticated"
-                                                ? "bg-[#1e1f20] border-[#303134] hover:bg-[#2a2b2d] hover:border-[#424242] text-[#e3e3e3]"
-                                                : "bg-[#1e1f20]/50 border-white/5 opacity-50 cursor-not-allowed text-gray-500"}
+                                                ? "bg-zinc-900 border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700 text-zinc-300"
+                                                : "bg-zinc-900/50 border-white/5 opacity-50 cursor-not-allowed text-zinc-600"}
                                             transition-all duration-300 flex items-center gap-2.5 shadow-sm
                                         `}
                                     >
-                                        <chip.icon size={18} className="text-[#4285f4]" />
+                                        <chip.icon size={16} className="text-blue-500" />
                                         {chip.label}
                                     </motion.button>
                                 ))}

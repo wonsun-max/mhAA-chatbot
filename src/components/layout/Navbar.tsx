@@ -49,7 +49,7 @@ export function Navbar() {
                         <div className="flex flex-col">
                             <div className="flex items-center gap-2">
                                 <span className="text-lg font-bold text-white leading-none tracking-tight">MissionLink</span>
-                                <span className="px-1.5 py-0.5 rounded-md bg-blue-600/20 border border-blue-500/30 text-[10px] font-black text-blue-400 uppercase tracking-tighter">Beta</span>
+                                <span className="px-1.5 py-0.5 rounded-md bg-zinc-800 border border-zinc-700 text-[9px] font-bold text-zinc-400 uppercase tracking-wider">Beta</span>
                             </div>
                         </div>
                     </Link>
@@ -62,29 +62,29 @@ export function Navbar() {
                                 href={link.href}
                                 target={link.external ? "_blank" : undefined}
                                 rel={link.external ? "noopener noreferrer" : undefined}
-                                className="text-sm font-medium text-slate-400 hover:text-white transition-colors flex items-center"
+                                className="text-sm font-medium text-zinc-400 hover:text-white transition-colors flex items-center"
                             >
-                                {link.icon && <link.icon size={16} className="mr-2" />}
+                                {link.icon && <link.icon size={14} className="mr-2" />}
                                 {link.name}
                             </Link>
                         ))}
 
                         {session ? (
-                            <div className="flex items-center space-x-6 pl-8 border-l border-white/10 ml-8">
+                            <div className="flex items-center space-x-6 pl-8 border-l border-zinc-800 ml-8">
                                 <div className="text-right flex flex-col items-end">
-                                    <p className="text-sm font-bold text-white">{displayName}</p>
+                                    <p className="text-sm font-semibold text-white">{displayName}</p>
                                 </div>
                                 <button
                                     onClick={() => signOut()}
-                                    className="p-2 text-slate-500 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                                    className="p-2 text-zinc-500 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
                                 >
-                                    <LogOut size={18} />
+                                    <LogOut size={16} />
                                 </button>
                             </div>
                         ) : (
                             <div className="flex items-center space-x-4 ml-4">
-                                <Link href="/login" className="text-sm font-bold text-slate-400 hover:text-white transition-colors">
-                                    Login
+                                <Link href="/login" className="text-sm font-semibold text-zinc-400 hover:text-white transition-colors">
+                                    Sign In
                                 </Link>
                             </div>
                         )}
@@ -94,14 +94,14 @@ export function Navbar() {
                     <div className="md:hidden flex items-center space-x-4">
                         {session && (
                             <div className="text-right mr-2">
-                                <p className="text-xs font-bold text-white tracking-tight">{displayName?.split(' ')[0]}</p>
+                                <p className="text-xs font-semibold text-white tracking-tight">{displayName?.split(' ')[0]}</p>
                             </div>
                         )}
                         <button
                             onClick={() => setIsOpen(!isOpen)}
-                            className="p-2 rounded-lg text-white hover:bg-white/5 transition-colors"
+                            className="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
                         >
-                            {isOpen ? <X size={24} /> : <Menu size={24} />}
+                            {isOpen ? <X size={20} /> : <Menu size={20} />}
                         </button>
                     </div>
                 </div>
@@ -111,40 +111,40 @@ export function Navbar() {
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
-                        initial={{ opacity: 0, y: -20 }}
+                        initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        className="md:hidden border-t border-white/5 glass-panel overflow-hidden"
+                        exit={{ opacity: 0, y: -10 }}
+                        className="md:hidden border-t border-zinc-900 bg-black/95 backdrop-blur-xl overflow-hidden"
                     >
-                        <div className="px-6 pt-4 pb-10 space-y-2">
+                        <div className="px-6 pt-4 pb-10 space-y-1">
                             {navLinks.map((link) => (
                                 <Link
                                     key={link.name}
                                     href={link.href}
                                     onClick={() => setIsOpen(false)}
-                                    className="flex items-center space-x-4 px-6 py-5 text-xs font-black text-gray-300 hover:bg-white/5 hover:text-white rounded-2xl transition-all uppercase tracking-widest"
+                                    className="flex items-center space-x-4 px-4 py-4 text-sm font-medium text-zinc-400 hover:bg-white/5 hover:text-white rounded-xl transition-all"
                                 >
                                     {link.icon && <link.icon size={18} />}
                                     <span>{link.name}</span>
                                 </Link>
                             ))}
-                            <div className="pt-6 mt-6 border-t border-white/5">
+                            <div className="pt-4 mt-4 border-t border-zinc-900">
                                 {session ? (
                                     <button
                                         onClick={() => signOut()}
-                                        className="w-full flex items-center space-x-4 px-6 py-5 text-xs font-black text-red-400 hover:bg-red-400/5 rounded-2xl transition-all uppercase tracking-widest"
+                                        className="w-full flex items-center space-x-4 px-4 py-4 text-sm font-medium text-red-400 hover:bg-red-400/5 rounded-xl transition-all"
                                     >
                                         <LogOut size={18} />
-                                        <span>Personnel Exit</span>
+                                        <span>Sign Out</span>
                                     </button>
                                 ) : (
                                     <div className="grid grid-cols-1 gap-4">
                                         <Link
                                             href="/login"
                                             onClick={() => setIsOpen(false)}
-                                            className="flex items-center justify-center py-5 rounded-2xl border border-white/10 text-[10px] font-black text-gray-400 uppercase tracking-widest"
+                                            className="flex items-center justify-center py-4 rounded-xl border border-zinc-800 text-sm font-medium text-zinc-400"
                                         >
-                                            Login
+                                            Sign In
                                         </Link>
                                     </div>
                                 )}
