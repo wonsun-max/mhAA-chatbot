@@ -18,7 +18,7 @@ export function Navbar() {
         return () => window.removeEventListener("scroll", handleScroll)
     }, [])
 
-    const displayName = (session?.user as any)?.koreanName || session?.user?.name || session?.user?.email
+    const displayName = (session?.user as any)?.nickname || (session?.user as any)?.koreanName || session?.user?.name || session?.user?.email
 
     const navLinks = [
         { name: "Home", href: "/" },
