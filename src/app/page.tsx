@@ -51,10 +51,18 @@ export default function Home() {
           className="max-w-4xl mx-auto w-full text-center space-y-12 mb-32"
         >
           <motion.div variants={itemVariants} className="space-y-8">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium tracking-wide">
-              <Sparkles size={14} />
+            <motion.div 
+              whileHover={{ scale: 1.05, backgroundColor: "rgba(59, 130, 246, 0.15)", borderColor: "rgba(59, 130, 246, 0.4)" }}
+              className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium tracking-wide cursor-default transition-colors duration-300"
+            >
+              <motion.div
+                animate={{ rotate: [0, 15, -15, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+              >
+                <Sparkles size={14} />
+              </motion.div>
               <span>MHA Students Private Network</span>
-            </div>
+            </motion.div>
 
             <div className="flex flex-col items-center space-y-4">
               <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white leading-[1.1]">
