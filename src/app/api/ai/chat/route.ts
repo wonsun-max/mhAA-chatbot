@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { CHATBOT_SYSTEM_PROMPT } from "@/lib/openai";
+import { aiTools } from "@/lib/ai/tools";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -118,6 +119,7 @@ export async function POST(req: Request) {
             model: openai("gpt-4o"),
             system: systemPrompt,
             messages,
+            tools: aiTools,
             stopWhen: stepCountIs(5),
             /**
              * onFinish callback - Persists chat log to database.
