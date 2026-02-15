@@ -5,6 +5,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { CHATBOT_SYSTEM_PROMPT } from "@/lib/openai";
 import { aiTools } from "@/lib/ai/tools";
+import { getDailyContent } from "@/lib/daily-content";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -102,9 +103,17 @@ export async function POST(req: Request) {
         // Precise localized time
         const currentTime = new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" });
 
+        // Get consistent daily content
+        const { verse, word } = getDailyContent();
+        const dailyContext = `
+Today's Scripture: "${verse.verse}" (${verse.ref})
+Today's English Word: ${word.word} (${word.meaning}) - Example: ${word.example}
+`;
+
         const systemPrompt = CHATBOT_SYSTEM_PROMPT
             .replace("{{currentTime}}", currentTime)
-            .replace("{{displayName}}", displayName);
+            .replace("{{displayName}}", displayName)
+            + "\n\n" + dailyContext;
 
         // Extract the latest user query for logging
         const latestUserMessage = messages

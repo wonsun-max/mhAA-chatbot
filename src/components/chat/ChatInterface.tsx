@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useLayoutEffect, useState, useEffect } from "react"
-import { MessageSquare, Sparkles, Brain, ChevronDown } from "lucide-react"
+import { MessageSquare, Sparkles, Brain, ChevronDown, BookOpen, Languages, Utensils, Calendar } from "lucide-react"
 import { ChatMessage } from "./ChatMessage"
 import { ChatInput } from "./ChatInput"
 import { motion, AnimatePresence } from "framer-motion"
@@ -61,9 +61,10 @@ export function ChatInterface() {
     }
 
     const starterChips = [
-        { label: "Creative Ideas", icon: Sparkles, text: "Give me some creative project ideas." },
-        { label: "Code Help", icon: MessageSquare, text: "Can you help me with a coding problem?" },
-        { label: "Summarize", icon: Brain, text: "Help me summarize a complex topic." },
+        { label: "오늘의 말씀", icon: BookOpen, text: "오늘의 말씀 하나만 추천해줘." },
+        { label: "오늘의 영어 단어", icon: Languages, text: "오늘 외우면 좋을 영어 단어 하나 알려줘." },
+        { label: "오늘 급식", icon: Utensils, text: "오늘 급식 메뉴가 뭐야?" },
+        { label: "오늘 시간표", icon: Calendar, text: "오늘 내 시간표 알려줘." },
     ]
 
     return (
