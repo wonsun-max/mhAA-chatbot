@@ -84,7 +84,7 @@ export function Navbar() {
                         ) : (
                             <div className="flex items-center space-x-4 ml-4">
                                 <Link href="/login" className="text-sm font-semibold text-zinc-400 hover:text-white transition-colors">
-                                    Sign In
+                                    로그인
                                 </Link>
                             </div>
                         )}
