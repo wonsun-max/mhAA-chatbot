@@ -42,10 +42,6 @@ function LoginContent() {
                 className="max-w-md w-full space-y-12 relative z-10"
             >
                 <div className="text-center space-y-6">
-                    <div className="inline-flex items-center justify-center w-20 h-20 bg-blue-600 rounded-[2rem] shadow-2xl shadow-blue-500/20 mx-auto relative overflow-hidden group">
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                        <Bot className="text-white w-10 h-10 relative z-10" />
-                    </div>
                     <div className="space-y-2">
                         <h2 className="text-5xl font-black text-white tracking-tighter uppercase leading-none">Login</h2>
                         <p className="text-[10px] text-blue-400 font-black uppercase tracking-[0.4em]">MissionLink Intelligence</p>
@@ -112,8 +108,8 @@ function LoginContent() {
                         </button>
 
                         <div className="pt-8 border-t border-white/5 text-center">
-                            <a 
-                                href="https://mhawebsitess.vercel.app/auth/signup" 
+                            <a
+                                href="https://mhawebsitess.vercel.app/auth/signup"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-[10px] font-black text-gray-500 hover:text-blue-400 uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
