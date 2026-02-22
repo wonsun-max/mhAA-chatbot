@@ -30,16 +30,8 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col relative min-h-screen bg-[#050505] text-white selection:bg-blue-500/30 overflow-x-hidden">
+    <div className="flex flex-col relative min-h-screen bg-black text-white selection:bg-blue-500/30 overflow-x-hidden">
       <Navbar />
-
-      {/* Subtle Background Grain/Grid */}
-      <div className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none" 
-           style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40' fill='%23ffffff' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E")` }} />
-      
-      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-15%] left-[10%] w-[40%] h-[40%] rounded-full bg-blue-500/5 blur-[120px]" />
-      </div>
 
       <main className="flex-1 flex flex-col items-center relative z-10 pt-32 pb-32 px-6">
 
@@ -51,7 +43,7 @@ export default function Home() {
           className="max-w-4xl mx-auto w-full text-center space-y-12 mb-32"
         >
           <motion.div variants={itemVariants} className="space-y-8">
-            <motion.div 
+            <motion.div
               whileHover={{ scale: 1.05, backgroundColor: "rgba(59, 130, 246, 0.15)", borderColor: "rgba(59, 130, 246, 0.4)" }}
               className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium tracking-wide cursor-default transition-colors duration-300"
             >
@@ -80,12 +72,12 @@ export default function Home() {
 
           <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
             <Link href="/chatbot" className="group inline-flex items-center justify-center px-8 py-4 bg-white text-black rounded-full font-bold text-lg transition-all hover:bg-zinc-200 active:scale-95 shadow-lg shadow-white/5">
-                채팅룸 입장하기
-                <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
+              채팅룸 입장하기
+              <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
             </Link>
             <Link href="https://mhawebsitess.vercel.app/" target="_blank" className="inline-flex items-center justify-center px-8 py-4 bg-zinc-900 text-white border border-zinc-800 rounded-full font-bold text-lg transition-all hover:bg-zinc-800 active:scale-95">
-                공식 사이트
-                <ArrowUpRight className="ml-2 opacity-50" size={18} />
+              공식 사이트
+              <ArrowUpRight className="ml-2 opacity-50" size={18} />
             </Link>
           </motion.div>
         </motion.section>
@@ -98,7 +90,7 @@ export default function Home() {
           transition={{ duration: 0.8 }}
           className="max-w-6xl mx-auto w-full grid grid-cols-1 md:grid-cols-3 gap-8"
         >
-          <div className="group p-8 rounded-2xl bg-zinc-900/40 border border-zinc-800 hover:border-blue-500/30 transition-all duration-300">
+          <div className="bento-card group">
             <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
               <Calendar className="text-blue-500" size={24} />
             </div>
@@ -108,7 +100,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="group p-8 rounded-2xl bg-zinc-900/40 border border-zinc-800 hover:border-blue-500/30 transition-all duration-300">
+          <div className="bento-card group">
             <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
               <Activity className="text-blue-500" size={24} />
             </div>
@@ -118,7 +110,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="group p-8 rounded-2xl bg-zinc-900/40 border border-zinc-800 hover:border-blue-500/30 transition-all duration-300">
+          <div className="bento-card group">
             <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
               <Shield className="text-blue-500" size={24} />
             </div>
@@ -137,18 +129,18 @@ export default function Home() {
           className="mt-32 w-full max-w-4xl p-8 rounded-3xl bg-gradient-to-b from-zinc-900/50 to-transparent border border-zinc-800/50 text-center"
         >
           <div className="flex flex-col items-center space-y-4">
-             <div className="flex items-center space-x-2">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                </span>
-                <span className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-bold">
-                  System Operational
-                </span>
-             </div>
-             <p className="text-zinc-600 text-xs">
-                © 2026 MHA Digital. All rights reserved.
-             </p>
+            <div className="flex items-center space-x-2">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              </span>
+              <span className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-bold">
+                System Operational
+              </span>
+            </div>
+            <p className="text-zinc-600 text-xs">
+              © 2026 MHA Digital. All rights reserved.
+            </p>
           </div>
         </motion.div>
 
