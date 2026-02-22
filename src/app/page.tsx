@@ -60,12 +60,12 @@ export default function Home() {
               <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white leading-[1.1]">
                 미래를 앞서가는 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">
-                  MHA 프라이빗 AI 라운지
+                  MHA AI 챗봇
                 </span>
               </h1>
               <p className="max-w-2xl mx-auto text-base md:text-lg text-zinc-400 font-medium leading-relaxed">
                 학교 생활의 모든 정보를 한곳에서 확인하고, <br className="hidden md:block" />
-                지능형 AI 어시스턴트와 함께 더 효율적인 학업 환경을 경험하세요.
+                지능형 AI 어시스턴트와 함께 더 효율적인 학교 생활을 경험하세요.
               </p>
             </div>
           </motion.div>

@@ -65,7 +65,7 @@ export function Footer() {
 
                 <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
                     <p className="text-xs font-medium text-gray-500">
-                        &copy; 2025 MissionLink Intelligence Unit. All Rights Reserved.
+                        &copy; 2026 MissionLink Intelligence Unit. All Rights Reserved.
                     </p>
                     <div className="flex items-center space-x-2">
                         <div className="w-1.5 h-1.5 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>

@@ -4,13 +4,22 @@ import { ChatInterface } from "@/components/chat/ChatInterface"
 import { motion } from "framer-motion"
 import { useSession } from "next-auth/react"
 import { Loader2 } from "lucide-react"
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 
 export default function ChatbotPage() {
     const { status } = useSession()
+    const router = useRouter()
 
-    if (status === "loading") {
+    useEffect(() => {
+        if (status === "unauthenticated") {
+            router.push("/login")
+        }
+    }, [status, router])
+
+    if (status === "loading" || status === "unauthenticated") {
         return (
-            <div className="h-screen flex items-center justify-center bg-background">
+            <div className="h-screen flex items-center justify-center bg-black">
                 <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
             </div>
         )
