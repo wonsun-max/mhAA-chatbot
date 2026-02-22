@@ -58,15 +58,11 @@ export default function Home() {
 
             <div className="flex flex-col items-center space-y-4">
               <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white leading-[1.1]">
-                미래를 앞서가는 <br />
+                ___ 앞서가는 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">
                   MHA AI 챗봇
                 </span>
               </h1>
-              <p className="max-w-2xl mx-auto text-base md:text-lg text-zinc-400 font-medium leading-relaxed">
-                학교 생활의 모든 정보를 한곳에서 확인하고, <br className="hidden md:block" />
-                지능형 AI 어시스턴트와 함께 더 효율적인 학교 생활을 경험하세요.
-              </p>
             </div>
           </motion.div>
 
@@ -104,9 +100,9 @@ export default function Home() {
             <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
               <Activity className="text-blue-500" size={24} />
             </div>
-            <h3 className="text-xl font-bold mb-3">지능형 Q&A</h3>
+            <h3 className="text-xl font-bold mb-3">끊김 없는 대화</h3>
             <p className="text-zinc-500 leading-relaxed text-sm">
-              복잡한 질문에도 맥락을 파악하여 가장 정확하고 유용한 정보를 즉시 제공합니다.
+              학교 관련해서 궁금한 점을 무엇이든 물어보세요.
             </p>
           </div>
 
@@ -134,13 +130,7 @@ export default function Home() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
               </span>
-              <span className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-bold">
-                System Operational
-              </span>
             </div>
-            <p className="text-zinc-600 text-xs">
-              © 2026 MHA Digital. All rights reserved.
-            </p>
           </div>
         </motion.div>
 
