@@ -12,7 +12,7 @@ export default function PrivacyPage() {
                 <div className="space-y-6">
                     <Link href="/" className="inline-flex items-center text-sm text-gray-500 hover:text-white transition-colors group">
                         <ChevronLeft size={16} className="mr-1 group-hover:-translate-x-1 transition-transform" />
-                        Back to Home
+                        Back to Home.
                     </Link>
                     <div className="flex items-center space-x-4">
                         <div className="p-3 bg-blue-600/10 rounded-2xl text-blue-500">
@@ -24,7 +24,7 @@ export default function PrivacyPage() {
                 </div>
 
                 {/* Content */}
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="glass-panel p-8 md:p-12 rounded-[2rem] border border-white/5 space-y-8 text-gray-300 leading-relaxed"
