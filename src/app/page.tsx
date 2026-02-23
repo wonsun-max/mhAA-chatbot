@@ -53,14 +53,14 @@ export default function Home() {
               >
                 <Sparkles size={14} />
               </motion.div>
-              <span>MHA Students Private Network</span>
+              <span>Mission Link Private Network</span>
             </motion.div>
 
             <div className="flex flex-col items-center space-y-4">
               <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white leading-[1.1]">
                 ___ 앞서가는 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">
-                  MHA AI 챗봇
+                  Mission Link
                 </span>
               </h1>
             </div>

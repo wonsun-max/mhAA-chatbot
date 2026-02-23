@@ -23,7 +23,7 @@ export function Navbar() {
     const navLinks = [
         { name: "Home", href: "/" },
         { name: "AI Assistant", href: "/chatbot" },
-        { name: "Official Site", href: "https://mhawebsitess.vercel.app/", external: true, icon: Globe },
+        { name: "MHA 커뮤니티", href: "https://mhawebsitess.vercel.app/", external: true, icon: Globe },
     ]
 
     return (
@@ -40,7 +40,7 @@ export function Navbar() {
                         <div className="w-10 h-10 relative flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
                             <Image
                                 src="/site-logo.png"
-                                alt="MHA Logo"
+                                alt="MissionLink Logo"
                                 fill
                                 className="object-contain drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]"
                                 priority

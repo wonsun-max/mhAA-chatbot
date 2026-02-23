@@ -70,7 +70,7 @@ export function PromotionModal() {
                                     Notice
                                 </div>
                                 <h2 className="text-2xl font-bold tracking-tight text-white">
-                                                                         MHA 커뮤니티에 오신 것을 환영합니다!                                </h2>
+                                    Mission Link에 오신 것을 환영합니다!                                </h2>
                                 <div className="space-y-4 text-white/70 leading-relaxed">
                                     <p>
                                         MHa 커뮤니티에서 계정 안 만들고 왔으면{" "}

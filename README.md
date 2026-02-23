@@ -1,4 +1,4 @@
-# MissionLink AI Assistant
+# Mission Link AI Assistant
 
 A high-fidelity, next-generation AI chat platform.
 
