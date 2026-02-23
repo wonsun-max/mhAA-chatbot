@@ -46,6 +46,8 @@ export function Footer() {
                         <ul className="space-y-3">
                             <li><Link href="/privacy" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Privacy Policy</Link></li>
                             <li><Link href="/terms" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Terms of Service</Link></li>
+                            <li><Link href="https://forms.gle/dTZNPr29Gs8Sg1i49" target="_blank" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">버그 리포트</Link></li>
+                            <li><Link href="https://forms.gle/ijQgKpGLvUexQ2tBA" target="_blank" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">아이디어 제출</Link></li>
                         </ul>
                     </div>
 

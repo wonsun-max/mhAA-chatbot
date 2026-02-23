@@ -4,11 +4,12 @@ import Background from "@/components/Background";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { PromotionModal } from "@/components/modals/PromotionModal";
 
 // 1. Metadata setup
 
 export const metadata: Metadata = {
-  title: "MHA AI Assistant",
+  title: "MHA 커뮤니티",
   description: "Advanced AI Assistant Platform",
   icons: {
     icon: "/site-favicon.png",
@@ -34,6 +35,7 @@ export default function RootLayout({
             {children}
           </main>
           <Footer />
+          <PromotionModal />
         </AuthProvider>
       </body>
     </html>

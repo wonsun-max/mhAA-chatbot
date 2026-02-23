@@ -71,8 +71,8 @@ export default function Home() {
               채팅룸 입장하기
               <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
             </Link>
-            <Link href="https://mhawebsitess.vercel.app/" target="_blank" className="inline-flex items-center justify-center px-8 py-4 bg-zinc-900 text-white border border-zinc-800 rounded-full font-bold text-lg transition-all hover:bg-zinc-800 active:scale-95">
-              공식 사이트
+            <Link href="https://mhawebsitess.vercel.app/news/board" target="_blank" className="inline-flex items-center justify-center px-8 py-4 bg-zinc-900 text-white border border-zinc-800 rounded-full font-bold text-lg transition-all hover:bg-zinc-800 active:scale-95">
+              MHA 커뮤니티
               <ArrowUpRight className="ml-2 opacity-50" size={18} />
             </Link>
           </motion.div>
