@@ -16,6 +16,7 @@ model User {
   name          String?
   koreanName    String?
   image         String?
+  grade         Int?
   
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt

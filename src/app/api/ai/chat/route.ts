@@ -88,6 +88,7 @@ export async function POST(req: Request) {
             select: {
                 koreanName: true,
                 name: true,
+                grade: true,
             }
         });
 
@@ -99,6 +100,7 @@ export async function POST(req: Request) {
         }
 
         const displayName = user.koreanName || user.name || "Member";
+        const userGradeText = user.grade ? `${user.grade}` : "Unknown (Ask the user to specify their grade)";
 
         // Precise localized time
         const currentTime = new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" });
@@ -113,6 +115,7 @@ Today's English Word: ${word.word} (${word.meaning}) - Example: ${word.example}
         const systemPrompt = CHATBOT_SYSTEM_PROMPT
             .replace("{{currentTime}}", currentTime)
             .replace("{{displayName}}", displayName)
+            .replace("{{userGrade}}", userGradeText)
             + "\n\n" + dailyContext;
 
         // Extract the latest user query for logging
