@@ -89,6 +89,7 @@ export async function POST(req: Request) {
                 koreanName: true,
                 name: true,
                 grade: true,
+                classNumber: true,
             }
         });
 
@@ -100,7 +101,13 @@ export async function POST(req: Request) {
         }
 
         const displayName = user.koreanName || user.name || "Member";
-        const userGradeText = user.grade ? `${user.grade}` : "Unknown (Ask the user to specify their grade)";
+
+        let userGradeText = "Unknown (Ask the user to specify their grade)";
+        if (user.grade === 12 && user.classNumber) {
+            userGradeText = `${user.grade}-${user.classNumber}`;
+        } else if (user.grade) {
+            userGradeText = `${user.grade}`;
+        }
 
         // Precise localized time
         const currentTime = new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" });
