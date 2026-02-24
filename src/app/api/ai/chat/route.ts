@@ -110,7 +110,11 @@ export async function POST(req: Request) {
         }
 
         // Precise localized time
-        const currentTime = new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" });
+        const currentTime = new Intl.DateTimeFormat("ko-KR", {
+            timeZone: "Asia/Manila",
+            dateStyle: "full",
+            timeStyle: "short"
+        }).format(new Date());
 
         // Get consistent daily content
         const { verse, word } = getDailyContent();
