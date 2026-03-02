@@ -53,14 +53,14 @@ export default function Home() {
               >
                 <Sparkles size={14} />
               </motion.div>
-              <span>Mission Link Private Network</span>
+              <span>WITHUS Private Network</span>
             </motion.div>
 
             <div className="flex flex-col items-center space-y-4">
               <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white leading-[1.1]">
                 ___ 앞서가는 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">
-                  Mission Link
+                  WITHUS
                 </span>
               </h1>
             </div>
@@ -70,10 +70,6 @@ export default function Home() {
             <Link href="/chatbot" className="group inline-flex items-center justify-center px-8 py-4 bg-white text-black rounded-full font-bold text-lg transition-all hover:bg-zinc-200 active:scale-95 shadow-lg shadow-white/5">
               채팅룸 입장하기
               <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
-            </Link>
-            <Link href="https://mhawebsitess.vercel.app/news/board" target="_blank" className="inline-flex items-center justify-center px-8 py-4 bg-zinc-900 text-white border border-zinc-800 rounded-full font-bold text-lg transition-all hover:bg-zinc-800 active:scale-95">
-              MHA 커뮤니티
-              <ArrowUpRight className="ml-2 opacity-50" size={18} />
             </Link>
           </motion.div>
         </motion.section>
@@ -88,11 +84,11 @@ export default function Home() {
         >
           <div className="bento-card group">
             <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-              <Calendar className="text-blue-500" size={24} />
+              <Sparkles className="text-blue-500" size={24} />
             </div>
-            <h3 className="text-xl font-bold mb-3">학사 일정 자동화</h3>
+            <h3 className="text-xl font-bold mb-3">AI 챗봇 인터페이스</h3>
             <p className="text-zinc-500 leading-relaxed text-sm">
-              중요한 학사 일정과 공지사항을 실시간으로 동기화하여 놓치는 일 없이 관리합니다.
+              고도로 훈련된 AI와 함께 더 스마트하게 대화하고 정보를 얻으세요.
             </p>
           </div>
 
@@ -102,7 +98,7 @@ export default function Home() {
             </div>
             <h3 className="text-xl font-bold mb-3">끊김 없는 대화</h3>
             <p className="text-zinc-500 leading-relaxed text-sm">
-              학교 관련해서 궁금한 점을 무엇이든 물어보세요.
+              궁금한 점을 무엇이든 물어보세요. 실시간으로 답변해 드립니다.
             </p>
           </div>
 
@@ -112,7 +108,7 @@ export default function Home() {
             </div>
             <h3 className="text-xl font-bold mb-3">프라이빗 네트워크</h3>
             <p className="text-zinc-500 leading-relaxed text-sm">
-              오직 MHA 학생들만을 위한 전용 공간으로, 안전하고 신뢰할 수 있는 정보를 공유합니다.
+              오직 승인된 멤버들만을 위한 전용 공간으로, 안전하고 신뢰할 수 있는 정보를 공유합니다.
             </p>
           </div>
         </motion.section>

@@ -17,14 +17,9 @@ export function Footer() {
                     <div className="col-span-1 md:col-span-1 space-y-6">
                         <Link href="/" className="flex items-center space-x-3 group">
                             <div className="w-10 h-10 relative flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
-                                <Image
-                                    src="/site-logo.png"
-                                    alt="Mission Link Logo"
-                                    fill
-                                    className="object-contain drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]"
-                                />
+                                <Bot className="text-blue-500 w-8 h-8 drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
                             </div>
-                            <span className="text-lg font-bold text-white tracking-tight">MissionLink</span>
+                            <span className="text-lg font-bold text-white tracking-tight">WITHUS</span>
                         </Link>
                         <p className="text-sm text-gray-400 leading-relaxed font-medium max-w-xs">
                             Secure, private, and localized academic intelligence for the modern educational environment.
@@ -58,16 +53,13 @@ export function Footer() {
                             <a href="mailto:wonsunpro123444@gmail.com" className="p-2.5 bg-white/5 rounded-xl border border-white/10 text-gray-400 hover:text-white hover:border-white/20 transition-all">
                                 <Mail size={18} />
                             </a>
-                            <a href="https://mhawebsitess.vercel.app/" target="_blank" className="p-2.5 bg-white/5 rounded-xl border border-white/10 text-gray-400 hover:text-white hover:border-white/20 transition-all">
-                                <Globe size={18} />
-                            </a>
                         </div>
                     </div>
                 </div>
 
                 <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
                     <p className="text-xs font-medium text-gray-500">
-                        &copy; 2026 MissionLink Intelligence Unit. All Rights Reserved.
+                        &copy; 2026 WITHUS Intelligence Unit. All Rights Reserved.
                     </p>
                     <div className="flex items-center space-x-2">
                         <div className="w-1.5 h-1.5 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>

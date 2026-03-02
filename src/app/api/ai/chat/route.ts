@@ -10,10 +10,6 @@ import { getDailyContent } from "@/lib/daily-content";
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
 
-/**
- * Represents a raw message from the client.
- * The client may send either UIMessage (with parts) or a simple format (with content).
- */
 interface RawClientMessage {
     id?: string;
     role: 'system' | 'user' | 'assistant';
@@ -21,13 +17,8 @@ interface RawClientMessage {
     parts?: Array<{ type: string; text?: string }>;
 }
 
-/**
- * Converts raw client messages to ModelMessage format for streamText.
- * Handles both UIMessage (with parts) and simple message formats.
- */
 function convertToModelMessages(rawMessages: RawClientMessage[]): ModelMessage[] {
     return rawMessages.map((msg): ModelMessage => {
-        // Extract content from parts if present, otherwise use content directly
         let content: string;
         if (msg.parts && Array.isArray(msg.parts)) {
             content = msg.parts
@@ -45,20 +36,12 @@ function convertToModelMessages(rawMessages: RawClientMessage[]): ModelMessage[]
     });
 }
 
-/**
- * POST handler for the MissionLink AI Assistant chat endpoint.
- * This endpoint processes user messages, retrieves user context from Prisma,
- * and generates a streaming response using the Vercel AI SDK.
- * 
- * @param {Request} req - The incoming HTTP request containing the chat messages.
- * @returns {Promise<Response>} A streaming data response from the AI SDK.
- */
 export async function POST(req: Request) {
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user?.id) {
             return new Response(
-                JSON.stringify({ error: "Unauthorized: Access requires a valid mission session." }),
+                JSON.stringify({ error: "Unauthorized: Access requires a valid WITHUS session." }),
                 { status: 401, headers: { 'Content-Type': 'application/json' } }
             );
         }
@@ -66,7 +49,6 @@ export async function POST(req: Request) {
         const body = await req.json();
         const { messages: rawMessages, text } = body;
 
-        // Normalize messages for different input formats
         let clientMessages: RawClientMessage[] = rawMessages;
         if (!clientMessages && text) {
             clientMessages = [{ role: 'user', content: text }];
@@ -79,17 +61,13 @@ export async function POST(req: Request) {
             );
         }
 
-        // Convert to ModelMessage format for streamText
         const messages: ModelMessage[] = convertToModelMessages(clientMessages);
 
-        // Retrieve user profile for prompt context
         const user = await prisma.user.findUnique({
             where: { id: session.user.id },
             select: {
-                koreanName: true,
                 name: true,
                 grade: true,
-                classNumber: true,
             }
         });
 
@@ -100,23 +78,15 @@ export async function POST(req: Request) {
             );
         }
 
-        const displayName = user.koreanName || user.name || "Member";
+        const displayName = user.name || "Member";
+        const userGradeText = user.grade || "Unknown";
 
-        let userGradeText = "Unknown (Ask the user to specify their grade)";
-        if (user.grade === 12 && user.classNumber) {
-            userGradeText = `${user.grade}-${user.classNumber}`;
-        } else if (user.grade) {
-            userGradeText = `${user.grade}`;
-        }
-
-        // Precise localized time
         const currentTime = new Intl.DateTimeFormat("ko-KR", {
             timeZone: "Asia/Manila",
             dateStyle: "full",
             timeStyle: "short"
         }).format(new Date());
 
-        // Get consistent daily content
         const { verse, word } = getDailyContent();
         const dailyContext = `
 Today's Scripture: "${verse.verse}" (${verse.ref})
@@ -129,7 +99,6 @@ Today's English Word: ${word.word} (${word.meaning}) - Example: ${word.example}
             .replace("{{userGrade}}", userGradeText)
             + "\n\n" + dailyContext;
 
-        // Extract the latest user query for logging
         const latestUserMessage = messages
             .filter(m => m.role === 'user')
             .pop();
@@ -144,20 +113,15 @@ Today's English Word: ${word.word} (${word.meaning}) - Example: ${word.example}
             messages,
             tools: aiTools,
             stopWhen: stepCountIs(5),
-            /**
-             * onFinish callback - Persists chat log to database.
-             */
-            onFinish: async ({ text, steps }) => {
+            onFinish: async ({ text }) => {
                 try {
                     await prisma.chatLog.create({
                         data: {
                             userId,
                             query: userQuery,
                             response: text || '',
-                            status: 'success',
                         },
                     });
-                    console.log(`[ChatLog] Saved for user ${userId}`);
                 } catch (logError) {
                     console.error('[ChatLog] Failed to save:', logError);
                 }
@@ -177,4 +141,3 @@ Today's English Word: ${word.word} (${word.meaning}) - Example: ${word.example}
         );
     }
 }
-

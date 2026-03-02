@@ -80,7 +80,7 @@ export function ChatInput({ status, isLoading, onSend, variant = "sticky" }: Cha
             {variant === 'centered' && (
                 <div className="text-center mt-6">
                     <p className="text-[10px] text-zinc-600 uppercase tracking-[0.2em] font-bold">
-                        MissionLink Intelligent Assistant
+                        WITHUS Intelligent Assistant
                     </p>
                 </div>
             )}

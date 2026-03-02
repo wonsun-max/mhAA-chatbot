@@ -23,7 +23,6 @@ export function Navbar() {
     const navLinks = [
         { name: "Home", href: "/" },
         { name: "AI Assistant", href: "/chatbot" },
-        { name: "MHA 커뮤니티", href: "https://mhawebsitess.vercel.app/", external: true, icon: Globe },
     ]
 
     return (
@@ -40,7 +39,7 @@ export function Navbar() {
                         <div className="w-10 h-10 relative flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
                             <Image
                                 src="/site-logo.png"
-                                alt="MissionLink Logo"
+                                alt="WITHUS Logo"
                                 fill
                                 className="object-contain drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]"
                                 priority
@@ -48,7 +47,7 @@ export function Navbar() {
                         </div>
                         <div className="flex flex-col">
                             <div className="flex items-center gap-2">
-                                <span className="text-lg font-bold text-white leading-none tracking-tight">MissionLink</span>
+                                <span className="text-lg font-bold text-white leading-none tracking-tight">WITHUS</span>
                                 <span className="px-1.5 py-0.5 rounded-md bg-zinc-800 border border-zinc-700 text-[9px] font-bold text-zinc-400 uppercase tracking-wider">Beta</span>
                             </div>
                         </div>
@@ -56,7 +55,7 @@ export function Navbar() {
 
                     {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center space-x-8">
-                        {navLinks.map((link) => (
+                        {navLinks.map((link: any) => (
                             <Link
                                 key={link.name}
                                 href={link.href}
@@ -117,7 +116,7 @@ export function Navbar() {
                         className="md:hidden border-t border-zinc-900 bg-black/95 backdrop-blur-xl overflow-hidden"
                     >
                         <div className="px-6 pt-4 pb-10 space-y-1">
-                            {navLinks.map((link) => (
+                            {navLinks.map((link: any) => (
                                 <Link
                                     key={link.name}
                                     href={link.href}

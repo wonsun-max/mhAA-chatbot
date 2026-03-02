@@ -6,9 +6,9 @@ import bcrypt from "bcryptjs";
 export const authOptions: NextAuthOptions = {
     providers: [
         CredentialsProvider({
-            name: "MissionLink Account",
+            name: "WITHUS Account",
             credentials: {
-                identifier: { label: "Email or Username", type: "text" },
+                identifier: { label: "Email or Nickname", type: "text" },
                 password: { label: "Password", type: "password" }
             },
             async authorize(credentials) {
@@ -23,18 +23,26 @@ export const authOptions: NextAuthOptions = {
                     },
                 });
 
-                if (!user || !user.passwordHash) return null;
+                if (!user || !user.passwordHash) {
+                    throw new Error("Invalid credentials");
+                }
+
+                if (user.status !== "APPROVED") {
+                    throw new Error("Your account is pending approval or has been suspended.");
+                }
 
                 const isPasswordValid = await bcrypt.compare(credentials.password, user.passwordHash);
-                if (!isPasswordValid) return null;
+                if (!isPasswordValid) {
+                    throw new Error("Invalid credentials");
+                }
 
                 return {
                     id: user.id,
                     email: user.email,
                     name: user.name,
-                    nickname: user.nickname,
-                    koreanName: user.koreanName,
-                    aiEnabled: user.aiEnabled,
+                    role: user.role,
+                    status: user.status,
+                    grade: user.grade,
                 } as any;
             }
         }),
@@ -49,9 +57,9 @@ export const authOptions: NextAuthOptions = {
                     session.user.id = user.id;
                     session.user.email = user.email;
                     session.user.name = user.name;
-                    session.user.aiEnabled = user.aiEnabled;
-                    session.user.koreanName = user.koreanName;
-                    (session.user as any).nickname = user.nickname;
+                    (session.user as any).role = user.role;
+                    (session.user as any).status = user.status;
+                    (session.user as any).grade = user.grade;
                 }
             }
             return session;

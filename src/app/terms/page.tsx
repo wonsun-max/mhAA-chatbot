@@ -24,7 +24,7 @@ export default function TermsPage() {
                 </div>
 
                 {/* Content */}
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="glass-panel p-8 md:p-12 rounded-[2rem] border border-white/5 space-y-8 text-gray-300 leading-relaxed"
@@ -32,7 +32,7 @@ export default function TermsPage() {
                     <section className="space-y-4">
                         <h2 className="text-xl font-bold text-white uppercase tracking-wider">1. Acceptance of Terms</h2>
                         <p>
-                            By accessing or using the MissionLink AI Assistant, you agree to be bound by these Terms of Service. If you do not agree to all of these terms, do not use our services.
+                            By accessing or using the WITHUS AI Assistant, you agree to be bound by these Terms of Service. If you do not agree to all of these terms, do not use our services.
                         </p>
                     </section>
 

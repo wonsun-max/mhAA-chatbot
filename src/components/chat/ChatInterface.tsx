@@ -71,9 +71,9 @@ export function ChatInterface() {
         <div className="flex flex-col h-full w-full max-w-5xl mx-auto relative px-4 md:px-8">
             {/* Access Gate Overlay */}
             {authStatus !== "authenticated" && (
-                <AccessGate 
+                <AccessGate
                     title="대화를 시작하려면"
-                    description="MissionLink 지능형 어시스턴트와 대화하려면 로그인이 필요합니다."
+                    description="WITHUS 지능형 어시스턴트와 대화하려면 로그인이 필요합니다."
                 />
             )}
 
