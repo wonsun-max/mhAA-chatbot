@@ -22,6 +22,7 @@ export function Navbar() {
 
     const navLinks = [
         { name: "Home", href: "/" },
+        { name: "Notices", href: "/notices" },
         { name: "AI Assistant", href: "/chatbot" },
     ]
 

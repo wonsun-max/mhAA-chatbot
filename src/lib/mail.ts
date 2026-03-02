@@ -1,22 +1,27 @@
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-    },
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // true for 465, false for other ports
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+  tls: {
+    rejectUnauthorized: false
+  }
 });
 
 /**
  * Sends a verification code to the specified email.
  */
 export async function sendVerificationEmail(email: string, code: string) {
-    const mailOptions = {
-        from: `"WITHUS" <${process.env.EMAIL_USER}>`,
-        to: email,
-        subject: "[WITHUS] Verification Code",
-        html: `
+  const mailOptions = {
+    from: `"WITHUS" <${process.env.EMAIL_USER}>`,
+    to: email,
+    subject: "[WITHUS] Verification Code",
+    html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
         <h2 style="color: #333; text-align: center;">Welcome to WITHUS</h2>
         <p style="font-size: 16px; color: #555;">Please use the following verification code to complete your registration or login:</p>
@@ -28,13 +33,13 @@ export async function sendVerificationEmail(email: string, code: string) {
         <p style="text-align: center; font-size: 12px; color: #aaa;">&copy; 2026 WITHUS. All rights reserved.</p>
       </div>
     `,
-    };
+  };
 
-    try {
-        await transporter.sendMail(mailOptions);
-        return true;
-    } catch (error) {
-        console.error("Error sending verification email:", error);
-        return false;
-    }
+  try {
+    await transporter.sendMail(mailOptions);
+    return true;
+  } catch (error) {
+    console.error("Error sending verification email:", error);
+    return false;
+  }
 }

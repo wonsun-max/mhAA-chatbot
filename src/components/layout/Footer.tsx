@@ -30,6 +30,7 @@ export function Footer() {
                     <div className="space-y-6">
                         <h4 className="text-xs font-bold text-gray-200 uppercase tracking-widest">Platform</h4>
                         <ul className="space-y-3">
+                            <li><Link href="/notices" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Notices</Link></li>
                             <li><Link href="/chatbot" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">AI Assistant</Link></li>
                             <li><Link href="/login" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Login</Link></li>
                         </ul>

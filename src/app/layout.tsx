@@ -5,12 +5,14 @@ import { AuthProvider } from "@/components/providers/AuthProvider";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { PromotionModal } from "@/components/modals/PromotionModal";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 // 1. Metadata setup
 
 export const metadata: Metadata = {
   title: "WITHUS",
-  description: "Advanced AI Assistant Platform",
+  description: "God is always withs!",
   icons: {
     icon: "/images/site-favicon.png",
     apple: "/images/site-favicon.png",
@@ -36,6 +38,8 @@ export default function RootLayout({
           </main>
           <Footer />
           <PromotionModal />
+          <Analytics />
+          <SpeedInsights />
         </AuthProvider>
       </body>
     </html>
