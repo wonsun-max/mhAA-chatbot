@@ -10,8 +10,9 @@ async function checkUsers() {
                 email: true,
                 nickname: true,
                 name: true,
-                koreanName: true,
-                aiEnabled: true,
+                grade: true,
+                role: true,
+                status: true,
                 passwordHash: true,
             }
         });
@@ -22,8 +23,9 @@ async function checkUsers() {
         users.forEach((user, index) => {
             console.log(`${index + 1}. ${user.name || 'No Name'} (${user.email})`);
             console.log(`   Nickname: ${user.nickname || 'N/A'}`);
-            console.log(`   Korean Name: ${user.koreanName || 'N/A'}`);
-            console.log(`   AI Enabled: ${user.aiEnabled}`);
+            console.log(`   Grade: ${user.grade || 'N/A'}`);
+            console.log(`   Role: ${user.role}`);
+            console.log(`   Status: ${user.status}`);
             console.log(`   Has Password: ${user.passwordHash ? 'Yes' : 'No'}`);
             console.log('');
         });
