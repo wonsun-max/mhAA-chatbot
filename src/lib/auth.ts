@@ -40,10 +40,11 @@ export const authOptions: NextAuthOptions = {
                     id: user.id,
                     email: user.email,
                     name: user.name,
+                    nickname: user.nickname,
                     role: user.role,
                     status: user.status,
                     grade: user.grade,
-                } as any;
+                };
             }
         }),
     ],
@@ -57,9 +58,10 @@ export const authOptions: NextAuthOptions = {
                     session.user.id = user.id;
                     session.user.email = user.email;
                     session.user.name = user.name;
-                    (session.user as any).role = user.role;
-                    (session.user as any).status = user.status;
-                    (session.user as any).grade = user.grade;
+                    session.user.nickname = user.nickname;
+                    session.user.role = user.role;
+                    session.user.status = user.status;
+                    session.user.grade = user.grade;
                 }
             }
             return session;

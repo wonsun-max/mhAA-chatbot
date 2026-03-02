@@ -97,7 +97,7 @@ export function ChatInterface() {
                                 transition={{ delay: 0.1 }}
                                 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight text-white"
                             >
-                                안녕하세요, {authStatus === "authenticated" ? (session?.user?.name || "사용자") : "Guest"}님
+                                안녕하세요, {authStatus === "authenticated" ? (session?.user?.nickname || "사용자") : "Guest"}님
                             </motion.h1>
                             <motion.h2
                                 initial={{ opacity: 0, x: -10 }}

@@ -70,7 +70,7 @@ model ChatLog {
   @@index([createdAt])
 }
 
-// Announcements / notices from the chaplaincy department
+// Announcements / notices from the chaplaincy department (updated)
 model Notice {
   id          String   @id @default(cuid())
   title       String
