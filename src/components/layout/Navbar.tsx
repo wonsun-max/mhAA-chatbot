@@ -5,18 +5,22 @@ import Image from "next/image"
 import { useSession, signOut } from "next-auth/react"
 import { Bot, LogOut, Menu, X, LayoutDashboard, Globe } from "lucide-react"
 import { useState, useEffect } from "react"
+import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 
 export function Navbar() {
     const { data: session } = useSession()
     const [isOpen, setIsOpen] = useState(false)
     const [scrolled, setScrolled] = useState(false)
+    const pathname = usePathname()
 
     useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > 20)
         window.addEventListener("scroll", handleScroll)
         return () => window.removeEventListener("scroll", handleScroll)
     }, [])
+
+    if (pathname.startsWith("/admin")) return null
 
     const displayName = (session?.user as any)?.nickname || (session?.user as any)?.koreanName || session?.user?.name || session?.user?.email
 
@@ -74,25 +78,29 @@ export function Navbar() {
 
                         {session ? (
                             <div className="hidden md:flex items-center space-x-6">
-                                <Link
-                                    href="/admin"
-                                    className="p-2 text-white/40 hover:text-white transition-colors"
-                                    title="Dashboard"
-                                >
-                                    <LayoutDashboard size={18} />
-                                </Link>
-                                <div className="h-4 w-[1px] bg-white/10" />
-                                <div className="flex items-center space-x-3 group cursor-pointer">
-                                    <div className="text-right">
-                                        <p className="text-[12px] font-medium text-white/80 group-hover:text-white transition-colors">{displayName}</p>
-                                    </div>
-                                    <button
-                                        onClick={() => signOut()}
-                                        className="p-2 text-white/40 hover:text-red-400 transition-colors"
+                                {session && (session.user as any)?.role === "ADMIN" && (
+                                    <Link
+                                        href="/admin"
+                                        className="p-2 text-white/40 hover:text-white transition-colors"
+                                        title="Dashboard"
                                     >
-                                        <LogOut size={16} />
-                                    </button>
+                                        <LayoutDashboard size={18} />
+                                    </Link>
+                                )}
+                                {session && (session.user as any)?.role === "ADMIN" && (
+                                    <div className="h-4 w-[1px] bg-white/10" />
+                                )}
+                                <div className="flex items-center space-x-3 group cursor-pointer">
+                                    <Link href="/profile" className="text-right">
+                                        <p className="text-[12px] font-medium text-white/80 group-hover:text-white transition-colors">{displayName}</p>
+                                    </Link>
                                 </div>
+                                <button
+                                    onClick={() => signOut()}
+                                    className="p-2 text-white/40 hover:text-red-400 transition-colors"
+                                >
+                                    <LogOut size={16} />
+                                </button>
                             </div>
                         ) : (
                             <div className="hidden md:flex items-center space-x-4">
@@ -141,9 +149,11 @@ export function Navbar() {
                                     <>
                                         <div className="flex items-center justify-between">
                                             <span className="text-white/40 text-sm tracking-wider uppercase">{displayName}</span>
-                                            <Link href="/admin" onClick={() => setIsOpen(false)}>
-                                                <LayoutDashboard size={20} className="text-white/60" />
-                                            </Link>
+                                            {(session.user as any)?.role === "ADMIN" && (
+                                                <Link href="/admin" onClick={() => setIsOpen(false)}>
+                                                    <LayoutDashboard size={20} className="text-white/60" />
+                                                </Link>
+                                            )}
                                         </div>
                                         <button
                                             onClick={() => signOut()}

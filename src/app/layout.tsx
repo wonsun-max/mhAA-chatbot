@@ -12,7 +12,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: "WITHUS",
-  description: "God is always withs!",
+  description: "God is always with us! - Official school mission companion.",
   icons: {
     icon: "/images/site-favicon.png",
     apple: "/images/site-favicon.png",

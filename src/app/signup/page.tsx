@@ -18,8 +18,14 @@ export default function SignupPage() {
     const [error, setError] = useState("")
     const router = useRouter()
 
+    const [agreed, setAgreed] = useState(false)
+
     const handleSendCode = async (e: React.FormEvent) => {
         e.preventDefault()
+        if (!agreed) {
+            setError("You must agree to the Privacy Policy and Terms of Service.")
+            return
+        }
         setLoading(true)
         setError("")
         try {
@@ -99,11 +105,24 @@ export default function SignupPage() {
                                         />
                                     </div>
                                 </div>
+                                <div className="flex items-start space-x-3 px-1">
+                                    <input
+                                        type="checkbox"
+                                        id="agree"
+                                        checked={agreed}
+                                        onChange={(e) => setAgreed(e.target.checked)}
+                                        className="mt-1 w-4 h-4 rounded border-zinc-800 bg-zinc-950 text-blue-500 focus:ring-blue-500/20"
+                                    />
+                                    <label htmlFor="agree" className="text-xs text-zinc-500 leading-normal">
+                                        I agree to the <Link href="/privacy" className="text-zinc-300 hover:text-white underline">Privacy Policy</Link> and <Link href="/terms" className="text-zinc-300 hover:text-white underline">Terms of Service</Link>. I understand that chat logs are stored for mission support purposes.
+                                    </label>
+                                </div>
                                 {error && <p className="text-red-500 text-sm ml-1">{error}</p>}
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="w-full bg-white text-black font-bold py-4 rounded-2xl hover:bg-zinc-200 transition-all flex items-center justify-center space-x-2"
+                                    className={`w-full font-bold py-4 rounded-2xl transition-all flex items-center justify-center space-x-2 ${agreed ? "bg-white text-black hover:bg-zinc-200" : "bg-zinc-800 text-zinc-500 cursor-not-allowed"
+                                        }`}
                                 >
                                     {loading ? <Loader2 className="animate-spin" size={20} /> : (
                                         <>
