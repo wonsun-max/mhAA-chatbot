@@ -12,11 +12,12 @@ export const tables = {
 
 export async function getRecords(tableName: string, options: { filterByFormula?: string; sort?: { field: string; direction: 'asc' | 'desc' }[] } = {}) {
     try {
+        const selectOptions: any = {};
+        if (options.filterByFormula) selectOptions.filterByFormula = options.filterByFormula;
+        if (options.sort) selectOptions.sort = options.sort;
+
         const records = await base(tableName)
-            .select({
-                filterByFormula: options.filterByFormula,
-                sort: options.sort,
-            })
+            .select(selectOptions)
             .all();
         return records.map((record) => ({
             id: record.id,

@@ -92,7 +92,7 @@ export default function Home() {
               <span className="opacity-40 font-serif italic italic font-light">Faith & Connection</span>
             </h2>
             <p className="text-sm font-light text-white/40 leading-relaxed tracking-wide">
-              WITHUS 는 교목부 사역을 위한 공식 소통 플랫폼입니다. 이곳에서 매일의 말씀을 묵상하고, 최신 공지사항을 확인하며, AI 어시스턴트와 함께 신앙의 고민을 나누어보세요.
+              WITHUS.
             </p>
             <div className="flex flex-wrap gap-4 pt-4">
               <Link href="/chatbot" className="px-8 py-3 bg-white text-black text-[11px] uppercase tracking-[0.2em] font-bold hover:bg-zinc-200 transition-all">
