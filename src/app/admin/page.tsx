@@ -2,29 +2,91 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { Loader2, Check, X, User } from "lucide-react"
+import { Loader2, Users, Bell, TrendingUp, ShieldCheck } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
+import { AdminLayout } from "@/components/admin/AdminLayout"
+import { UserManager } from "@/components/admin/UserManager"
+import { NoticeManager } from "@/components/admin/NoticeManager"
 
-export default function AdminDashboard() {
+interface Stats {
+    totalUsers: number
+    pendingUsers: number
+    totalNotices: number
+}
+
+function StatCard({ label, value, icon: Icon, color }: { label: string, value: number, icon: any, color: string }) {
+    return (
+        <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="p-8 rounded-[32px] bg-zinc-900/10 border border-white/5 hover:border-white/10 transition-all relative overflow-hidden group"
+        >
+            <div className={`absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 group-hover:opacity-10 transition-all ${color}`}>
+                <Icon size={120} />
+            </div>
+            <div className="relative z-10 flex flex-col gap-4">
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center bg-white/5 border border-white/5 ${color}`}>
+                    <Icon size={24} />
+                </div>
+                <div>
+                    <h3 className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.2em]">{label}</h3>
+                    <p className="text-4xl font-light tracking-tighter mt-1">{value}</p>
+                </div>
+            </div>
+        </motion.div>
+    )
+}
+
+function Overview({ stats }: { stats: Stats | null }) {
+    if (!stats) return null;
+
+    return (
+        <div className="space-y-12">
+            <div>
+                <h2 className="text-2xl font-bold tracking-tight">System Overview</h2>
+                <p className="text-sm text-zinc-500">Real-time metrics and platform status</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <StatCard label="Total Community" value={stats.totalUsers} icon={Users} color="text-blue-500" />
+                <StatCard label="Pending Approval" value={stats.pendingUsers} icon={ShieldCheck} color="text-amber-500" />
+                <StatCard label="Mission Updates" value={stats.totalNotices} icon={Bell} color="text-purple-500" />
+            </div>
+
+            <div className="p-12 rounded-[40px] border border-white/5 bg-zinc-900/10 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 to-transparent pointer-events-none" />
+                <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+                    <div className="space-y-2 text-center md:text-left">
+                        <h3 className="text-xl font-light tracking-tight italic">"Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go."</h3>
+                        <p className="text-xs text-white/20 uppercase tracking-[0.4em] font-bold">Joshua 1:9</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export default function AdminDashboardPage() {
     const { data: session, status } = useSession()
     const router = useRouter()
-    const [users, setUsers] = useState<any[]>([])
+    const [activeTab, setActiveTab] = useState("overview")
+    const [stats, setStats] = useState<Stats | null>(null)
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         if (status === "unauthenticated" || (session?.user as any)?.role !== "ADMIN") {
             router.push("/")
         } else if (status === "authenticated") {
-            fetchPendingUsers()
+            fetchStats()
         }
     }, [status, session, router])
 
-    const fetchPendingUsers = async () => {
+    const fetchStats = async () => {
         try {
-            const res = await fetch("/api/admin/users")
+            const res = await fetch("/api/admin/stats")
             const data = await res.json()
-            setUsers(data)
+            if (data.stats) setStats(data.stats)
         } catch (err) {
             console.error(err)
         } finally {
@@ -32,86 +94,20 @@ export default function AdminDashboard() {
         }
     }
 
-    const handleApprove = async (id: string) => {
-        try {
-            const res = await fetch(`/api/admin/users/${id}`, { method: "POST" })
-            if (res.ok) {
-                setUsers(users.filter(u => u.id !== id))
-            }
-        } catch (err) {
-            console.error(err)
-        }
-    }
-
-    const handleReject = async (id: string) => {
-        try {
-            const res = await fetch(`/api/admin/users/${id}`, { method: "DELETE" })
-            if (res.ok) {
-                setUsers(users.filter(u => u.id !== id))
-            }
-        } catch (err) {
-            console.error(err)
-        }
-    }
-
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-black">
+            <div className="min-h-screen flex flex-col items-center justify-center bg-black gap-4">
                 <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
+                <p className="text-[10px] uppercase font-bold tracking-widest opacity-30">Initializing Control Center</p>
             </div>
         )
     }
 
     return (
-        <div className="min-h-screen bg-black text-white p-8 pt-24">
-            <div className="max-w-4xl mx-auto">
-                <h1 className="text-3xl font-bold mb-8">Pending User Approvals</h1>
-
-                {users.length === 0 ? (
-                    <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-12 text-center text-zinc-500">
-                        No pending users to approve.
-                    </div>
-                ) : (
-                    <div className="grid gap-4">
-                        {users.map((user) => (
-                            <motion.div
-                                key={user.id}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 flex items-center justify-between"
-                            >
-                                <div className="flex items-center space-x-4">
-                                    <div className="w-12 h-12 bg-blue-500/10 rounded-full flex items-center justify-center">
-                                        <User className="text-blue-500" size={24} />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold">{user.name}</h3>
-                                        <p className="text-sm text-zinc-400">{user.email}</p>
-                                        <span className="text-xs bg-zinc-800 px-2 py-0.5 rounded uppercase tracking-wider text-zinc-500">
-                                            Grade: {user.grade}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div className="flex space-x-2">
-                                    <button
-                                        onClick={() => handleApprove(user.id)}
-                                        className="p-3 bg-green-500/10 text-green-500 hover:bg-green-500/20 rounded-xl transition-colors"
-                                    >
-                                        <Check size={20} />
-                                    </button>
-                                    <button
-                                        onClick={() => handleReject(user.id)}
-                                        className="p-3 bg-red-500/10 text-red-500 hover:bg-red-500/20 rounded-xl transition-colors"
-                                    >
-                                        <X size={20} />
-                                    </button>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </div>
-                )}
-            </div>
-        </div>
+        <AdminLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+            {activeTab === "overview" && <Overview stats={stats} />}
+            {activeTab === "users" && <UserManager />}
+            {activeTab === "notices" && <NoticeManager />}
+        </AdminLayout>
     )
 }

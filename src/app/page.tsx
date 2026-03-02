@@ -115,14 +115,14 @@ export default function Home() {
           >
             <div className="flex items-center gap-3 text-white/30">
               <BookOpen size={16} />
-              <span className="text-[10px] uppercase tracking-[0.3em]">Daily Verse</span>
+              <span className="text-[10px] uppercase tracking-[0.3em]">주제 말씀</span>
             </div>
 
             <blockquote className="space-y-4">
               <p className="text-xl md:text-2xl font-serif italic text-white/80 leading-relaxed font-light">
-                "볼지어다 내가 세상 끝날까지 너희와 항상 함께 있으리라 하시니라"
+                "너는 마음을 다하고 뜻을 다하고 힘을 다하여 네 하나님 여호와를 사랑하라"
               </p>
-              <footer className="text-[10px] uppercase tracking-[0.2em] text-white/20">— 마태복음 28:20</footer>
+              <footer className="text-[10px] uppercase tracking-[0.2em] text-white/20">신명기 6:4-5 </footer>
             </blockquote>
           </motion.div>
         </section>
