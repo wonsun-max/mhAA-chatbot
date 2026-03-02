@@ -12,8 +12,8 @@ export const metadata: Metadata = {
   title: "WITHUS",
   description: "Advanced AI Assistant Platform",
   icons: {
-    icon: "/site-favicon.png",
-    apple: "/site-favicon.png",
+    icon: "/images/site-favicon.png",
+    apple: "/images/site-favicon.png",
   },
 };
 

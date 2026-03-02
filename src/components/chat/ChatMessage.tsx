@@ -30,7 +30,7 @@ export function ChatMessage({ role, content }: ChatMessageProps) {
                     <div className="flex-shrink-0 w-8 h-8 mt-1">
                         <div className="w-8 h-8 flex items-center justify-center rounded-lg overflow-hidden bg-zinc-900 border border-zinc-800 shadow-sm relative">
                             <Image
-                                src="/site-logo.png"
+                                src="/images/site-logo.png"
                                 alt="AI"
                                 fill
                                 className="object-contain p-1.5 grayscale"
