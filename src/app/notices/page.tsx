@@ -105,7 +105,7 @@ export default function NoticesPage() {
                         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                             <div className="space-y-2">
                                 <h1 className="text-4xl md:text-6xl font-extralight tracking-tight">Mission Portal</h1>
-                                <p className="text-xs text-white/30 font-light tracking-[0.4em] uppercase">교목부 소식 및 선교 정보</p>
+                                <p className="text-xs text-white/30 font-light tracking-[0.4em] uppercase">소식 및 정보</p>
                             </div>
 
                             <div className="flex items-center gap-4">
