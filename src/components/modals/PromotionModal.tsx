@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ExternalLink } from "lucide-react";
+import Link from "next/link";
 
 /**
  * PromotionModal component that displays a welcome message and a signup link.
@@ -70,30 +71,27 @@ export function PromotionModal() {
                                     Notice
                                 </div>
                                 <h2 className="text-2xl font-bold tracking-tight text-white">
-                                    Mission Link에 오신 것을 환영합니다!                                </h2>
+                                    WITHUS에 오신 것을 환영합니다!
+                                </h2>
                                 <div className="space-y-4 text-white/70 leading-relaxed">
                                     <p>
-                                        MHa 커뮤니티에서 계정 안 만들고 왔으면{" "}
-                                        <span className="text-blue-400 font-semibold underline underline-offset-4">
-                                            만들고 오세요.
-                                        </span>
+                                        WITHUS는 오직 승인된 멤버들을 위한 전용 프라이빗 네트워크 공간입니다.
                                     </p>
                                     <p className="text-sm">
-                                        로그인 했다면 자유롭게 채팅하세요.
+                                        아직 계정이 없으신가요? 지금 가입하고 커뮤니티의 일원이 되세요.
                                     </p>
                                 </div>
                             </div>
 
                             <div className="flex flex-col gap-3">
-                                <a
-                                    href="https://mhawebsitess.vercel.app/auth/signup"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+                                <Link
+                                    href="/signup"
+                                    onClick={closeBase}
                                     className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4 font-semibold text-white hover:from-blue-500 hover:to-indigo-500 transition-all active:scale-[0.98] group shadow-lg shadow-blue-900/20"
                                 >
-                                    계정 만들러 가기
+                                    지금 가입하기
                                     <ExternalLink size={18} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                                </a>
+                                </Link>
                             </div>
 
                             <div className="flex items-center justify-between pt-6 border-t border-white/10">

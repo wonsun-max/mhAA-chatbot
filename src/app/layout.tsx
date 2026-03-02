@@ -9,7 +9,7 @@ import { PromotionModal } from "@/components/modals/PromotionModal";
 // 1. Metadata setup
 
 export const metadata: Metadata = {
-  title: "Mission Link",
+  title: "WITHUS",
   description: "Advanced AI Assistant Platform",
   icons: {
     icon: "/site-favicon.png",

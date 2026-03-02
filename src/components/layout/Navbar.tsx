@@ -27,80 +27,89 @@ export function Navbar() {
 
     return (
         <nav
-            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
-                ? "bg-black/40 backdrop-blur-md border-b border-white/5 py-2 shadow-lg"
-                : "bg-transparent py-4"
+            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled
+                ? "bg-black/20 backdrop-blur-2xl border-b border-white/10 py-2 shadow-2xl"
+                : "bg-transparent py-6"
                 }`}
         >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between items-center h-16">
-                    {/* Logo Section */}
-                    <Link href="/" className="flex items-center space-x-3 group">
-                        <div className="w-10 h-10 relative flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
-                            <Image
-                                src="/site-logo.png"
-                                alt="WITHUS Logo"
-                                fill
-                                className="object-contain drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]"
-                                priority
-                            />
-                        </div>
-                        <div className="flex flex-col">
-                            <div className="flex items-center gap-2">
-                                <span className="text-lg font-bold text-white leading-none tracking-tight">WITHUS</span>
-                                <span className="px-1.5 py-0.5 rounded-md bg-zinc-800 border border-zinc-700 text-[9px] font-bold text-zinc-400 uppercase tracking-wider">Beta</span>
-                            </div>
-                        </div>
-                    </Link>
-
-                    {/* Desktop Navigation */}
-                    <div className="hidden md:flex items-center space-x-8">
+            <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+                <div className="flex justify-between items-center h-16 relative">
+                    {/* Left Navigation */}
+                    <div className="hidden md:flex items-center space-x-10">
                         {navLinks.map((link: any) => (
                             <Link
                                 key={link.name}
                                 href={link.href}
-                                target={link.external ? "_blank" : undefined}
-                                rel={link.external ? "noopener noreferrer" : undefined}
-                                className="text-sm font-medium text-zinc-400 hover:text-white transition-colors flex items-center"
+                                className="text-[13px] font-medium text-white/60 hover:text-white transition-all duration-300 tracking-[0.1em] uppercase relative group"
                             >
-                                {link.icon && <link.icon size={14} className="mr-2" />}
                                 {link.name}
+                                <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-white transition-all duration-300 group-hover:w-full" />
                             </Link>
                         ))}
+                    </div>
+
+                    {/* Centered Logo Section */}
+                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                        <Link href="/" className="flex items-center space-x-3 group perspective-1000">
+                            <motion.div
+                                className="flex flex-col items-center"
+                                whileHover={{ scale: 1.05 }}
+                                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                            >
+                                <span className="text-2xl font-light text-white leading-none tracking-[0.3em] uppercase transition-all duration-500 group-hover:tracking-[0.4em]">
+                                    WITHUS
+                                </span>
+                                <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-white/40 to-transparent mt-1" />
+                            </motion.div>
+                        </Link>
+                    </div>
+
+                    {/* Right Utilities & Session */}
+                    <div className="flex items-center space-x-8">
+                        {/* Search/Global Icons placeholder to match the reference look */}
+                        <div className="hidden lg:flex items-center space-x-6 text-white/40 border-r border-white/10 pr-8 mr-2">
+                            <Globe size={18} className="hover:text-white cursor-pointer transition-colors" />
+                        </div>
 
                         {session ? (
-                            <div className="flex items-center space-x-6 pl-8 border-l border-zinc-800 ml-8">
-                                <div className="text-right flex flex-col items-end">
-                                    <p className="text-sm font-semibold text-white">{displayName}</p>
-                                </div>
-                                <button
-                                    onClick={() => signOut()}
-                                    className="p-2 text-zinc-500 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                            <div className="hidden md:flex items-center space-x-6">
+                                <Link
+                                    href="/admin"
+                                    className="p-2 text-white/40 hover:text-white transition-colors"
+                                    title="Dashboard"
                                 >
-                                    <LogOut size={16} />
-                                </button>
+                                    <LayoutDashboard size={18} />
+                                </Link>
+                                <div className="h-4 w-[1px] bg-white/10" />
+                                <div className="flex items-center space-x-3 group cursor-pointer">
+                                    <div className="text-right">
+                                        <p className="text-[12px] font-medium text-white/80 group-hover:text-white transition-colors">{displayName}</p>
+                                    </div>
+                                    <button
+                                        onClick={() => signOut()}
+                                        className="p-2 text-white/40 hover:text-red-400 transition-colors"
+                                    >
+                                        <LogOut size={16} />
+                                    </button>
+                                </div>
                             </div>
                         ) : (
-                            <div className="flex items-center space-x-4 ml-4">
-                                <Link href="/login" className="text-sm font-semibold text-zinc-400 hover:text-white transition-colors">
+                            <div className="hidden md:flex items-center space-x-4">
+                                <Link
+                                    href="/login"
+                                    className="text-[13px] font-medium text-white/70 hover:text-white transition-all duration-300 tracking-[0.1em] uppercase py-2 px-4 rounded-full border border-white/10 hover:border-white/30 backdrop-blur-sm"
+                                >
                                     로그인
                                 </Link>
                             </div>
                         )}
-                    </div>
 
-                    {/* Mobile Controls */}
-                    <div className="md:hidden flex items-center space-x-4">
-                        {session && (
-                            <div className="text-right mr-2">
-                                <p className="text-xs font-semibold text-white tracking-tight">{displayName?.split(' ')[0]}</p>
-                            </div>
-                        )}
+                        {/* Mobile Menu Toggle */}
                         <button
                             onClick={() => setIsOpen(!isOpen)}
-                            className="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
+                            className="md:hidden p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/5 transition-colors"
                         >
-                            {isOpen ? <X size={20} /> : <Menu size={20} />}
+                            {isOpen ? <X size={24} /> : <Menu size={24} />}
                         </button>
                     </div>
                 </div>
@@ -110,42 +119,46 @@ export function Navbar() {
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="md:hidden border-t border-zinc-900 bg-black/95 backdrop-blur-xl overflow-hidden"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="md:hidden border-t border-white/5 bg-black/98 backdrop-blur-2xl overflow-hidden"
                     >
-                        <div className="px-6 pt-4 pb-10 space-y-1">
+                        <div className="px-8 pt-8 pb-12 space-y-6">
                             {navLinks.map((link: any) => (
                                 <Link
                                     key={link.name}
                                     href={link.href}
                                     onClick={() => setIsOpen(false)}
-                                    className="flex items-center space-x-4 px-4 py-4 text-sm font-medium text-zinc-400 hover:bg-white/5 hover:text-white rounded-xl transition-all"
+                                    className="block text-lg font-light tracking-[0.2em] text-white/60 hover:text-white transition-all"
                                 >
-                                    {link.icon && <link.icon size={18} />}
-                                    <span>{link.name}</span>
+                                    {link.name.toUpperCase()}
                                 </Link>
                             ))}
-                            <div className="pt-4 mt-4 border-t border-zinc-900">
+                            <div className="pt-8 border-t border-white/5 space-y-6">
                                 {session ? (
-                                    <button
-                                        onClick={() => signOut()}
-                                        className="w-full flex items-center space-x-4 px-4 py-4 text-sm font-medium text-red-400 hover:bg-red-400/5 rounded-xl transition-all"
-                                    >
-                                        <LogOut size={18} />
-                                        <span>Sign Out</span>
-                                    </button>
-                                ) : (
-                                    <div className="grid grid-cols-1 gap-4">
-                                        <Link
-                                            href="/login"
-                                            onClick={() => setIsOpen(false)}
-                                            className="flex items-center justify-center py-4 rounded-xl border border-zinc-800 text-sm font-medium text-zinc-400"
+                                    <>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-white/40 text-sm tracking-wider uppercase">{displayName}</span>
+                                            <Link href="/admin" onClick={() => setIsOpen(false)}>
+                                                <LayoutDashboard size={20} className="text-white/60" />
+                                            </Link>
+                                        </div>
+                                        <button
+                                            onClick={() => signOut()}
+                                            className="w-full py-4 rounded-xl bg-white/5 text-sm font-medium text-red-400 hover:bg-red-400/10 transition-all uppercase tracking-widest"
                                         >
-                                            Sign In
-                                        </Link>
-                                    </div>
+                                            Sign Out
+                                        </button>
+                                    </>
+                                ) : (
+                                    <Link
+                                        href="/login"
+                                        onClick={() => setIsOpen(false)}
+                                        className="block w-full py-4 text-center rounded-xl bg-white/5 text-[13px] font-medium text-white/80 hover:bg-white/10 transition-all uppercase tracking-[0.2em]"
+                                    >
+                                        Login
+                                    </Link>
                                 )}
                             </div>
                         </div>
