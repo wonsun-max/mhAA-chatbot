@@ -87,7 +87,12 @@ function LoginContent() {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-zinc-400 ml-1">비밀번호</label>
+                                <div className="flex items-center justify-between ml-1">
+                                    <label className="text-sm font-medium text-zinc-400">비밀번호</label>
+                                    <Link href="/forgot-password" className="text-xs text-zinc-500 hover:text-white transition-colors">
+                                        비밀번호를 잊으셨나요?
+                                    </Link>
+                                </div>
                                 <div className="relative group">
                                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-blue-500 transition-colors" size={20} />
                                     <input
