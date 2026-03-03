@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Background from "@/components/Background";
 import { AuthProvider } from "@/components/providers/AuthProvider";
@@ -17,6 +17,19 @@ export const metadata: Metadata = {
     icon: "/images/site-favicon.png",
     apple: "/images/site-favicon.png",
   },
+};
+
+/**
+ * Viewport config: prevents layout shift when the iOS virtual keyboard appears.
+ * `interactive-widget=resizes-content` makes the viewport resize with the keyboard
+ * instead of overlapping content. `viewport-fit=cover` enables safe-area insets
+ * for notched iPhones.
+ */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  interactiveWidget: "resizes-content",
 };
 
 export default function RootLayout({

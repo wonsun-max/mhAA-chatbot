@@ -105,7 +105,7 @@ export default function ForgotPasswordPage() {
     }
 
     return (
-        <div className="min-h-screen bg-black text-white flex items-center justify-center p-6 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/10 via-black to-black">
+        <div className="min-h-[100dvh] bg-black text-white flex items-center justify-center p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/10 via-black to-black">
             <div className="w-full max-w-md">
                 {/* Header */}
                 <div className="text-center mb-10">
@@ -123,8 +123,8 @@ export default function ForgotPasswordPage() {
                             <div key={s} className="flex items-center">
                                 <div className="flex flex-col items-center gap-1">
                                     <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${isCompleted ? "bg-green-500 text-white" :
-                                            isActive ? "bg-blue-500 text-white" :
-                                                "bg-zinc-800 text-zinc-500"
+                                        isActive ? "bg-blue-500 text-white" :
+                                            "bg-zinc-800 text-zinc-500"
                                         }`}>
                                         {isCompleted ? "✓" : s}
                                     </div>
@@ -280,8 +280,8 @@ export default function ForgotPasswordPage() {
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
                                             className={`w-full bg-zinc-950 border rounded-2xl py-4 pl-12 pr-4 focus:ring-2 outline-none transition-all ${confirmPassword && confirmPassword !== password
-                                                    ? "border-red-500/50 focus:ring-red-500/20 focus:border-red-500"
-                                                    : "border-zinc-800 focus:ring-blue-500/20 focus:border-blue-500"
+                                                ? "border-red-500/50 focus:ring-red-500/20 focus:border-red-500"
+                                                : "border-zinc-800 focus:ring-blue-500/20 focus:border-blue-500"
                                                 }`}
                                             placeholder="••••••••"
                                         />

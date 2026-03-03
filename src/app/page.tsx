@@ -36,14 +36,14 @@ export default function Home() {
   }, [])
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-black text-white selection:bg-blue-500/30 overflow-x-hidden">
+    <div className="flex flex-col md:flex-row min-h-screen min-h-[100dvh] bg-black text-white selection:bg-blue-500/30 overflow-x-hidden">
       {/* Texture Overlay */}
       <div className="fixed inset-0 z-[60] pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] contrast-150" />
 
       <Navbar />
 
       {/* Left Column: Visual Pillar (Desktop Only/Top on Mobile) */}
-      <section className="relative w-full md:w-1/2 h-[50vh] md:h-screen sticky top-0 overflow-hidden border-r border-white/5">
+      <section className="relative w-full md:w-1/2 min-h-[50dvh] md:min-h-screen md:h-screen md:sticky md:top-0 overflow-hidden border-b md:border-b-0 md:border-r border-white/5">
         <Image
           src="/images/hero-premium.png"
           alt="WITHUS Sacred space"
@@ -53,7 +53,7 @@ export default function Home() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40" />
 
-        <div className="absolute inset-0 flex flex-col items-center justify-center p-12 text-center">
+        <div className="absolute inset-0 flex flex-col items-center justify-center p-8 md:p-12 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -71,13 +71,13 @@ export default function Home() {
         </div>
 
         {/* Brand */}
-        <div className="absolute bottom-12 left-12 hidden md:block">
+        <div className="absolute bottom-8 left-8 hidden md:block">
           <p className="text-[9px] uppercase tracking-[0.3em] text-white/20">WITHUS Intelligence</p>
         </div>
       </section>
 
       {/* Right Column: Information & Interactions */}
-      <main className="w-full md:w-1/2 min-h-screen flex flex-col pt-12 md:pt-24 px-8 md:px-16 lg:px-24 bg-[#0a0a0a]">
+      <main className="w-full md:w-1/2 flex flex-col pt-20 md:pt-24 px-6 md:px-16 lg:px-24 bg-[#0a0a0a] pb-[env(safe-area-inset-bottom,0px)]">
 
         {/* Intro Section */}
         <section className="py-12 md:py-24 space-y-12">

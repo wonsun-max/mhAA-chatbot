@@ -68,7 +68,7 @@ export function ChatInterface() {
     ]
 
     return (
-        <div className="flex flex-col h-full w-full max-w-5xl mx-auto relative px-4 md:px-8">
+        <div className="flex flex-col h-[100dvh] w-full max-w-5xl mx-auto relative px-4 md:px-8">
             {/* Access Gate Overlay */}
             {authStatus !== "authenticated" && (
                 <AccessGate
@@ -81,7 +81,7 @@ export function ChatInterface() {
             <div
                 ref={messagesContainerRef}
                 onScroll={handleScroll}
-                className={`flex-1 overflow-y-auto pt-12 pb-40 space-y-2 scrollbar-hide [&::-webkit-scrollbar]:hidden ${messages.length === 0 ? 'flex items-center justify-center' : ''}`}
+                className={`flex-1 overflow-y-auto pt-12 pb-48 space-y-2 scrollbar-hide [&::-webkit-scrollbar]:hidden ${messages.length === 0 ? 'flex items-center justify-center' : ''}`}
             >
                 {messages.length === 0 ? (
                     <motion.div
@@ -95,7 +95,7 @@ export function ChatInterface() {
                                 initial={{ opacity: 0, x: -10 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: 0.1 }}
-                                className="text-4xl md:text-5xl font-bold tracking-tight leading-tight text-white"
+                                className="text-3xl md:text-5xl font-bold tracking-tight leading-tight text-white"
                             >
                                 안녕하세요, {authStatus === "authenticated" ? (session?.user?.nickname || "사용자") : "Guest"}님
                             </motion.h1>
@@ -103,7 +103,7 @@ export function ChatInterface() {
                                 initial={{ opacity: 0, x: -10 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: 0.2 }}
-                                className="text-3xl md:text-4xl font-semibold text-zinc-600 tracking-tight leading-tight"
+                                className="text-2xl md:text-4xl font-semibold text-zinc-600 tracking-tight leading-tight"
                             >
                                 무엇을 도와드릴까요?
                             </motion.h2>
@@ -117,7 +117,7 @@ export function ChatInterface() {
                                 variant="centered"
                             />
 
-                            <div className="flex flex-wrap items-center justify-center gap-3">
+                            <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3">
                                 {starterChips.map((chip, idx) => (
                                     <motion.button
                                         key={chip.label}
@@ -127,14 +127,14 @@ export function ChatInterface() {
                                         onClick={() => handleSend(chip.text)}
                                         disabled={authStatus !== "authenticated"}
                                         className={`
-                                            px-5 py-2.5 rounded-xl border text-sm font-medium
+                                            px-4 py-2 md:px-5 md:py-2.5 rounded-xl border text-xs md:text-sm font-medium
                                             ${authStatus === "authenticated"
                                                 ? "bg-zinc-900 border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700 text-zinc-300"
                                                 : "bg-zinc-900/50 border-white/5 opacity-50 cursor-not-allowed text-zinc-600"}
-                                            transition-all duration-300 flex items-center gap-2.5 shadow-sm
+                                            transition-all duration-300 flex items-center gap-2 shadow-sm
                                         `}
                                     >
-                                        <chip.icon size={16} className="text-blue-500" />
+                                        <chip.icon size={15} className="text-blue-500" />
                                         {chip.label}
                                     </motion.button>
                                 ))}
@@ -174,7 +174,7 @@ export function ChatInterface() {
                                 key="loading-indicator"
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="flex justify-start py-6 px-12"
+                                className="flex justify-start py-6 px-4 md:px-12"
                             >
                                 <div className="flex items-center space-x-3 text-blue-400 opacity-80">
                                     <motion.div
@@ -208,23 +208,24 @@ export function ChatInterface() {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.5, y: 20 }}
                         onClick={scrollToBottom}
-                        className="fixed bottom-32 right-8 md:right-12 z-50 p-3 rounded-full bg-[#1e1f20] border border-[#303134] text-[#e3e3e3] shadow-2xl hover:bg-[#2a2b2d] transition-all group"
+                        className="fixed bottom-36 right-4 md:right-12 z-50 p-3 rounded-full bg-[#1e1f20] border border-[#303134] text-[#e3e3e3] shadow-2xl hover:bg-[#2a2b2d] transition-all group"
                     >
                         <ChevronDown size={24} className="group-hover:translate-y-0.5 transition-transform" />
                     </motion.button>
                 )}
             </AnimatePresence>
 
-            {/* Sticky Input Area for Chat View */}
+            {/* Sticky Input Area — safe-area-aware padding for iPhone home bar */}
             {messages.length > 0 && (
                 <div className="fixed bottom-0 left-0 right-0 z-40">
                     {/* Gradient background for text legibility */}
-                    <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#0b0c0d] via-[#0b0c0d]/90 to-transparent pointer-events-none" />
+                    <div className="absolute bottom-0 left-0 right-0 h-56 bg-gradient-to-t from-[#0b0c0d] via-[#0b0c0d]/90 to-transparent pointer-events-none" />
 
                     <motion.div
                         initial={{ y: 100 }}
                         animate={{ y: 0 }}
-                        className="relative max-w-4xl mx-auto px-4 pb-8"
+                        className="relative max-w-4xl mx-auto px-4 pb-6"
+                        style={{ paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))" }}
                     >
                         <ChatInput
                             status={authStatus}

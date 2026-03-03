@@ -26,7 +26,7 @@ export default function ChatbotPage() {
     }
 
     return (
-        <main className="h-screen relative overflow-hidden pt-16">
+        <main className="h-[100dvh] relative overflow-hidden pt-16">
             <div className="h-full w-full relative z-10">
                 <motion.div
                     initial={{ opacity: 0 }}

@@ -104,7 +104,7 @@ export default function SignupPage() {
     const stepLabels = ["이메일", "코드 인증", "정보 입력", "완료"]
 
     return (
-        <div className="min-h-screen bg-black text-white flex items-center justify-center p-6 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/10 via-black to-black">
+        <div className="min-h-[100dvh] bg-black text-white flex items-center justify-center p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/10 via-black to-black">
             <div className="w-full max-w-md">
                 <div className="text-center mb-10">
                     <h1 className="text-4xl font-bold tracking-tight mb-2">WITHUS</h1>
@@ -121,8 +121,8 @@ export default function SignupPage() {
                             <div key={s} className="flex items-center">
                                 <div className={`flex flex-col items-center gap-1`}>
                                     <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${isCompleted ? "bg-green-500 text-white" :
-                                            isActive ? "bg-blue-500 text-white" :
-                                                "bg-zinc-800 text-zinc-500"
+                                        isActive ? "bg-blue-500 text-white" :
+                                            "bg-zinc-800 text-zinc-500"
                                         }`}>
                                         {isCompleted ? "✓" : s}
                                     </div>

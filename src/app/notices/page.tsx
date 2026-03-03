@@ -87,112 +87,115 @@ export default function NoticesPage() {
     )
 
     return (
-        <div className="flex flex-col relative min-h-screen bg-black text-white selection:bg-blue-500/30 overflow-x-hidden pt-32 pb-24">
-            {/* Texture Overlay */}
-            <div className="fixed inset-0 z-50 pointer-events-none opacity-[0.04] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] contrast-150" />
-
+        <div className="min-h-screen bg-black text-white selection:bg-blue-500/30">
             <Navbar />
 
-            <main className="flex-1 flex flex-col">
-                <div className="max-w-5xl mx-auto px-6 w-full space-y-12">
-
-                    {/* Header */}
-                    <div className="space-y-6">
-                        <Link href="/" className="inline-flex items-center gap-2 text-xs text-white/30 hover:text-white transition-colors group">
-                            <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> 홈으로 돌아가기
-                        </Link>
-
-                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                            <div className="space-y-2">
-                                <h1 className="text-4xl md:text-6xl font-extralight tracking-tight">공지사항 포털</h1>
-                                <p className="text-xs text-white/30 font-light tracking-[0.4em] uppercase">소식 및 정보</p>
-                            </div>
-
-                            <div className="flex items-center gap-4">
-                                <div className="relative">
-                                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20" />
-                                    <input
-                                        type="text"
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                        placeholder="공지사항 검색..."
-                                        className="bg-white/5 border border-white/10 rounded-xl py-2.5 pl-9 pr-4 text-[11px] font-light focus:outline-none focus:border-white/20 transition-all w-full md:w-64"
-                                    />
-                                </div>
-                                {isAdmin && (
-                                    <button
-                                        onClick={() => setShowAddModal(true)}
-                                        className="p-2.5 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider px-4"
-                                    >
-                                        <Plus size={16} /> 새 글 작성
-                                    </button>
-                                )}
-                            </div>
-                        </div>
+            <main className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 pt-28 pb-20">
+                {/* Header Section */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
+                    <div className="space-y-4">
+                        <motion.div
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20"
+                        >
+                            <Bell size={14} className="text-blue-400" />
+                            <span className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Notice Portal</span>
+                        </motion.div>
+                        <motion.h1
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1 }}
+                            className="text-4xl md:text-5xl font-bold tracking-tight"
+                        >
+                            새로운 소식
+                        </motion.h1>
                     </div>
 
-                    {/* Notices List */}
-                    <div className="space-y-4">
-                        {loading ? (
-                            <div className="flex flex-col items-center justify-center py-40 space-y-4 opacity-20">
-                                <Loader2 size={32} className="animate-spin" />
-                                <p className="text-[10px] uppercase tracking-widest">데이터를 불러오는 중...</p>
-                            </div>
-                        ) : filteredNotices.length > 0 ? (
-                            filteredNotices.map((notice, i) => (
-                                <motion.div
-                                    key={notice.id}
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: i * 0.05 }}
-                                    id={notice.id}
-                                    className="group relative p-8 rounded-[32px] border border-white/5 bg-zinc-900/10 hover:bg-zinc-900/30 transition-all"
-                                >
-                                    <div className="flex flex-col md:flex-row md:items-start justify-between gap-8">
-                                        <div className="space-y-6 flex-1">
-                                            <div className="flex items-center gap-4">
-                                                <span className="px-3 py-1 rounded-full text-[9px] uppercase tracking-widest font-bold bg-white/5 text-white/50 border border-white/10 group-hover:bg-blue-500/10 group-hover:text-blue-400 group-hover:border-blue-500/20 transition-colors">
-                                                    {notice.category === "Notice" ? "공지사항" : notice.category === "Mission" ? "미션" : notice.category === "Event" ? "이벤트" : notice.category === "Bible" ? "주제 말씀" : notice.category}
-                                                </span>
-                                                <span className="text-[10px] text-white/20 font-mono">
-                                                    {new Date(notice.createdAt).toLocaleDateString("ko-KR", { year: "numeric", month: "2-digit", day: "2-digit" })}
-                                                </span>
-                                            </div>
-
-                                            <div className="space-y-3">
-                                                <h2 className="text-2xl font-light text-white/90 group-hover:text-white transition-colors tracking-tight leading-snug">
-                                                    {notice.title}
-                                                </h2>
-                                                <p className="text-sm text-white/40 font-light leading-relaxed whitespace-pre-wrap">
-                                                    {notice.content}
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex items-center gap-3 self-start">
-                                            {isAdmin && (
-                                                <button
-                                                    onClick={() => handleDeleteNotice(notice.id)}
-                                                    className="p-3 bg-red-500/5 rounded-full text-red-500/20 hover:text-red-500 hover:bg-red-500/10 transition-all opacity-0 group-hover:opacity-100"
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
-                                            )}
-                                            <button className="p-3 bg-white/5 rounded-full text-white/20 group-hover:text-white group-hover:bg-white/10 transition-all">
-                                                <ChevronRight size={20} />
-                                            </button>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            ))
-                        ) : (
-                            <div className="py-40 text-center space-y-4 opacity-20">
-                                <Bell size={40} className="mx-auto" />
-                                <p className="text-sm italic">검색 결과가 없습니다.</p>
-                            </div>
+                    <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+                        <div className="relative w-full sm:w-64 group">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-blue-500 transition-colors" size={18} />
+                            <input
+                                type="text"
+                                placeholder="검색어를 입력하세요..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full bg-zinc-900/50 border border-zinc-800 rounded-2xl py-3 pl-12 pr-4 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                            />
+                        </div>
+                        {isAdmin && (
+                            <button
+                                onClick={() => setShowAddModal(true)}
+                                className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-white text-black rounded-2xl font-bold text-sm hover:bg-zinc-200 transition-all active:scale-[0.98]"
+                            >
+                                <Plus size={18} />
+                                공지 등록
+                            </button>
                         )}
                     </div>
                 </div>
+
+                {/* Grid Section */}
+                {loading ? (
+                    <div className="flex flex-col items-center justify-center py-32 space-y-4">
+                        <Loader2 className="animate-spin text-blue-500" size={32} />
+                        <p className="text-zinc-500 text-sm animate-pulse">공지사항을 불러오는 중...</p>
+                    </div>
+                ) : filteredNotices.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {filteredNotices.map((notice, i) => (
+                            <motion.div
+                                key={notice.id}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: i * 0.05 }}
+                                id={notice.id}
+                                className="group relative p-8 rounded-[32px] border border-white/5 bg-zinc-900/10 hover:bg-zinc-900/30 transition-all flex flex-col justify-between"
+                            >
+                                <div className="space-y-6">
+                                    <div className="flex items-center gap-4">
+                                        <span className="px-3 py-1 rounded-full text-[9px] uppercase tracking-widest font-bold bg-white/5 text-white/50 border border-white/10 group-hover:bg-blue-500/10 group-hover:text-blue-400 group-hover:border-blue-500/20 transition-colors">
+                                            {notice.category === "Notice" ? "공지사항" : notice.category === "Mission" ? "미션" : notice.category === "Event" ? "이벤트" : notice.category === "Bible" ? "주제 말씀" : notice.category}
+                                        </span>
+                                        <span className="text-[10px] text-white/20 font-mono">
+                                            {new Date(notice.createdAt).toLocaleDateString("ko-KR", { year: "numeric", month: "2-digit", day: "2-digit" })}
+                                        </span>
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        <h2 className="text-2xl font-light text-white/90 group-hover:text-white transition-colors tracking-tight leading-snug">
+                                            {notice.title}
+                                        </h2>
+                                        <p className="text-sm text-white/40 font-light leading-relaxed whitespace-pre-wrap line-clamp-4">
+                                            {notice.content}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center justify-between mt-8 pt-6 border-t border-white/5">
+                                    <div className="flex items-center gap-2">
+                                        {isAdmin && (
+                                            <button
+                                                onClick={() => handleDeleteNotice(notice.id)}
+                                                className="p-3 bg-red-500/5 rounded-full text-red-500/40 hover:text-red-500 hover:bg-red-500/10 transition-all"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        )}
+                                    </div>
+                                    <button className="flex items-center gap-2 text-[10px] uppercase font-bold tracking-widest text-white/20 group-hover:text-white transition-colors">
+                                        자세히 보기 <ChevronRight size={14} />
+                                    </button>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="py-40 text-center space-y-4 opacity-20">
+                        <Bell size={40} className="mx-auto" />
+                        <p className="text-sm italic">검색 결과가 없습니다.</p>
+                    </div>
+                )}
             </main>
 
             {/* Add Notice Modal */}
