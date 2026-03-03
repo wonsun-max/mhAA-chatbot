@@ -4,7 +4,7 @@ import { useState, Suspense } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
-import { Loader2, Mail, Lock, ChevronRight, User } from "lucide-react"
+import { Loader2, Lock, ChevronRight, User } from "lucide-react"
 import { motion } from "framer-motion"
 
 function LoginContent() {
@@ -12,17 +12,12 @@ function LoginContent() {
     const [password, setPassword] = useState("")
     const [error, setError] = useState("")
     const [isLoading, setIsLoading] = useState(false)
-    const [agreed, setAgreed] = useState(false)
     const router = useRouter()
     const searchParams = useSearchParams()
     const message = searchParams.get("message")
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!agreed) {
-            setError("로그인하시려면 이용약관 및 개인정보 처리방침에 동의해주셔야 합니다.")
-            return
-        }
         setIsLoading(true)
         setError("")
         const res = await signIn("credentials", {
@@ -53,6 +48,16 @@ function LoginContent() {
 
                 <div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 blur-3xl" />
+
+                    {message && (
+                        <motion.div
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className="p-4 bg-blue-400/10 text-blue-400 text-sm rounded-2xl border border-blue-500/20 mb-6"
+                        >
+                            {message}
+                        </motion.div>
+                    )}
 
                     <form className="space-y-6 relative" onSubmit={handleSubmit}>
                         {error && (
@@ -97,24 +102,10 @@ function LoginContent() {
                             </div>
                         </div>
 
-                        <div className="flex items-start space-x-3 px-1 mb-6">
-                            <input
-                                type="checkbox"
-                                id="login-agree"
-                                checked={agreed}
-                                onChange={(e) => setAgreed(e.target.checked)}
-                                className="mt-1 w-4 h-4 rounded border-zinc-800 bg-zinc-950 text-blue-500 focus:ring-blue-500/20"
-                            />
-                            <label htmlFor="login-agree" className="text-xs text-zinc-500 leading-normal">
-                                <Link href="/terms" className="text-zinc-300 hover:text-white underline">이용약관</Link> 및 <Link href="/privacy" className="text-zinc-300 hover:text-white underline">개인정보 처리방침</Link>에 동의합니다.
-                            </label>
-                        </div>
-
                         <button
                             type="submit"
-                            disabled={isLoading || !agreed}
-                            className={`w-full font-bold py-4 rounded-2xl transition-all flex items-center justify-center space-x-2 active:scale-[0.98] ${agreed ? "bg-white text-black hover:bg-zinc-200" : "bg-zinc-800 text-zinc-500 cursor-not-allowed"
-                                }`}
+                            disabled={isLoading}
+                            className="w-full font-bold py-4 rounded-2xl transition-all flex items-center justify-center space-x-2 active:scale-[0.98] bg-white text-black hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isLoading ? (
                                 <Loader2 className="animate-spin" size={20} />

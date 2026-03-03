@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { ChevronRight, Bell, BookOpen, MessageSquare, ArrowUpRight, Heart, Loader2 } from "lucide-react"
+import { ChevronRight, Bell, Sparkles, MessageSquare, ArrowUpRight, Heart, Loader2 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Navbar } from "@/components/layout/Navbar"
 import Image from "next/image"
@@ -70,9 +70,9 @@ export default function Home() {
           </motion.div>
         </div>
 
-        {/* Floating Credit/Brand */}
+        {/* Brand */}
         <div className="absolute bottom-12 left-12 hidden md:block">
-          <p className="text-[9px] uppercase tracking-[0.3em] text-white/20">교목실</p>
+          <p className="text-[9px] uppercase tracking-[0.3em] text-white/20">WITHUS Intelligence</p>
         </div>
       </section>
 
@@ -88,8 +88,8 @@ export default function Home() {
             className="space-y-6 max-w-lg"
           >
             <h2 className="text-3xl md:text-5xl font-extralight tracking-tight leading-tight">
-              믿음과 연결을 위한 <br />
-              <span className="opacity-40 font-serif italic italic font-light">공간</span>
+              학술적 지능과 <br />
+              <span className="opacity-40 font-serif italic italic font-light">효율성</span>을 위한 공간
             </h2>
             <p className="text-sm font-light text-white/40 leading-relaxed tracking-wide">
               WITHUS.
@@ -99,13 +99,13 @@ export default function Home() {
                 대화 시작하기
               </Link>
               <Link href="/notices" className="px-8 py-3 border border-white/10 text-[11px] uppercase tracking-[0.2em] font-light hover:bg-white/5 transition-all">
-                미션 포털 보기
+                포털 보기
               </Link>
             </div>
           </motion.div>
         </section>
 
-        {/* Daily Verse Section - Elegant Minimal Box */}
+        {/* Daily Insight Section - Elegant Minimal Box */}
         <section className="py-12 border-t border-white/5">
           <motion.div
             initial={{ opacity: 0 }}
@@ -114,15 +114,14 @@ export default function Home() {
             className="space-y-8"
           >
             <div className="flex items-center gap-3 text-white/30">
-              <BookOpen size={16} />
-              <span className="text-[10px] uppercase tracking-[0.3em]">주제 말씀</span>
+              <Sparkles size={16} />
+              <span className="text-[10px] uppercase tracking-[0.3em]">오늘의 인사이트</span>
             </div>
 
             <blockquote className="space-y-4">
               <p className="text-xl md:text-2xl font-serif italic text-white/80 leading-relaxed font-light">
-                "너는 마음을 다하고 뜻을 다하고 힘을 다하여 네 하나님 여호와를 사랑하라"
+                "지능은 학습하는 능력뿐만 아니라, 그 지식을 통해 세상을 변화시키는 능력입니다."
               </p>
-              <footer className="text-[10px] uppercase tracking-[0.2em] text-white/20">신명기 6:4-5 </footer>
             </blockquote>
           </motion.div>
         </section>
@@ -134,7 +133,7 @@ export default function Home() {
               <Bell size={18} className="text-blue-400/50" />
               <h3 className="text-sm uppercase tracking-[0.3em] font-medium text-white/60">최근 공지사항</h3>
             </div>
-            <Link href="/notices" className="text-[9px] uppercase tracking-[0.2em] text-white/30 hover:text-white transition-colors">포털 보기</Link>
+            <Link href="/notices" className="text-[9px] uppercase tracking-[0.2em] text-white/30 hover:text-white transition-colors">전체 보기</Link>
           </div>
 
           <div className="space-y-1">
@@ -167,7 +166,7 @@ export default function Home() {
           <div className="space-y-2">
             <p className="text-[9px] uppercase tracking-[0.5em] text-white/10 font-bold">WITHUS HUB</p>
             <p className="text-[9px] text-white/10 font-light max-w-xs leading-loose">
-              본 플랫폼은 교목부의 신앙 사역과 학생들의 영적 성장을 위해 운영됩니다.
+              본 플랫폼은 학생들의 학술적 성장과 지능형 학습 지원을 위해 운영됩니다.
             </p>
           </div>
 

@@ -78,8 +78,8 @@ export default function ProfilePage() {
                                 <div className="space-y-1">
                                     <p className="text-sm font-medium text-white">채팅 기록 투명성</p>
                                     <p className="text-xs text-zinc-500 leading-relaxed">
-                                        귀하의 채팅 로그는 맞춤형 선교 지원을 위해 안전하게 저장됩니다. 
-                                        교목실에 문의하여 데이터 요약을 요청할 수 있습니다.
+                                        귀하의 채팅 로그는 맞춤형 학습 지원을 위해 안전하게 저장됩니다.
+                                        데이터 관련 문의는 플랫폼 내 문의 채널을 통해 요청하실 수 있습니다.
                                     </p>
                                 </div>
                             </div>

@@ -57,14 +57,24 @@ export function Navbar() {
                     <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
                         <Link href="/" className="flex items-center space-x-3 group perspective-1000">
                             <motion.div
-                                className="flex flex-col items-center"
+                                className="flex flex-row items-center space-x-3"
                                 whileHover={{ scale: 1.05 }}
                                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
                             >
-                                <span className="text-2xl font-light text-white leading-none tracking-[0.3em] uppercase transition-all duration-500 group-hover:tracking-[0.4em]">
-                                    WITHUS
-                                </span>
-                                <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-white/40 to-transparent mt-1" />
+                                <div className="w-8 h-8 relative">
+                                    <Image
+                                        src="/images/site-logo.png"
+                                        alt="WITHUS Logo"
+                                        fill
+                                        className="object-contain"
+                                    />
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-2xl font-light text-white leading-none tracking-[0.3em] uppercase transition-all duration-500 group-hover:tracking-[0.4em]">
+                                        WITHUS
+                                    </span>
+                                    <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-white/40 to-transparent mt-1" />
+                                </div>
                             </motion.div>
                         </Link>
                     </div>

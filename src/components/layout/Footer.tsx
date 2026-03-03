@@ -17,7 +17,13 @@ export function Footer() {
                     <div className="col-span-1 md:col-span-1 space-y-6">
                         <Link href="/" className="flex items-center space-x-3 group">
                             <div className="w-10 h-10 relative flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
-                                <Bot className="text-blue-500 w-8 h-8 drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
+                                <Image 
+                                    src="/images/site-logo.png" 
+                                    alt="WITHUS Logo"
+                                    width={32}
+                                    height={32}
+                                    className="drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]"
+                                />
                             </div>
                             <span className="text-lg font-bold text-white tracking-tight">WITHUS</span>
                         </Link>
