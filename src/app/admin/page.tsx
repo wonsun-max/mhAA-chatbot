@@ -44,14 +44,14 @@ function Overview({ stats }: { stats: Stats | null }) {
     return (
         <div className="space-y-12">
             <div>
-                <h2 className="text-2xl font-bold tracking-tight">System Overview</h2>
-                <p className="text-sm text-zinc-500">Real-time metrics and platform status</p>
+                <h2 className="text-2xl font-bold tracking-tight">시스템 개요</h2>
+                <p className="text-sm text-zinc-500">실시간 지표 및 플랫폼 상태</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <StatCard label="Total Community" value={stats.totalUsers} icon={Users} color="text-blue-500" />
-                <StatCard label="Pending Approval" value={stats.pendingUsers} icon={ShieldCheck} color="text-amber-500" />
-                <StatCard label="Mission Updates" value={stats.totalNotices} icon={Bell} color="text-purple-500" />
+                <StatCard label="전체 커뮤니티" value={stats.totalUsers} icon={Users} color="text-blue-500" />
+                <StatCard label="승인 대기 중" value={stats.pendingUsers} icon={ShieldCheck} color="text-amber-500" />
+                <StatCard label="미션 업데이트" value={stats.totalNotices} icon={Bell} color="text-purple-500" />
             </div>
 
             <div className="p-12 rounded-[40px] border border-white/5 bg-zinc-900/10 relative overflow-hidden">
@@ -98,7 +98,7 @@ export default function AdminDashboardPage() {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center bg-black gap-4">
                 <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
-                <p className="text-[10px] uppercase font-bold tracking-widest opacity-30">Initializing Control Center</p>
+                <p className="text-[10px] uppercase font-bold tracking-widest opacity-30">관리 센터 초기화 중</p>
             </div>
         )
     }

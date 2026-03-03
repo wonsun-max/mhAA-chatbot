@@ -58,7 +58,7 @@ export function ChatInput({ status, isLoading, onSend, variant = "sticky" }: Cha
                     />
                     <div className="flex items-center justify-between px-4 pb-2">
                         <div className="flex gap-2 text-[10px] text-zinc-600 font-medium">
-                            <span className="opacity-50 tracking-tight">Shift+Enter for new line</span>
+                            <span className="opacity-50 tracking-tight">Shift+Enter로 줄바꿈</span>
                         </div>
                         <button
                             onClick={handleSendClick}
@@ -80,7 +80,7 @@ export function ChatInput({ status, isLoading, onSend, variant = "sticky" }: Cha
             {variant === 'centered' && (
                 <div className="text-center mt-6">
                     <p className="text-[10px] text-zinc-600 uppercase tracking-[0.2em] font-bold">
-                        WITHUS Intelligent Assistant
+                        WITHUS 지능형 어시스턴트
                     </p>
                 </div>
             )}

@@ -22,26 +22,26 @@ export function Footer() {
                             <span className="text-lg font-bold text-white tracking-tight">WITHUS</span>
                         </Link>
                         <p className="text-sm text-gray-400 leading-relaxed font-medium max-w-xs">
-                            Secure, private, and localized academic intelligence for the modern educational environment.
+                            현대 교육 환경을 위한 안전하고 프라이빗한 맞춤형 학술 지능 서비스입니다.
                         </p>
                     </div>
 
                     {/* Platform Links */}
                     <div className="space-y-6">
-                        <h4 className="text-xs font-bold text-gray-200 uppercase tracking-widest">Platform</h4>
+                        <h4 className="text-xs font-bold text-gray-200 uppercase tracking-widest">플랫폼</h4>
                         <ul className="space-y-3">
-                            <li><Link href="/notices" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Notices</Link></li>
-                            <li><Link href="/chatbot" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">AI Assistant</Link></li>
-                            <li><Link href="/login" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Login</Link></li>
+                            <li><Link href="/notices" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">공지사항</Link></li>
+                            <li><Link href="/chatbot" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">AI 어시스턴트</Link></li>
+                            <li><Link href="/login" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">로그인</Link></li>
                         </ul>
                     </div>
 
                     {/* Support Links */}
                     <div className="space-y-6">
-                        <h4 className="text-xs font-bold text-gray-200 uppercase tracking-widest">Support</h4>
+                        <h4 className="text-xs font-bold text-gray-200 uppercase tracking-widest">지원</h4>
                         <ul className="space-y-3">
-                            <li><Link href="/privacy" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Privacy Policy</Link></li>
-                            <li><Link href="/terms" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Terms of Service</Link></li>
+                            <li><Link href="/privacy" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">개인정보처리방침</Link></li>
+                            <li><Link href="/terms" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">이용약관</Link></li>
                             <li><Link href="https://forms.gle/dTZNPr29Gs8Sg1i49" target="_blank" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">버그 리포트</Link></li>
                             <li><Link href="https://forms.gle/ijQgKpGLvUexQ2tBA" target="_blank" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">아이디어 제출</Link></li>
                         </ul>
@@ -49,7 +49,7 @@ export function Footer() {
 
                     {/* Connection Section */}
                     <div className="space-y-6">
-                        <h4 className="text-xs font-bold text-gray-200 uppercase tracking-widest">Connect</h4>
+                        <h4 className="text-xs font-bold text-gray-200 uppercase tracking-widest">연결</h4>
                         <div className="flex space-x-4">
                             <a href="mailto:wonsunpro123444@gmail.com" className="p-2.5 bg-white/5 rounded-xl border border-white/10 text-gray-400 hover:text-white hover:border-white/20 transition-all">
                                 <Mail size={18} />
@@ -64,7 +64,7 @@ export function Footer() {
                     </p>
                     <div className="flex items-center space-x-2">
                         <div className="w-1.5 h-1.5 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>
-                        <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Systems Operational</span>
+                        <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">시스템 정상 운영 중</span>
                     </div>
                 </div>
             </div>

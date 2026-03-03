@@ -48,7 +48,7 @@ function LoginContent() {
             >
                 <div className="text-center space-y-2">
                     <h1 className="text-4xl font-bold tracking-tight">WITHUS</h1>
-                    <p className="text-zinc-500">Welcome back</p>
+                    <p className="text-zinc-500">다시 오신 것을 환영합니다</p>
                 </div>
 
                 <div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
@@ -67,13 +67,13 @@ function LoginContent() {
 
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-zinc-400 ml-1">Email or Nickname</label>
+                                <label className="text-sm font-medium text-zinc-400 ml-1">이메일 또는 닉네임</label>
                                 <div className="relative group">
                                     <User className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-blue-500 transition-colors" size={20} />
                                     <input
                                         type="text"
                                         required
-                                        placeholder="your@email.com or nickname"
+                                        placeholder="이메일 또는 닉네임 입력"
                                         className="w-full pl-12 pr-4 py-4 bg-zinc-950 border border-zinc-800 rounded-2xl text-sm font-medium text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none placeholder-zinc-700"
                                         value={identifier}
                                         onChange={(e) => setIdentifier(e.target.value)}
@@ -82,7 +82,7 @@ function LoginContent() {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-zinc-400 ml-1">Password</label>
+                                <label className="text-sm font-medium text-zinc-400 ml-1">비밀번호</label>
                                 <div className="relative group">
                                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-blue-500 transition-colors" size={20} />
                                     <input
@@ -120,7 +120,7 @@ function LoginContent() {
                                 <Loader2 className="animate-spin" size={20} />
                             ) : (
                                 <>
-                                    <span>Log In</span>
+                                    <span>로그인</span>
                                     <ChevronRight size={20} />
                                 </>
                             )}
@@ -128,9 +128,9 @@ function LoginContent() {
 
                         <div className="pt-6 border-t border-zinc-800 text-center">
                             <p className="text-sm text-zinc-500">
-                                Don&apos;t have an account?{" "}
+                                계정이 없으신가요?{" "}
                                 <Link href="/signup" className="text-white hover:underline font-medium">
-                                    Sign up here
+                                    여기에서 회원가입하세요
                                 </Link>
                             </p>
                         </div>

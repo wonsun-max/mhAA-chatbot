@@ -23,7 +23,7 @@ export default function SignupPage() {
     const handleSendCode = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!agreed) {
-            setError("You must agree to the Privacy Policy and Terms of Service.")
+            setError("개인정보 처리방침 및 이용약관에 동의해야 합니다.")
             return
         }
         setLoading(true)
@@ -37,10 +37,10 @@ export default function SignupPage() {
                 setStep(2)
             } else {
                 const data = await res.json()
-                setError(data.error || "Failed to send code")
+                setError(data.error || "코드 전송에 실패했습니다.")
             }
         } catch (err) {
-            setError("An error occurred. Please try again.")
+            setError("오류가 발생했습니다. 다시 시도해주세요.")
         } finally {
             setLoading(false)
         }
@@ -59,10 +59,10 @@ export default function SignupPage() {
                 setStep(3)
             } else {
                 const data = await res.json()
-                setError(data.error || "Registration failed")
+                setError(data.error || "가입에 실패했습니다.")
             }
         } catch (err) {
-            setError("An error occurred. Please try again.")
+            setError("오류가 발생했습니다. 다시 시도해주세요.")
         } finally {
             setLoading(false)
         }
@@ -77,7 +77,7 @@ export default function SignupPage() {
             <div className="w-full max-w-md">
                 <div className="text-center mb-10">
                     <h1 className="text-4xl font-bold tracking-tight mb-2">WITHUS</h1>
-                    <p className="text-zinc-500">Join our private network</p>
+                    <p className="text-zinc-500">프라이빗 네트워크에 가입하세요</p>
                 </div>
 
                 <div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-3xl p-8 shadow-2xl">
@@ -92,7 +92,7 @@ export default function SignupPage() {
                                 className="space-y-6"
                             >
                                 <div className="space-y-2">
-                                    <label className="text-sm font-medium text-zinc-400 ml-1">Email Address</label>
+                                    <label className="text-sm font-medium text-zinc-400 ml-1">이메일 주소</label>
                                     <div className="relative">
                                         <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={20} />
                                         <input
@@ -101,7 +101,7 @@ export default function SignupPage() {
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
                                             className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
-                                            placeholder="your@email.com"
+                                            placeholder="이메일 주소 입력"
                                         />
                                     </div>
                                 </div>
@@ -114,7 +114,7 @@ export default function SignupPage() {
                                         className="mt-1 w-4 h-4 rounded border-zinc-800 bg-zinc-950 text-blue-500 focus:ring-blue-500/20"
                                     />
                                     <label htmlFor="agree" className="text-xs text-zinc-500 leading-normal">
-                                        I agree to the <Link href="/privacy" className="text-zinc-300 hover:text-white underline">Privacy Policy</Link> and <Link href="/terms" className="text-zinc-300 hover:text-white underline">Terms of Service</Link>. I understand that chat logs are stored for mission support purposes.
+                                        <Link href="/privacy" className="text-zinc-300 hover:text-white underline">개인정보 처리방침</Link> 및 <Link href="/terms" className="text-zinc-300 hover:text-white underline">이용약관</Link>에 동의합니다. 선교 지원 목적으로 채팅 로그가 저장됨을 이해합니다.
                                     </label>
                                 </div>
                                 {error && <p className="text-red-500 text-sm ml-1">{error}</p>}
@@ -126,7 +126,7 @@ export default function SignupPage() {
                                 >
                                     {loading ? <Loader2 className="animate-spin" size={20} /> : (
                                         <>
-                                            <span>Send Verification Code</span>
+                                            <span>인증 코드 전송</span>
                                             <ChevronRight size={20} />
                                         </>
                                     )}
@@ -145,7 +145,7 @@ export default function SignupPage() {
                             >
                                 <div className="space-y-4">
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium text-zinc-400 ml-1">Verification Code</label>
+                                        <label className="text-sm font-medium text-zinc-400 ml-1">인증 코드</label>
                                         <input
                                             type="text"
                                             required
@@ -158,7 +158,7 @@ export default function SignupPage() {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium text-zinc-400 ml-1">Full Name</label>
+                                        <label className="text-sm font-medium text-zinc-400 ml-1">성명</label>
                                         <div className="relative">
                                             <User className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={20} />
                                             <input
@@ -167,13 +167,13 @@ export default function SignupPage() {
                                                 value={name}
                                                 onChange={(e) => setName(e.target.value)}
                                                 className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
-                                                placeholder="John Doe"
+                                                placeholder="홍길동"
                                             />
                                         </div>
                                     </div>
 
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium text-zinc-400 ml-1">Nickname</label>
+                                        <label className="text-sm font-medium text-zinc-400 ml-1">닉네임</label>
                                         <div className="relative">
                                             <User className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={20} />
                                             <input
@@ -182,13 +182,13 @@ export default function SignupPage() {
                                                 value={nickname}
                                                 onChange={(e) => setNickname(e.target.value)}
                                                 className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
-                                                placeholder="johndoe123"
+                                                placeholder="닉네임 입력"
                                             />
                                         </div>
                                     </div>
 
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium text-zinc-400 ml-1">Grade / Class</label>
+                                        <label className="text-sm font-medium text-zinc-400 ml-1">학년 / 반</label>
                                         <div className="relative">
                                             <GraduationCap className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={20} />
                                             <select
@@ -197,14 +197,14 @@ export default function SignupPage() {
                                                 onChange={(e) => setGrade(e.target.value)}
                                                 className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none appearance-none"
                                             >
-                                                <option value="">Select Grade</option>
-                                                {grades.map(g => <option key={g} value={g}>{g} Grade</option>)}
+                                                <option value="">학년 선택</option>
+                                                {grades.map(g => <option key={g} value={g}>{g}학년</option>)}
                                             </select>
                                         </div>
                                     </div>
 
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium text-zinc-400 ml-1">Password</label>
+                                        <label className="text-sm font-medium text-zinc-400 ml-1">비밀번호</label>
                                         <div className="relative">
                                             <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={20} />
                                             <input
@@ -226,7 +226,7 @@ export default function SignupPage() {
                                     disabled={loading}
                                     className="w-full bg-white text-black font-bold py-4 rounded-2xl hover:bg-zinc-200 transition-all flex items-center justify-center"
                                 >
-                                    {loading ? <Loader2 className="animate-spin" size={20} /> : "Complete Registration"}
+                                    {loading ? <Loader2 className="animate-spin" size={20} /> : "가입 완료"}
                                 </button>
                             </motion.form>
                         )}
@@ -244,16 +244,16 @@ export default function SignupPage() {
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <h2 className="text-2xl font-bold">Registration Successful</h2>
+                                    <h2 className="text-2xl font-bold">회원가입 성공</h2>
                                     <p className="text-zinc-500">
-                                        Your account is now pending approval. An administrator will review your request shortly.
+                                        계정이 승인 대기 중입니다. 관리자가 곧 요청을 검토할 예정입니다.
                                     </p>
                                 </div>
                                 <Link
                                     href="/login"
                                     className="block w-full bg-zinc-800 text-white font-bold py-4 rounded-2xl hover:bg-zinc-700 transition-all"
                                 >
-                                    Back to Login
+                                    로그인으로 돌아가기
                                 </Link>
                             </motion.div>
                         )}
@@ -262,9 +262,9 @@ export default function SignupPage() {
 
                 {step < 3 && (
                     <p className="text-center mt-8 text-zinc-500 text-sm">
-                        Already have an account?{" "}
+                        이미 계정이 있으신가요?{" "}
                         <Link href="/login" className="text-white hover:underline font-medium">
-                            Log in
+                            로그인
                         </Link>
                     </p>
                 )}

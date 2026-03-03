@@ -32,7 +32,7 @@ export function UserManager() {
     }
 
     const handleReject = async (id: string) => {
-        if (!confirm("Are you sure? This will delete the user.")) return
+        if (!confirm("정말입니까? 사용자가 삭제됩니다.")) return
         try {
             const res = await fetch(`/api/admin/users/${id}`, { method: "DELETE" })
             if (res.ok) setUsers(users.filter(u => u.id !== id))
@@ -43,22 +43,22 @@ export function UserManager() {
         <div className="space-y-8">
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-2xl font-bold tracking-tight">User Approvals</h2>
-                    <p className="text-sm text-zinc-500">Manage pending registrations</p>
+                    <h2 className="text-2xl font-bold tracking-tight">사용자 승인</h2>
+                    <p className="text-sm text-zinc-500">대기 중인 등록 관리</p>
                 </div>
                 <div className="flex bg-zinc-900 p-1 rounded-xl border border-white/5">
                     <button
                         onClick={() => setFilter("PENDING")}
                         className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${filter === "PENDING" ? "bg-white/10 text-white" : "text-zinc-500 hover:text-zinc-300"}`}
                     >
-                        Pending
+                        대기 중
                     </button>
                     <button
                         onClick={() => setFilter("APPROVED")}
                         disabled
                         className="px-4 py-1.5 rounded-lg text-xs font-bold text-zinc-700 cursor-not-allowed"
                     >
-                        Active Users
+                        활성 사용자
                     </button>
                 </div>
             </div>
@@ -69,7 +69,7 @@ export function UserManager() {
                 ) : users.length === 0 ? (
                     <div className="bg-zinc-900/10 border border-white/5 rounded-3xl p-20 text-center opacity-30">
                         <User className="mx-auto mb-4" size={32} />
-                        <p className="text-xs uppercase tracking-widest">No pending applications</p>
+                        <p className="text-xs uppercase tracking-widest">대기 중인 신청이 없습니다.</p>
                     </div>
                 ) : users.map((user) => (
                     <motion.div
@@ -85,7 +85,7 @@ export function UserManager() {
                             <div>
                                 <h3 className="font-bold">{user.name} <span className="text-zinc-500 font-normal">@{user.nickname}</span></h3>
                                 <p className="text-xs text-zinc-500 mb-1">{user.email}</p>
-                                <span className="text-[10px] bg-white/5 border border-white/5 px-2 py-0.5 rounded-md uppercase font-bold text-zinc-400">G{user.grade}</span>
+                                <span className="text-[10px] bg-white/5 border border-white/5 px-2 py-0.5 rounded-md uppercase font-bold text-zinc-400">{user.grade}학년</span>
                             </div>
                         </div>
 

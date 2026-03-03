@@ -25,9 +25,9 @@ export function Navbar() {
     const displayName = (session?.user as any)?.nickname || (session?.user as any)?.koreanName || session?.user?.name || session?.user?.email
 
     const navLinks = [
-        { name: "Home", href: "/" },
-        { name: "Notices", href: "/notices" },
-        { name: "AI Assistant", href: "/chatbot" },
+        { name: "홈", href: "/" },
+        { name: "공지사항", href: "/notices" },
+        { name: "AI 어시스턴트", href: "/chatbot" },
     ]
 
     return (
@@ -82,7 +82,7 @@ export function Navbar() {
                                     <Link
                                         href="/admin"
                                         className="p-2 text-white/40 hover:text-white transition-colors"
-                                        title="Dashboard"
+                                        title="대시보드"
                                     >
                                         <LayoutDashboard size={18} />
                                     </Link>
@@ -159,7 +159,7 @@ export function Navbar() {
                                             onClick={() => signOut()}
                                             className="w-full py-4 rounded-xl bg-white/5 text-sm font-medium text-red-400 hover:bg-red-400/10 transition-all uppercase tracking-widest"
                                         >
-                                            Sign Out
+                                            로그아웃
                                         </button>
                                     </>
                                 ) : (
@@ -168,7 +168,7 @@ export function Navbar() {
                                         onClick={() => setIsOpen(false)}
                                         className="block w-full py-4 text-center rounded-xl bg-white/5 text-[13px] font-medium text-white/80 hover:bg-white/10 transition-all uppercase tracking-[0.2em]"
                                     >
-                                        Login
+                                        로그인
                                     </Link>
                                 )}
                             </div>

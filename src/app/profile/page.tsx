@@ -28,11 +28,11 @@ export default function ProfilePage() {
     if (!session) return null
 
     const userData = [
-        { label: "Full Name", value: session.user?.name, icon: User },
-        { label: "Nickname", value: (session.user as any)?.nickname, icon: Shield },
-        { label: "Email Address", value: session.user?.email, icon: Mail },
-        { label: "Grade / Class", value: (session.user as any)?.grade + " Grade", icon: GraduationCap },
-        { label: "Account Status", value: "Approved Member", icon: Shield, color: "text-green-400" },
+        { label: "성명", value: session.user?.name, icon: User },
+        { label: "닉네임", value: (session.user as any)?.nickname, icon: Shield },
+        { label: "이메일 주소", value: session.user?.email, icon: Mail },
+        { label: "학년 / 반", value: (session.user as any)?.grade + "학년", icon: GraduationCap },
+        { label: "계정 상태", value: "승인된 회원", icon: Shield, color: "text-green-400" },
     ]
 
     return (
@@ -42,10 +42,10 @@ export default function ProfilePage() {
                 <div className="space-y-6">
                     <Link href="/" className="inline-flex items-center text-sm text-gray-500 hover:text-white transition-colors group">
                         <ChevronLeft size={16} className="mr-1 group-hover:-translate-x-1 transition-transform" />
-                        Back to Home
+                        홈으로 돌아가기
                     </Link>
-                    <h1 className="text-4xl md:text-5xl font-bold tracking-tight">Your Profile</h1>
-                    <p className="text-zinc-500">Manage your student account and personal information.</p>
+                    <h1 className="text-4xl md:text-5xl font-bold tracking-tight">사용자 프로필</h1>
+                    <p className="text-zinc-500">학생 계정 및 개인 정보를 관리하세요.</p>
                 </div>
 
                 {/* Profile Card */}
@@ -62,24 +62,24 @@ export default function ProfilePage() {
                                     <span className="text-[10px] uppercase tracking-[0.2em] font-bold">{item.label}</span>
                                 </div>
                                 <div className={`text-lg font-medium ${item.color || "text-white"}`}>
-                                    {item.value || "Not set"}
+                                    {item.value || "설정되지 않음"}
                                 </div>
                             </div>
                         ))}
                     </div>
 
                     <div className="pt-8 border-t border-white/5 space-y-6">
-                        <h3 className="text-sm font-bold text-white uppercase tracking-widest">Data & Privacy</h3>
+                        <h3 className="text-sm font-bold text-white uppercase tracking-widest">데이터 및 개인정보 보호</h3>
                         <div className="bg-zinc-950/50 rounded-2xl p-6 border border-white/5 space-y-4">
                             <div className="flex items-start space-x-4">
                                 <div className="p-2 bg-blue-500/10 rounded-lg text-blue-500">
                                     <Clock size={20} />
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-sm font-medium text-white">Chat History Transparency</p>
+                                    <p className="text-sm font-medium text-white">채팅 기록 투명성</p>
                                     <p className="text-xs text-zinc-500 leading-relaxed">
-                                        Your chat logs are stored securely to provide personalized mission support.
-                                        You can request a summary of your data by contacting the chaplaincy department.
+                                        귀하의 채팅 로그는 맞춤형 선교 지원을 위해 안전하게 저장됩니다. 
+                                        교목실에 문의하여 데이터 요약을 요청할 수 있습니다.
                                     </p>
                                 </div>
                             </div>

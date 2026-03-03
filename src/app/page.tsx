@@ -66,13 +66,13 @@ export default function Home() {
             <h1 className="text-6xl md:text-8xl font-extralight tracking-tighter leading-[0.9]">
               WITH<br />US
             </h1>
-            <p className="text-[11px] uppercase tracking-[0.5em] text-white/20 font-medium">God is with us</p>
+            <p className="text-[11px] uppercase tracking-[0.5em] text-white/20 font-medium">하나님이 우리와 함께하십니다</p>
           </motion.div>
         </div>
 
         {/* Floating Credit/Brand */}
         <div className="absolute bottom-12 left-12 hidden md:block">
-          <p className="text-[9px] uppercase tracking-[0.3em] text-white/20">Chaplaincy Department</p>
+          <p className="text-[9px] uppercase tracking-[0.3em] text-white/20">교목실</p>
         </div>
       </section>
 
@@ -88,18 +88,18 @@ export default function Home() {
             className="space-y-6 max-w-lg"
           >
             <h2 className="text-3xl md:text-5xl font-extralight tracking-tight leading-tight">
-              A space for <br />
-              <span className="opacity-40 font-serif italic italic font-light">Faith & Connection</span>
+              믿음과 연결을 위한 <br />
+              <span className="opacity-40 font-serif italic italic font-light">공간</span>
             </h2>
             <p className="text-sm font-light text-white/40 leading-relaxed tracking-wide">
               WITHUS.
             </p>
             <div className="flex flex-wrap gap-4 pt-4">
               <Link href="/chatbot" className="px-8 py-3 bg-white text-black text-[11px] uppercase tracking-[0.2em] font-bold hover:bg-zinc-200 transition-all">
-                Start Conversation
+                대화 시작하기
               </Link>
               <Link href="/notices" className="px-8 py-3 border border-white/10 text-[11px] uppercase tracking-[0.2em] font-light hover:bg-white/5 transition-all">
-                View Mission Portal
+                미션 포털 보기
               </Link>
             </div>
           </motion.div>
@@ -132,9 +132,9 @@ export default function Home() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Bell size={18} className="text-blue-400/50" />
-              <h3 className="text-sm uppercase tracking-[0.3em] font-medium text-white/60">Recent Notices</h3>
+              <h3 className="text-sm uppercase tracking-[0.3em] font-medium text-white/60">최근 공지사항</h3>
             </div>
-            <Link href="/notices" className="text-[9px] uppercase tracking-[0.2em] text-white/30 hover:text-white transition-colors">See Portal</Link>
+            <Link href="/notices" className="text-[9px] uppercase tracking-[0.2em] text-white/30 hover:text-white transition-colors">포털 보기</Link>
           </div>
 
           <div className="space-y-1">
@@ -172,8 +172,8 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-8 pt-8">
-            {["Notices", "Privacy", "Terms"].map((l) => (
-              <Link key={l} href={`/${l.toLowerCase()}`} className="text-[9px] uppercase tracking-widest text-white/20 hover:text-white transition-colors">
+            {["공지사항", "개인정보처리방침", "이용약관"].map((l) => (
+              <Link key={l} href={`/${l === "공지사항" ? "notices" : l === "개인정보처리방침" ? "privacy" : "terms"}`} className="text-[9px] uppercase tracking-widest text-white/20 hover:text-white transition-colors">
                 {l}
               </Link>
             ))}

@@ -61,19 +61,19 @@ export function AdminLayout({
                 <nav className="flex-1 space-y-2">
                     <SidebarItem
                         icon={LayoutDashboard}
-                        label="Overview"
+                        label="개요"
                         active={activeTab === "overview"}
                         onClick={() => setActiveTab("overview")}
                     />
                     <SidebarItem
                         icon={Users}
-                        label="Users"
+                        label="사용자"
                         active={activeTab === "users"}
                         onClick={() => setActiveTab("users")}
                     />
                     <SidebarItem
                         icon={Bell}
-                        label="Notices"
+                        label="공지사항"
                         active={activeTab === "notices"}
                         onClick={() => setActiveTab("notices")}
                     />
@@ -85,7 +85,7 @@ export function AdminLayout({
                         className="w-full flex items-center gap-3 px-4 py-3 text-zinc-500 hover:text-zinc-300 hover:bg-white/5 rounded-xl transition-all"
                     >
                         <ChevronLeft size={18} />
-                        <span className="text-sm font-medium">Exit Admin</span>
+                        <span className="text-sm font-medium">관리자 나가기</span>
                     </Link>
                 </div>
             </aside>

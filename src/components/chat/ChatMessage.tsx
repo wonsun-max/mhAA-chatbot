@@ -134,7 +134,7 @@ function CopyButton({ text }: { text: string }) {
                         className="flex items-center gap-1"
                     >
                         <Check size={14} className="text-green-400" />
-                        <span>Copied!</span>
+                        <span>복사됨!</span>
                     </motion.div>
                 ) : (
                     <motion.div
@@ -145,7 +145,7 @@ function CopyButton({ text }: { text: string }) {
                         className="flex items-center gap-1"
                     >
                         <Copy size={14} />
-                        <span>Copy</span>
+                        <span>복사</span>
                     </motion.div>
                 )}
             </AnimatePresence>

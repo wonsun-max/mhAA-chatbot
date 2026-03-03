@@ -58,7 +58,7 @@ export function AccessGate({
                         
                         <div className="flex items-center gap-3">
                             <div className="h-px flex-1 bg-white/5" />
-                            <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">or</span>
+                            <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">또는</span>
                             <div className="h-px flex-1 bg-white/5" />
                         </div>
 
@@ -77,7 +77,7 @@ export function AccessGate({
                 {/* Bottom Badge */}
                 <div className="relative z-10 pt-4 flex items-center justify-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">
                     <ShieldAlert size={12} className="text-blue-500/50" />
-                    Secure Access Only
+                    보안 접근 전용
                 </div>
             </motion.div>
         </motion.div>

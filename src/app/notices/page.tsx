@@ -99,12 +99,12 @@ export default function NoticesPage() {
                     {/* Header */}
                     <div className="space-y-6">
                         <Link href="/" className="inline-flex items-center gap-2 text-xs text-white/30 hover:text-white transition-colors group">
-                            <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Back to Home
+                            <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> 홈으로 돌아가기
                         </Link>
 
                         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                             <div className="space-y-2">
-                                <h1 className="text-4xl md:text-6xl font-extralight tracking-tight">광고 Portal</h1>
+                                <h1 className="text-4xl md:text-6xl font-extralight tracking-tight">공지사항 포털</h1>
                                 <p className="text-xs text-white/30 font-light tracking-[0.4em] uppercase">소식 및 정보</p>
                             </div>
 
@@ -115,7 +115,7 @@ export default function NoticesPage() {
                                         type="text"
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                        placeholder="Search notices..."
+                                        placeholder="공지사항 검색..."
                                         className="bg-white/5 border border-white/10 rounded-xl py-2.5 pl-9 pr-4 text-[11px] font-light focus:outline-none focus:border-white/20 transition-all w-full md:w-64"
                                     />
                                 </div>
@@ -124,7 +124,7 @@ export default function NoticesPage() {
                                         onClick={() => setShowAddModal(true)}
                                         className="p-2.5 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider px-4"
                                     >
-                                        <Plus size={16} /> New Post
+                                        <Plus size={16} /> 새 글 작성
                                     </button>
                                 )}
                             </div>
@@ -136,7 +136,7 @@ export default function NoticesPage() {
                         {loading ? (
                             <div className="flex flex-col items-center justify-center py-40 space-y-4 opacity-20">
                                 <Loader2 size={32} className="animate-spin" />
-                                <p className="text-[10px] uppercase tracking-widest">Fetching data...</p>
+                                <p className="text-[10px] uppercase tracking-widest">데이터를 불러오는 중...</p>
                             </div>
                         ) : filteredNotices.length > 0 ? (
                             filteredNotices.map((notice, i) => (
@@ -152,7 +152,7 @@ export default function NoticesPage() {
                                         <div className="space-y-6 flex-1">
                                             <div className="flex items-center gap-4">
                                                 <span className="px-3 py-1 rounded-full text-[9px] uppercase tracking-widest font-bold bg-white/5 text-white/50 border border-white/10 group-hover:bg-blue-500/10 group-hover:text-blue-400 group-hover:border-blue-500/20 transition-colors">
-                                                    {notice.category}
+                                                    {notice.category === "Notice" ? "공지사항" : notice.category === "Mission" ? "미션" : notice.category === "Event" ? "이벤트" : notice.category === "Bible" ? "주제 말씀" : notice.category}
                                                 </span>
                                                 <span className="text-[10px] text-white/20 font-mono">
                                                     {new Date(notice.createdAt).toLocaleDateString("ko-KR", { year: "numeric", month: "2-digit", day: "2-digit" })}
@@ -188,7 +188,7 @@ export default function NoticesPage() {
                         ) : (
                             <div className="py-40 text-center space-y-4 opacity-20">
                                 <Bell size={40} className="mx-auto" />
-                                <p className="text-sm italic">Nothing found yet.</p>
+                                <p className="text-sm italic">검색 결과가 없습니다.</p>
                             </div>
                         )}
                     </div>
@@ -221,46 +221,46 @@ export default function NoticesPage() {
 
                             <div className="space-y-8">
                                 <div className="space-y-1">
-                                    <h3 className="text-2xl font-light">New Mission Update</h3>
-                                    <p className="text-[10px] text-white/20 uppercase tracking-[0.3em]">Create a new notice for the community</p>
+                                    <h3 className="text-2xl font-light">새로운 소식 업데이트</h3>
+                                    <p className="text-[10px] text-white/20 uppercase tracking-[0.3em]">커뮤니티를 위한 새로운 공지사항을 작성하세요</p>
                                 </div>
 
                                 <form onSubmit={handleAddNotice} className="space-y-6">
                                     <div className="space-y-4">
                                         <div className="space-y-2">
-                                            <label className="text-[10px] uppercase tracking-widest text-white/40 px-1 font-bold">Category</label>
+                                            <label className="text-[10px] uppercase tracking-widest text-white/40 px-1 font-bold">카테고리</label>
                                             <select
                                                 value={newNotice.category}
                                                 onChange={(e) => setNewNotice({ ...newNotice, category: e.target.value })}
                                                 className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-sm focus:outline-none focus:border-white/20 transition-all appearance-none"
                                             >
-                                                <option value="Notice" className="bg-zinc-900">Notice</option>
-                                                <option value="Mission" className="bg-zinc-900">Mission</option>
-                                                <option value="Event" className="bg-zinc-900">Event</option>
-                                                <option value="Bible" className="bg-zinc-900">Bible Verse</option>
+                                                <option value="Notice" className="bg-zinc-900">공지사항</option>
+                                                <option value="Mission" className="bg-zinc-900">미션</option>
+                                                <option value="Event" className="bg-zinc-900">이벤트</option>
+                                                <option value="Bible" className="bg-zinc-900">주제 말씀</option>
                                             </select>
                                         </div>
 
                                         <div className="space-y-2">
-                                            <label className="text-[10px] uppercase tracking-widest text-white/40 px-1 font-bold">Title</label>
+                                            <label className="text-[10px] uppercase tracking-widest text-white/40 px-1 font-bold">제목</label>
                                             <input
                                                 type="text"
                                                 required
                                                 value={newNotice.title}
                                                 onChange={(e) => setNewNotice({ ...newNotice, title: e.target.value })}
-                                                placeholder="Notice Title..."
+                                                placeholder="공지사항 제목..."
                                                 className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-sm focus:outline-none focus:border-white/20 transition-all"
                                             />
                                         </div>
 
                                         <div className="space-y-2">
-                                            <label className="text-[10px] uppercase tracking-widest text-white/40 px-1 font-bold">Content</label>
+                                            <label className="text-[10px] uppercase tracking-widest text-white/40 px-1 font-bold">내용</label>
                                             <textarea
                                                 required
                                                 rows={6}
                                                 value={newNotice.content}
                                                 onChange={(e) => setNewNotice({ ...newNotice, content: e.target.value })}
-                                                placeholder="Enter the detailed announcement..."
+                                                placeholder="상세 내용을 입력하세요..."
                                                 className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-sm focus:outline-none focus:border-white/20 transition-all resize-none"
                                             />
                                         </div>
@@ -270,7 +270,7 @@ export default function NoticesPage() {
                                         disabled={isSubmitting}
                                         className="w-full py-4 bg-white text-black rounded-2xl text-[11px] uppercase tracking-widest font-black hover:bg-zinc-200 transition-all disabled:opacity-50 flex items-center justify-center gap-3"
                                     >
-                                        {isSubmitting ? <Loader2 size={16} className="animate-spin" /> : "Publish Notice"}
+                                        {isSubmitting ? <Loader2 size={16} className="animate-spin" /> : "공지사항 게시"}
                                     </button>
                                 </form>
                             </div>
