@@ -3,6 +3,25 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
+    try {
+        const { id } = await params;
+        
+        // @ts-ignore - Prisma type issue in IDE
+        const notice = await prisma.notice.findUnique({
+            where: { id },
+        });
+
+        if (!notice) {
+            return NextResponse.json({ error: "Notice not found" }, { status: 404 });
+        }
+
+        return NextResponse.json(notice);
+    } catch (error) {
+        return NextResponse.json({ error: "Failed to fetch notice" }, { status: 500 });
+    }
+}
+
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const { id } = await params;
@@ -48,3 +67,4 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
         return NextResponse.json({ error: "Failed to delete notice" }, { status: 500 });
     }
 }
+

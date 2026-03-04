@@ -183,9 +183,12 @@ export default function NoticesPage() {
                                             </button>
                                         )}
                                     </div>
-                                    <button className="flex items-center gap-2 text-[10px] uppercase font-bold tracking-widest text-white/20 group-hover:text-white transition-colors">
+                                    <Link
+                                        href={`/notices/${notice.id}`}
+                                        className="flex items-center gap-2 text-[10px] uppercase font-bold tracking-widest text-white/20 group-hover:text-white transition-colors"
+                                    >
                                         자세히 보기 <ChevronRight size={14} />
-                                    </button>
+                                    </Link>
                                 </div>
                             </motion.div>
                         ))}

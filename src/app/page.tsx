@@ -143,7 +143,7 @@ export default function Home() {
               </div>
             ) : notices.length > 0 ? (
               notices.map((notice, i) => (
-                <Link key={notice.id} href={`/notices#${notice.id}`} className="block border-b border-white/5 last:border-0 py-8 group">
+                <Link key={notice.id} href={`/notices/${notice.id}`} className="block border-b border-white/5 last:border-0 py-8 group">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="space-y-2">
                       <span className="text-[9px] uppercase tracking-widest text-blue-400 font-medium">{notice.category}</span>
