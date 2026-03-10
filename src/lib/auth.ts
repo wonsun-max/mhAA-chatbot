@@ -52,10 +52,11 @@ export const authOptions: NextAuthOptions = {
         async jwt({ token, user }) {
             if (user) {
                 token.id = user.id;
-                token.sub = user.id; // Added for standard compatibility
+                token.sub = user.id;
                 token.role = (user as any).role;
                 token.status = (user as any).status;
                 token.grade = (user as any).grade;
+                token.nickname = (user as any).nickname;
             }
             return token;
         },
@@ -65,6 +66,7 @@ export const authOptions: NextAuthOptions = {
                 (session.user as any).role = token.role;
                 (session.user as any).status = token.status;
                 (session.user as any).grade = token.grade;
+                (session.user as any).nickname = token.nickname;
             }
             return session;
         }

@@ -8,16 +8,16 @@ import { Loader2, Lock, ChevronRight, User } from "lucide-react"
 import { motion } from "framer-motion"
 
 function LoginContent() {
-    const { data: session, status } = useSession()
     const [identifier, setIdentifier] = useState("")
     const [password, setPassword] = useState("")
     const [error, setError] = useState("")
     const [isLoading, setIsLoading] = useState(false)
     const router = useRouter()
     const searchParams = useSearchParams()
+    const { status } = useSession()
     const message = searchParams.get("message")
 
-    // Automatically redirect if already authenticated
+    // Automatically redirect if session becomes authenticated
     useEffect(() => {
         if (status === "authenticated" && !isLoading) {
             const callbackUrl = searchParams.get("callbackUrl") || "/chatbot"
@@ -27,6 +27,8 @@ function LoginContent() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+        if (isLoading) return
+
         setIsLoading(true)
         setError("")
 
@@ -38,12 +40,19 @@ function LoginContent() {
             })
 
             if (res?.error) {
-                setError(res.error || "Invalid credentials or account pending approval.")
+                setError(res.error || "이메일/닉네임 또는 비밀번호가 올바르지 않습니다.")
                 setIsLoading(false)
+            } else {
+                // Successful login
+                const callbackUrl = searchParams.get("callbackUrl") || "/chatbot"
+                // Force a router refresh to sync session state, then redirect
+                router.refresh()
+                router.replace(callbackUrl)
+                // Note: We don't set isLoading(false) here to prevent the UI from "toggling"
+                // before the redirect happens.
             }
-            // Note: status will change to "authenticated", triggering the useEffect above
         } catch (err) {
-            setError("An unexpected error occurred. Please try again.")
+            setError("로그인 중 오류가 발생했습니다. 다시 시도해주세요.")
             setIsLoading(false)
         }
     }

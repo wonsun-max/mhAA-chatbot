@@ -1,15 +1,29 @@
 "use client"
 
-import { useSession } from "next-auth/react"
-import { motion } from "framer-motion"
-import { User, Mail, GraduationCap, Shield, Calendar, Clock, ChevronLeft } from "lucide-react"
+import { useSession, signOut } from "next-auth/react"
+import { motion, AnimatePresence } from "framer-motion"
+import {
+    User, Mail, GraduationCap, Shield,
+    ChevronLeft, LogOut, MessageSquare,
+    Calendar, CheckCircle2, AlertCircle,
+    Activity, ArrowRight
+} from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
+
+interface UserStats {
+    totalChats: number
+    memberSince: string
+    status: string
+    grade: string
+}
 
 export default function ProfilePage() {
     const { data: session, status } = useSession()
     const router = useRouter()
+    const [stats, setStats] = useState<UserStats | null>(null)
+    const [loadingStats, setLoadingStats] = useState(true)
 
     useEffect(() => {
         if (status === "unauthenticated") {
@@ -17,75 +31,226 @@ export default function ProfilePage() {
         }
     }, [status, router])
 
+    useEffect(() => {
+        if (status === "authenticated") {
+            fetch("/api/user/stats")
+                .then(res => res.json())
+                .then(data => {
+                    setStats(data)
+                    setLoadingStats(false)
+                })
+                .catch(() => setLoadingStats(false))
+        }
+    }, [status])
+
     if (status === "loading") {
         return (
-            <div className="min-h-screen bg-black flex items-center justify-center">
-                <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+            <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+                <div className="relative w-12 h-12">
+                    <div className="absolute inset-0 border-2 border-white/10 rounded-full" />
+                    <div className="absolute inset-0 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                </div>
             </div>
         )
     }
 
     if (!session) return null
 
-    const userData = [
-        { label: "성명", value: session.user?.name, icon: User },
-        { label: "닉네임", value: (session.user as any)?.nickname, icon: Shield },
-        { label: "이메일 주소", value: session.user?.email, icon: Mail },
-        { label: "학년 / 반", value: (session.user as any)?.grade + "학년", icon: GraduationCap },
-        { label: "계정 상태", value: "승인된 회원", icon: Shield, color: "text-green-400" },
-    ]
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.1,
+                delayChildren: 0.2
+            }
+        }
+    }
+
+    const itemVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: { opacity: 1, y: 0 }
+    }
 
     return (
-        <div className="min-h-screen bg-black text-white pt-32 pb-20 px-6">
-            <div className="max-w-3xl mx-auto space-y-12">
-                {/* Header */}
-                <div className="space-y-6">
-                    <Link href="/" className="inline-flex items-center text-sm text-gray-500 hover:text-white transition-colors group">
-                        <ChevronLeft size={16} className="mr-1 group-hover:-translate-x-1 transition-transform" />
-                        홈으로 돌아가기
-                    </Link>
-                    <h1 className="text-4xl md:text-5xl font-bold tracking-tight">사용자 프로필</h1>
-                    <p className="text-zinc-500">학생 계정 및 개인 정보를 관리하세요.</p>
-                </div>
+        <div className="min-h-screen bg-[#050505] text-white selection:bg-blue-500/30">
+            {/* Background Elements */}
+            <div className="fixed inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full" />
+                <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/10 blur-[120px] rounded-full" />
+            </div>
 
-                {/* Profile Card */}
+            <div className="max-w-5xl mx-auto px-6 pt-32 pb-24 relative z-10">
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="glass-panel p-8 md:p-10 rounded-[2.5rem] border border-white/5 space-y-10"
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="visible"
+                    className="space-y-12"
                 >
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {userData.map((item, idx) => (
-                            <div key={idx} className="space-y-2">
-                                <div className="flex items-center space-x-2 text-zinc-500">
-                                    <item.icon size={14} />
-                                    <span className="text-[10px] uppercase tracking-[0.2em] font-bold">{item.label}</span>
-                                </div>
-                                <div className={`text-lg font-medium ${item.color || "text-white"}`}>
-                                    {item.value || "설정되지 않음"}
-                                </div>
-                            </div>
-                        ))}
+                    {/* Header */}
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                        <div className="space-y-4">
+                            <motion.div variants={itemVariants}>
+                                <Link
+                                    href="/"
+                                    className="inline-flex items-center text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500 hover:text-white transition-colors group"
+                                >
+                                    <ChevronLeft size={14} className="mr-1 group-hover:-translate-x-1 transition-transform" />
+                                    홈으로 돌아가기
+                                </Link>
+                            </motion.div>
+                            <motion.h1
+                                variants={itemVariants}
+                                className="text-5xl md:text-6xl font-black tracking-tight"
+                            >
+                                Student<span className="text-blue-500">.</span>
+                            </motion.h1>
+                            <motion.p variants={itemVariants} className="text-zinc-400 text-lg max-w-md">
+                                플랫폼 개인 식별 및 활동 관리
+                            </motion.p>
+                        </div>
+
+                        <motion.button
+                            variants={itemVariants}
+                            onClick={() => signOut({ callbackUrl: "/" })}
+                            className="bg-zinc-900 border border-white/5 hover:bg-zinc-800 text-white px-6 py-3 rounded-2xl flex items-center space-x-2 transition-all group active:scale-95"
+                        >
+                            <LogOut size={18} className="text-zinc-400 group-hover:text-red-400 transition-colors" />
+                            <span className="font-medium">로그아웃</span>
+                        </motion.button>
                     </div>
 
-                    <div className="pt-8 border-t border-white/5 space-y-6">
-                        <h3 className="text-sm font-bold text-white uppercase tracking-widest">데이터 및 개인정보 보호</h3>
-                        <div className="bg-zinc-950/50 rounded-2xl p-6 border border-white/5 space-y-4">
-                            <div className="flex items-start space-x-4">
-                                <div className="p-2 bg-blue-500/10 rounded-lg text-blue-500">
-                                    <Clock size={20} />
+                    {/* Dashboard Grid */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        {/* Stats Section */}
+                        <motion.div
+                            variants={itemVariants}
+                            className="lg:col-span-2 space-y-8"
+                        >
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <StatCard
+                                    label="총 채팅 미션"
+                                    value={loadingStats ? "..." : stats?.totalChats || 0}
+                                    icon={MessageSquare}
+                                    color="blue"
+                                />
+                                <StatCard
+                                    label="현재 학년"
+                                    value={session.user?.grade ? `${session.user.grade}학년` : "미지정"}
+                                    icon={GraduationCap}
+                                    color="indigo"
+                                />
+                                <StatCard
+                                    label="회원 상태"
+                                    value={stats?.status === "APPROVED" ? "승인됨" : "대기 중"}
+                                    icon={Shield}
+                                    color={stats?.status === "APPROVED" ? "green" : "orange"}
+                                />
+                                <StatCard
+                                    label="가입 일자"
+                                    value={stats?.memberSince ? new Date(stats.memberSince).toLocaleDateString() : "---"}
+                                    icon={Calendar}
+                                    color="zinc"
+                                />
+                            </div>
+
+                            {/* Recent Activity Mockup */}
+                            <div className="glass-panel p-8 rounded-[2rem] border border-white/5 bg-zinc-950/20">
+                                <div className="flex items-center justify-between mb-8">
+                                    <h3 className="text-lg font-bold tracking-tight">시스템 로그</h3>
+                                    <Activity size={18} className="text-blue-500" />
                                 </div>
-                                <div className="space-y-1">
-                                    <p className="text-sm font-medium text-white">채팅 기록 투명성</p>
-                                    <p className="text-xs text-zinc-500 leading-relaxed">
-                                        귀하의 채팅 로그는 맞춤형 학습 지원을 위해 안전하게 저장됩니다.
-                                        데이터 관련 문의는 플랫폼 내 문의 채널을 통해 요청하실 수 있습니다.
+                                <div className="space-y-4">
+                                    {[1, 2, 3].map((_, i) => (
+                                        <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/5">
+                                            <div className="flex items-center space-x-4">
+                                                <div className="w-2 h-2 rounded-full bg-blue-500" />
+                                                <div className="text-sm font-medium text-zinc-300">
+                                                    AI 상호작용 신호 감지됨
+                                                </div>
+                                            </div>
+                                            <div className="text-xs text-zinc-600 font-mono">
+                                                상태: 정상
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </motion.div>
+
+                        {/* Profile Info Section */}
+                        <motion.div variants={itemVariants} className="space-y-8">
+                            <div className="glass-panel p-8 rounded-[2rem] border border-white/5 bg-zinc-950/30 flex flex-col items-center text-center">
+                                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mb-6 shadow-2xl shadow-blue-500/20">
+                                    <span className="text-3xl font-black">{session.user?.name?.[0]}</span>
+                                </div>
+                                <div className="space-y-1 mb-8">
+                                    <h2 className="text-2xl font-bold">{session.user?.name}</h2>
+                                    <p className="text-blue-400 text-sm font-semibold tracking-widest uppercase">
+                                        {(session.user as any)?.nickname}
                                     </p>
                                 </div>
+
+                                <div className="w-full space-y-4 pt-8 border-t border-white/5">
+                                    <InfoRow icon={Mail} label="이메일" value={session.user?.email || "이메일 없음"} />
+                                    <InfoRow icon={Shield} label="계정 등급" value={(session.user as any)?.role || "사용자"} />
+                                </div>
+
+                                <Link
+                                    href="/chatbot"
+                                    className="w-full mt-10 bg-white text-black py-4 rounded-xl font-bold flex items-center justify-center group transition-all hover:bg-zinc-200"
+                                >
+                                    챗봇 입장하기
+                                    <ArrowRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                                </Link>
                             </div>
-                        </div>
+
+                            <div className="px-4 text-center">
+                                <p className="text-[10px] text-zinc-600 uppercase tracking-[0.3em] font-bold">
+                                    위더스 교육 보안 플랫폼
+                                </p>
+                            </div>
+                        </motion.div>
                     </div>
                 </motion.div>
+            </div>
+        </div>
+    )
+}
+
+function StatCard({ label, value, icon: Icon, color }: { label: string, value: any, icon: any, color: string }) {
+    const colors: Record<string, string> = {
+        blue: "text-blue-500 bg-blue-500/10 border-blue-500/20",
+        indigo: "text-indigo-500 bg-indigo-500/10 border-indigo-500/20",
+        green: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20",
+        orange: "text-orange-500 bg-orange-500/10 border-orange-500/20",
+        zinc: "text-zinc-400 bg-zinc-400/10 border-zinc-400/20",
+    }
+
+    return (
+        <div className="glass-panel p-6 rounded-3xl border border-white/5 bg-zinc-950/20 flex flex-col justify-between group hover:border-white/10 transition-colors">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 border ${colors[color]}`}>
+                <Icon size={20} />
+            </div>
+            <div className="space-y-1">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 group-hover:text-zinc-400 transition-colors">
+                    {label}
+                </p>
+                <h4 className="text-xl font-bold tracking-tight">{value}</h4>
+            </div>
+        </div>
+    )
+}
+
+function InfoRow({ icon: Icon, label, value }: { icon: any, label: string, value: string }) {
+    return (
+        <div className="flex items-center space-x-3 w-full text-left">
+            <div className="text-zinc-600">
+                <Icon size={16} />
+            </div>
+            <div className="flex-1 overflow-hidden">
+                <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-600 leading-tight">{label}</p>
+                <p className="text-xs font-medium text-zinc-300 truncate">{value}</p>
             </div>
         </div>
     )
