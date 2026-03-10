@@ -52,14 +52,17 @@ export const authOptions: NextAuthOptions = {
         }),
     ],
     callbacks: {
-        async jwt({ token, user }) {
+        async jwt({ token, user, trigger, session }) {
             if (user) {
                 token.id = user.id;
-                token.sub = user.id;
                 token.role = (user as any).role;
                 token.status = (user as any).status;
                 token.grade = (user as any).grade;
                 token.nickname = (user as any).nickname;
+            }
+            // Support updating token values if needed
+            if (trigger === "update" && session?.nickname) {
+                token.nickname = session.nickname;
             }
             return token;
         },
@@ -76,9 +79,22 @@ export const authOptions: NextAuthOptions = {
     },
     pages: {
         signIn: "/login",
+        error: "/login",
     },
     session: {
         strategy: "jwt",
         maxAge: 30 * 24 * 60 * 60,
     },
+    // Ensure cookies are handled correctly across subdomains if applicable
+    cookies: {
+        sessionToken: {
+            name: process.env.NODE_ENV === 'production' ? `__Secure-next-auth.session-token` : `next-auth.session-token`,
+            options: {
+                httpOnly: true,
+                sameSite: 'lax',
+                path: '/',
+                secure: process.env.NODE_ENV === 'production'
+            }
+        }
+    }
 };

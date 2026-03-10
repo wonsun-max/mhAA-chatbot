@@ -6,7 +6,7 @@ import {
     User, Mail, GraduationCap, Shield,
     ChevronLeft, LogOut, MessageSquare,
     Calendar, CheckCircle2, AlertCircle,
-    Activity, ArrowRight
+    Activity, ArrowRight, Edit3, X
 } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -20,10 +20,47 @@ interface UserStats {
 }
 
 export default function ProfilePage() {
-    const { data: session, status } = useSession()
+    const { data: session, status, update } = useSession()
     const router = useRouter()
     const [stats, setStats] = useState<UserStats | null>(null)
     const [loadingStats, setLoadingStats] = useState(true)
+
+    // Nickname Edit State
+    const [isEditingNickname, setIsEditingNickname] = useState(false)
+    const [newNickname, setNewNickname] = useState("")
+    const [isSaving, setIsSaving] = useState(false)
+    const [updateError, setUpdateError] = useState<string | null>(null)
+
+    const handleNicknameUpdate = async () => {
+        if (!newNickname || newNickname.trim() === (session?.user as any)?.nickname) {
+            setIsEditingNickname(false)
+            return
+        }
+
+        setIsSaving(true)
+        setUpdateError(null)
+
+        try {
+            const res = await fetch("/api/user/nickname", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nickname: newNickname.trim() })
+            })
+
+            const data = await res.json()
+
+            if (!res.ok) throw new Error(data.error || "변경에 실패했습니다.")
+
+            // Update session locally
+            await update({ nickname: newNickname.trim() })
+            setIsEditingNickname(false)
+            setUpdateError(null)
+        } catch (err: any) {
+            setUpdateError(err.message)
+        } finally {
+            setIsSaving(false)
+        }
+    }
 
     useEffect(() => {
         if (status === "unauthenticated") {
@@ -74,7 +111,6 @@ export default function ProfilePage() {
 
     return (
         <div className="min-h-screen bg-[#050505] text-white selection:bg-blue-500/30">
-            {/* Background Elements */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full" />
                 <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/10 blur-[120px] rounded-full" />
@@ -87,7 +123,6 @@ export default function ProfilePage() {
                     animate="visible"
                     className="space-y-12"
                 >
-                    {/* Header */}
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                         <div className="space-y-4">
                             <motion.div variants={itemVariants}>
@@ -120,9 +155,7 @@ export default function ProfilePage() {
                         </motion.button>
                     </div>
 
-                    {/* Dashboard Grid */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        {/* Stats Section */}
                         <motion.div
                             variants={itemVariants}
                             className="lg:col-span-2 space-y-8"
@@ -136,7 +169,7 @@ export default function ProfilePage() {
                                 />
                                 <StatCard
                                     label="현재 학년"
-                                    value={session.user?.grade ? `${session.user.grade}학년` : "미지정"}
+                                    value={(session.user as any)?.grade ? `${(session.user as any).grade}학년` : "미지정"}
                                     icon={GraduationCap}
                                     color="indigo"
                                 />
@@ -154,7 +187,6 @@ export default function ProfilePage() {
                                 />
                             </div>
 
-                            {/* Recent Activity Mockup */}
                             <div className="glass-panel p-8 rounded-[2rem] border border-white/5 bg-zinc-950/20">
                                 <div className="flex items-center justify-between mb-8">
                                     <h3 className="text-lg font-bold tracking-tight">시스템 로그</h3>
@@ -178,7 +210,6 @@ export default function ProfilePage() {
                             </div>
                         </motion.div>
 
-                        {/* Profile Info Section */}
                         <motion.div variants={itemVariants} className="space-y-8">
                             <div className="glass-panel p-8 rounded-[2rem] border border-white/5 bg-zinc-950/30 flex flex-col items-center text-center">
                                 <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mb-6 shadow-2xl shadow-blue-500/20">
@@ -186,9 +217,51 @@ export default function ProfilePage() {
                                 </div>
                                 <div className="space-y-1 mb-8">
                                     <h2 className="text-2xl font-bold">{session.user?.name}</h2>
-                                    <p className="text-blue-400 text-sm font-semibold tracking-widest uppercase">
-                                        {(session.user as any)?.nickname}
-                                    </p>
+                                    <div className="flex flex-col items-center space-y-2">
+                                        {isEditingNickname ? (
+                                            <div className="flex items-center space-x-2">
+                                                <input
+                                                    type="text"
+                                                    value={newNickname}
+                                                    onChange={(e) => setNewNickname(e.target.value)}
+                                                    className="bg-black/50 border border-white/20 rounded-lg px-3 py-1 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
+                                                    placeholder="새 닉네임"
+                                                    autoFocus
+                                                />
+                                                <button
+                                                    onClick={handleNicknameUpdate}
+                                                    disabled={isSaving}
+                                                    className="p-1.5 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors disabled:opacity-50"
+                                                >
+                                                    {isSaving ? <Activity size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
+                                                </button>
+                                                <button
+                                                    onClick={() => setIsEditingNickname(false)}
+                                                    className="p-1.5 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors"
+                                                >
+                                                    <X size={14} />
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center space-x-2 group">
+                                                <p className="text-blue-400 text-sm font-semibold tracking-widest uppercase">
+                                                    {(session.user as any)?.nickname}
+                                                </p>
+                                                <button
+                                                    onClick={() => {
+                                                        setNewNickname((session.user as any)?.nickname || "")
+                                                        setIsEditingNickname(true)
+                                                    }}
+                                                    className="opacity-0 group-hover:opacity-100 p-1 hover:bg-white/10 rounded-md transition-all text-zinc-500 hover:text-white"
+                                                >
+                                                    <Edit3 size={14} />
+                                                </button>
+                                            </div>
+                                        )}
+                                        {updateError && (
+                                            <p className="text-[10px] text-red-500 font-bold">{updateError}</p>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div className="w-full space-y-4 pt-8 border-t border-white/5">
@@ -228,7 +301,7 @@ function StatCard({ label, value, icon: Icon, color }: { label: string, value: a
     }
 
     return (
-        <div className="glass-panel p-6 rounded-3xl border border-white/5 bg-zinc-950/20 flex flex-col justify-between group hover:border-white/10 transition-colors">
+        <div className="glass-panel p-6 rounded-3xl border border-white/5 bg-zinc-950/20 flex flex-col justify-between group hover:border-white/10 transition-colors text-white">
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 border ${colors[color]}`}>
                 <Icon size={20} />
             </div>
