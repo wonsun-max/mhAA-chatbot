@@ -19,11 +19,11 @@ function LoginContent() {
 
     // Automatically redirect if already authenticated
     useEffect(() => {
-        if (status === "authenticated") {
+        if (status === "authenticated" && !isLoading) {
             const callbackUrl = searchParams.get("callbackUrl") || "/chatbot"
-            window.location.href = callbackUrl
+            router.replace(callbackUrl)
         }
-    }, [status, searchParams])
+    }, [status, searchParams, router, isLoading])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -40,10 +40,8 @@ function LoginContent() {
             if (res?.error) {
                 setError(res.error || "Invalid credentials or account pending approval.")
                 setIsLoading(false)
-            } else {
-                const callbackUrl = searchParams.get("callbackUrl") || "/chatbot"
-                window.location.href = callbackUrl
             }
+            // Note: status will change to "authenticated", triggering the useEffect above
         } catch (err) {
             setError("An unexpected error occurred. Please try again.")
             setIsLoading(false)
