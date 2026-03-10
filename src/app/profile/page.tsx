@@ -9,6 +9,7 @@ import {
     Activity, ArrowRight, Edit3, X
 } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
@@ -111,6 +112,7 @@ export default function ProfilePage() {
 
     return (
         <div className="min-h-screen bg-[#050505] text-white selection:bg-blue-500/30">
+            {/* Background Elements */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full" />
                 <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/10 blur-[120px] rounded-full" />
@@ -123,6 +125,7 @@ export default function ProfilePage() {
                     animate="visible"
                     className="space-y-12"
                 >
+                    {/* Header */}
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                         <div className="space-y-4">
                             <motion.div variants={itemVariants}>
@@ -155,7 +158,9 @@ export default function ProfilePage() {
                         </motion.button>
                     </div>
 
+                    {/* Dashboard Grid */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        {/* Stats Section */}
                         <motion.div
                             variants={itemVariants}
                             className="lg:col-span-2 space-y-8"
@@ -187,33 +192,28 @@ export default function ProfilePage() {
                                 />
                             </div>
 
+                            {/* Activity Section Placeholder or Alternative Content */}
                             <div className="glass-panel p-8 rounded-[2rem] border border-white/5 bg-zinc-950/20">
-                                <div className="flex items-center justify-between mb-8">
-                                    <h3 className="text-lg font-bold tracking-tight">시스템 로그</h3>
-                                    <Activity size={18} className="text-blue-500" />
-                                </div>
-                                <div className="space-y-4">
-                                    {[1, 2, 3].map((_, i) => (
-                                        <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/5">
-                                            <div className="flex items-center space-x-4">
-                                                <div className="w-2 h-2 rounded-full bg-blue-500" />
-                                                <div className="text-sm font-medium text-zinc-300">
-                                                    AI 상호작용 신호 감지됨
-                                                </div>
-                                            </div>
-                                            <div className="text-xs text-zinc-600 font-mono">
-                                                상태: 정상
-                                            </div>
-                                        </div>
-                                    ))}
+                                <div className="space-y-4 text-center py-6">
+                                    <CheckCircle2 size={32} className="mx-auto text-blue-500/50 mb-4" />
+                                    <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-widest">학습 활동 정보</h3>
+                                    <p className="text-xs text-zinc-500">미션 수행 기록과 활동 로그가 이곳에 표시됩니다.</p>
                                 </div>
                             </div>
                         </motion.div>
 
+                        {/* Profile Info Section */}
                         <motion.div variants={itemVariants} className="space-y-8">
                             <div className="glass-panel p-8 rounded-[2rem] border border-white/5 bg-zinc-950/30 flex flex-col items-center text-center">
-                                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mb-6 shadow-2xl shadow-blue-500/20">
-                                    <span className="text-3xl font-black">{session.user?.name?.[0]}</span>
+                                <div className="w-24 h-24 rounded-full overflow-hidden mb-6 shadow-2xl shadow-blue-500/20 border border-white/10 p-2 bg-gradient-to-br from-white/5 to-white/10">
+                                    <div className="relative w-full h-full">
+                                        <Image
+                                            src="/images/site-logo.png"
+                                            alt="Student Profile"
+                                            fill
+                                            className="object-contain"
+                                        />
+                                    </div>
                                 </div>
                                 <div className="space-y-1 mb-8">
                                     <h2 className="text-2xl font-bold">{session.user?.name}</h2>
@@ -244,7 +244,7 @@ export default function ProfilePage() {
                                             </div>
                                         ) : (
                                             <div className="flex items-center space-x-2 group">
-                                                <p className="text-blue-400 text-sm font-semibold tracking-widest uppercase">
+                                                <p className="text-blue-400 text-sm font-semibold">
                                                     {(session.user as any)?.nickname}
                                                 </p>
                                                 <button
