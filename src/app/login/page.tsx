@@ -17,13 +17,13 @@ function LoginContent() {
     const { status } = useSession()
     const message = searchParams.get("message")
 
-    // Automatically redirect if session becomes authenticated
+    // If already logged in, redirect immediately
     useEffect(() => {
-        if (status === "authenticated" && !isLoading) {
+        if (status === "authenticated") {
             const callbackUrl = searchParams.get("callbackUrl") || "/chatbot"
             router.replace(callbackUrl)
         }
-    }, [status, searchParams, router, isLoading])
+    }, [status, searchParams, router])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -39,19 +39,24 @@ function LoginContent() {
                 redirect: false,
             })
 
-            if (res?.error) {
-                setError(res.error || "이메일/닉네임 또는 비밀번호가 올바르지 않습니다.")
+            if (!res) {
+                setError("서버 응답이 없습니다. 잠시 후 다시 시도해주세요.")
                 setIsLoading(false)
-            } else {
-                // Successful login
-                const callbackUrl = searchParams.get("callbackUrl") || "/chatbot"
-                // Force a router refresh to sync session state, then redirect
-                router.refresh()
-                router.replace(callbackUrl)
-                // Note: We don't set isLoading(false) here to prevent the UI from "toggling"
-                // before the redirect happens.
+                return
             }
-        } catch (err) {
+
+            if (res.error) {
+                setError("이메일/닉네임 또는 비밀번호가 올바르지 않습니다.")
+                setIsLoading(false)
+                return
+            }
+
+            // Success — redirect directly using window.location for a hard nav
+            // This is the most reliable way to avoid session sync issues.
+            const callbackUrl = searchParams.get("callbackUrl") || "/chatbot"
+            window.location.href = callbackUrl
+
+        } catch {
             setError("로그인 중 오류가 발생했습니다. 다시 시도해주세요.")
             setIsLoading(false)
         }
