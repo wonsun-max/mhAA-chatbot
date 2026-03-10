@@ -10,6 +10,15 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Email is required" }, { status: 400 });
         }
 
+        // Check if user already exists
+        const existingUser = await prisma.user.findUnique({
+            where: { email },
+        });
+
+        if (existingUser) {
+            return NextResponse.json({ error: "이미 등록된 이메일입니다." }, { status: 400 });
+        }
+
         // Generate 6-digit code
         const code = Math.floor(100000 + Math.random() * 900000).toString();
         const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes

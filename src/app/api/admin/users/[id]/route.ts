@@ -16,10 +16,16 @@ export async function POST(
 
         const { id } = await params;
 
-        await prisma.user.update({
+        const user = await prisma.user.update({
             where: { id },
             data: { status: "APPROVED" },
         });
+
+        // Send approval email if user has an email and name
+        if (user.email && user.name) {
+            const { sendApprovalEmail } = await import("@/lib/mail");
+            await sendApprovalEmail(user.email, user.name);
+        }
 
         return NextResponse.json({ message: "User approved successfully" });
     } catch (error) {
