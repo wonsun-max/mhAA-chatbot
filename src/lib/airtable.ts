@@ -10,9 +10,14 @@ export const tables = {
     SCHEDULES: "Schedules",
 };
 
+interface SelectOptions {
+    filterByFormula?: string;
+    sort?: { field: string; direction: 'asc' | 'desc' }[];
+}
+
 export async function getRecords(tableName: string, options: { filterByFormula?: string; sort?: { field: string; direction: 'asc' | 'desc' }[] } = {}) {
     try {
-        const selectOptions: any = {};
+        const selectOptions: SelectOptions = {};
         if (options.filterByFormula) selectOptions.filterByFormula = options.filterByFormula;
         if (options.sort) selectOptions.sort = options.sort;
 

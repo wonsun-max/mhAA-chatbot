@@ -15,13 +15,13 @@ export function PromotionModal() {
 
     useEffect(() => {
         setMounted(true);
-        const hideUntil = localStorage.getItem("mha-promo-hide-until");
+        const hideUntil = typeof window !== "undefined" ? localStorage.getItem("mha-promo-hide-until") : null;
         if (!hideUntil || Date.now() > parseInt(hideUntil)) {
             // Delay opening slightly for a smoother entry
             const timer = setTimeout(() => setIsOpen(true), 1000);
             return () => clearTimeout(timer);
         }
-    }, []);
+    }, [setMounted]); // Added dependency to satisfy lint if needed, though it's static
 
     const closeBase = () => setIsOpen(false);
 

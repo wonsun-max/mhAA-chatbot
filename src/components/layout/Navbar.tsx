@@ -28,7 +28,7 @@ export function Navbar() {
         { name: "홈", href: "/" },
         { name: "공지사항", href: "/notices" },
         { name: "AI 어시스턴트", href: "/chatbot" },
-    ]
+    ] as const
 
     return (
         <nav
@@ -41,7 +41,7 @@ export function Navbar() {
                 <div className="flex justify-between items-center h-16 relative">
                     {/* Left Navigation */}
                     <div className="hidden md:flex items-center space-x-10">
-                        {navLinks.map((link: any) => (
+                        {navLinks.map((link) => (
                             <Link
                                 key={link.name}
                                 href={link.href}
@@ -80,7 +80,7 @@ export function Navbar() {
 
                         {session ? (
                             <div className="hidden md:flex items-center space-x-6">
-                                {session && (session.user as any)?.role === "ADMIN" && (
+                                {session.user && (session.user as { role?: string }).role === "ADMIN" && (
                                     <Link
                                         href="/admin"
                                         className="p-2 text-white/40 hover:text-white transition-colors"
@@ -89,7 +89,7 @@ export function Navbar() {
                                         <LayoutDashboard size={18} />
                                     </Link>
                                 )}
-                                {session && (session.user as any)?.role === "ADMIN" && (
+                                {session.user && (session.user as { role?: string }).role === "ADMIN" && (
                                     <div className="h-4 w-[1px] bg-white/10" />
                                 )}
                                 <div className="flex items-center space-x-3 group cursor-pointer">
