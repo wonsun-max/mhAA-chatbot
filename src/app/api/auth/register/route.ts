@@ -25,12 +25,6 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Invalid or expired verification code" }, { status: 400 });
         }
 
-        // Mark code as verified
-        await prisma.verificationCode.update({
-            where: { id: verification.id },
-            data: { verified: true },
-        });
-
         // Check if user already exists
         const existingEmail = await prisma.user.findUnique({
             where: { email },
@@ -62,6 +56,12 @@ export async function POST(request: Request) {
                 status: "PENDING", // Require admin approval
                 role: "STUDENT",   // Default role
             },
+        });
+
+        // Mark code as verified ONLY after user creation succeeds
+        await prisma.verificationCode.update({
+            where: { id: verification.id },
+            data: { verified: true },
         });
 
         return NextResponse.json({
