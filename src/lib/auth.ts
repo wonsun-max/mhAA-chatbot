@@ -49,28 +49,23 @@ export const authOptions: NextAuthOptions = {
         }),
     ],
     callbacks: {
-        async session({ session, token }) {
-            if (session.user && token.sub) {
-                const user = await prisma.user.findUnique({
-                    where: { id: token.sub },
-                });
-                if (user) {
-                    session.user.id = user.id;
-                    session.user.email = user.email;
-                    session.user.name = user.name;
-                    session.user.nickname = user.nickname;
-                    session.user.role = user.role;
-                    session.user.status = user.status;
-                    session.user.grade = user.grade;
-                }
-            }
-            return session;
-        },
         async jwt({ token, user }) {
             if (user) {
                 token.id = user.id;
+                token.role = (user as any).role;
+                token.status = (user as any).status;
+                token.grade = (user as any).grade;
             }
             return token;
+        },
+        async session({ session, token }) {
+            if (session.user) {
+                (session.user as any).id = token.id;
+                (session.user as any).role = token.role;
+                (session.user as any).status = token.status;
+                (session.user as any).grade = token.grade;
+            }
+            return session;
         }
     },
     pages: {

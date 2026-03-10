@@ -30,7 +30,8 @@ function LoginContent() {
             setError(res.error || "Invalid credentials or account pending approval.")
             setIsLoading(false)
         } else {
-            router.push("/chatbot")
+            const callbackUrl = searchParams.get("callbackUrl")
+            router.push(callbackUrl || "/chatbot")
         }
     }
 
