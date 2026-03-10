@@ -1,13 +1,14 @@
 "use client"
 
-import { useState, Suspense } from "react"
-import { signIn } from "next-auth/react"
+import { useState, Suspense, useEffect } from "react"
+import { signIn, useSession } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Loader2, Lock, ChevronRight, User } from "lucide-react"
 import { motion } from "framer-motion"
 
 function LoginContent() {
+    const { data: session, status } = useSession()
     const [identifier, setIdentifier] = useState("")
     const [password, setPassword] = useState("")
     const [error, setError] = useState("")
@@ -16,22 +17,36 @@ function LoginContent() {
     const searchParams = useSearchParams()
     const message = searchParams.get("message")
 
+    // Automatically redirect if already authenticated
+    useEffect(() => {
+        if (status === "authenticated") {
+            const callbackUrl = searchParams.get("callbackUrl") || "/chatbot"
+            window.location.href = callbackUrl
+        }
+    }, [status, searchParams])
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsLoading(true)
         setError("")
-        const res = await signIn("credentials", {
-            identifier,
-            password,
-            redirect: false,
-        })
 
-        if (res?.error) {
-            setError(res.error || "Invalid credentials or account pending approval.")
+        try {
+            const res = await signIn("credentials", {
+                identifier,
+                password,
+                redirect: false,
+            })
+
+            if (res?.error) {
+                setError(res.error || "Invalid credentials or account pending approval.")
+                setIsLoading(false)
+            } else {
+                const callbackUrl = searchParams.get("callbackUrl") || "/chatbot"
+                window.location.href = callbackUrl
+            }
+        } catch (err) {
+            setError("An unexpected error occurred. Please try again.")
             setIsLoading(false)
-        } else {
-            const callbackUrl = searchParams.get("callbackUrl")
-            router.push(callbackUrl || "/chatbot")
         }
     }
 
