@@ -55,14 +55,14 @@ export function Navbar() {
 
                     {/* Centered Logo Section */}
                     <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                        <Link href="/" className="flex items-center space-x-3 group perspective-1000">
+                        <Link href="/" className="flex items-center space-x-3 group">
                             <motion.div
                                 className="flex flex-row items-center"
                                 whileHover={{ scale: 1.05 }}
-                                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                                transition={{ type: "spring", stiffness: 400, damping: 20 }}
                             >
                                 <div className="flex flex-col">
-                                    <span className="text-2xl font-light text-white leading-none tracking-[0.3em] uppercase transition-all duration-500 group-hover:tracking-[0.4em]">
+                                    <span className="text-2xl font-light text-white leading-none tracking-[0.3em] uppercase group-hover:text-white/90">
                                         WITHUS
                                     </span>
                                     <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-white/40 to-transparent mt-1" />
