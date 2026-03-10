@@ -4,6 +4,9 @@ import { prisma } from "./prisma";
 import bcrypt from "bcryptjs";
 
 export const authOptions: NextAuthOptions = {
+    // Explicitly set secret to avoid any env reading ambiguity
+    secret: process.env.NEXTAUTH_SECRET,
+
     providers: [
         CredentialsProvider({
             name: "WITHUS Account",
@@ -24,16 +27,16 @@ export const authOptions: NextAuthOptions = {
                 });
 
                 if (!user || !user.passwordHash) {
-                    throw new Error("Invalid credentials");
+                    throw new Error("이메일/닉네임 또는 비밀번호가 올바르지 않습니다.");
                 }
 
                 if (user.status !== "APPROVED") {
-                    throw new Error("Your account is pending approval or has been suspended.");
+                    throw new Error("계정이 아직 승인되지 않았거나 정지된 상태입니다.");
                 }
 
                 const isPasswordValid = await bcrypt.compare(credentials.password, user.passwordHash);
                 if (!isPasswordValid) {
-                    throw new Error("Invalid credentials");
+                    throw new Error("이메일/닉네임 또는 비밀번호가 올바르지 않습니다.");
                 }
 
                 return {
@@ -76,6 +79,6 @@ export const authOptions: NextAuthOptions = {
     },
     session: {
         strategy: "jwt",
-        maxAge: 30 * 24 * 60 * 60, // 30 Days persistence
-    }
+        maxAge: 30 * 24 * 60 * 60,
+    },
 };

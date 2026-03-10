@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, Suspense, useEffect, useRef } from "react"
+import { useState, Suspense, useEffect } from "react"
 import { signIn, useSession } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
@@ -14,26 +14,23 @@ function LoginContent() {
     const [isLoading, setIsLoading] = useState(false)
     const router = useRouter()
     const searchParams = useSearchParams()
-    const { data: session, status } = useSession()
+    const { status } = useSession()
     const message = searchParams.get("message")
-    // Track if we just submitted so we can redirect once session is ready
-    const justLoggedIn = useRef(false)
 
-    // Watch for session becoming authenticated *after* a login attempt
-    useEffect(() => {
-        if (status === "authenticated" && justLoggedIn.current) {
-            const callbackUrl = searchParams.get("callbackUrl") || "/chatbot"
-            router.push(callbackUrl)
-        }
-    }, [status, searchParams, router])
-
-    // If already authenticated on mount, redirect immediately
+    /**
+     * If the user is already authenticated, send them to their destination.
+     * This also fires after a successful login when the session transitions
+     * from "loading" → "authenticated".
+     * Using window.location.assign ensures a full hard navigation so the
+     * middleware gets a fresh request with the new cookie set.
+     */
     useEffect(() => {
         if (status === "authenticated") {
             const callbackUrl = searchParams.get("callbackUrl") || "/chatbot"
-            router.replace(callbackUrl)
+            // Hard navigation: guarantees the cookie is sent with the request
+            window.location.assign(callbackUrl)
         }
-    }, [])
+    }, [status, searchParams])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -41,7 +38,6 @@ function LoginContent() {
 
         setIsLoading(true)
         setError("")
-        justLoggedIn.current = true
 
         try {
             const res = await signIn("credentials", {
@@ -50,29 +46,39 @@ function LoginContent() {
                 redirect: false,
             })
 
-            if (!res) {
-                setError("서버 응답이 없습니다. 잠시 후 다시 시도해주세요.")
-                setIsLoading(false)
-                justLoggedIn.current = false
-                return
-            }
-
-            if (res.error) {
+            if (!res || res.error) {
                 setError("이메일/닉네임 또는 비밀번호가 올바르지 않습니다.")
                 setIsLoading(false)
-                justLoggedIn.current = false
                 return
             }
 
-            // signIn succeeded — the session will become "authenticated" shortly.
-            // The useEffect above will handle the redirect once that happens.
-            // Keep isLoading=true to show spinner during that brief wait.
+            // signIn() succeeded and set the cookie.
+            // The useEffect above will now fire when session status becomes
+            // "authenticated" and will do a hard redirect to the destination.
+            // Keep spinner visible during this brief transition.
 
         } catch {
             setError("로그인 중 오류가 발생했습니다. 다시 시도해주세요.")
             setIsLoading(false)
-            justLoggedIn.current = false
         }
+    }
+
+    // If session is loading, show a neutral loading screen (prevents flicker)
+    if (status === "loading") {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-black">
+                <Loader2 className="animate-spin text-blue-500" size={40} />
+            </div>
+        )
+    }
+
+    // If already authenticated (before form submit), show brief redirect screen
+    if (status === "authenticated") {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-black">
+                <Loader2 className="animate-spin text-blue-500" size={40} />
+            </div>
+        )
     }
 
     return (
@@ -103,6 +109,7 @@ function LoginContent() {
                     <form className="space-y-6 relative" onSubmit={handleSubmit}>
                         {error && (
                             <motion.div
+                                key={error}
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 className="p-4 bg-red-400/10 text-red-500 text-sm rounded-2xl border border-red-500/20"
