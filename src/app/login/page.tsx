@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, Suspense, useEffect } from "react"
+import { useState, Suspense, useEffect, useRef } from "react"
 import { signIn, useSession } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
@@ -14,16 +14,26 @@ function LoginContent() {
     const [isLoading, setIsLoading] = useState(false)
     const router = useRouter()
     const searchParams = useSearchParams()
-    const { status } = useSession()
+    const { data: session, status } = useSession()
     const message = searchParams.get("message")
+    // Track if we just submitted so we can redirect once session is ready
+    const justLoggedIn = useRef(false)
 
-    // If already logged in, redirect immediately
+    // Watch for session becoming authenticated *after* a login attempt
+    useEffect(() => {
+        if (status === "authenticated" && justLoggedIn.current) {
+            const callbackUrl = searchParams.get("callbackUrl") || "/chatbot"
+            router.push(callbackUrl)
+        }
+    }, [status, searchParams, router])
+
+    // If already authenticated on mount, redirect immediately
     useEffect(() => {
         if (status === "authenticated") {
             const callbackUrl = searchParams.get("callbackUrl") || "/chatbot"
             router.replace(callbackUrl)
         }
-    }, [status, searchParams, router])
+    }, [])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -31,6 +41,7 @@ function LoginContent() {
 
         setIsLoading(true)
         setError("")
+        justLoggedIn.current = true
 
         try {
             const res = await signIn("credentials", {
@@ -42,23 +53,25 @@ function LoginContent() {
             if (!res) {
                 setError("서버 응답이 없습니다. 잠시 후 다시 시도해주세요.")
                 setIsLoading(false)
+                justLoggedIn.current = false
                 return
             }
 
             if (res.error) {
                 setError("이메일/닉네임 또는 비밀번호가 올바르지 않습니다.")
                 setIsLoading(false)
+                justLoggedIn.current = false
                 return
             }
 
-            // Success — redirect directly using window.location for a hard nav
-            // This is the most reliable way to avoid session sync issues.
-            const callbackUrl = searchParams.get("callbackUrl") || "/chatbot"
-            window.location.href = callbackUrl
+            // signIn succeeded — the session will become "authenticated" shortly.
+            // The useEffect above will handle the redirect once that happens.
+            // Keep isLoading=true to show spinner during that brief wait.
 
         } catch {
             setError("로그인 중 오류가 발생했습니다. 다시 시도해주세요.")
             setIsLoading(false)
+            justLoggedIn.current = false
         }
     }
 
