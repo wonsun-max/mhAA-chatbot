@@ -39,7 +39,6 @@ export default function NoticeDetailPage({ params }: { params: Promise<{ id: str
     if (loading) {
         return (
             <div className="min-h-screen bg-black text-white selection:bg-blue-500/30">
-                <Navbar />
                 <main className="max-w-4xl mx-auto px-6 py-32 flex flex-col items-center justify-center space-y-4">
                     <Loader2 size={32} className="animate-spin text-blue-500" />
                     <p className="text-zinc-500 text-sm animate-pulse tracking-widest uppercase">공지사항을 불러오는 중...</p>
@@ -51,7 +50,6 @@ export default function NoticeDetailPage({ params }: { params: Promise<{ id: str
     if (!notice) {
         return (
             <div className="min-h-screen bg-black text-white selection:bg-blue-500/30">
-                <Navbar />
                 <main className="max-w-4xl mx-auto px-6 py-32 text-center space-y-8">
                     <div className="space-y-2">
                         <h1 className="text-4xl font-light">공지사항을 찾을 수 없습니다</h1>
@@ -69,8 +67,6 @@ export default function NoticeDetailPage({ params }: { params: Promise<{ id: str
         <div className="min-h-screen bg-black text-white selection:bg-blue-500/30 overflow-x-hidden">
             {/* Texture Overlay */}
             <div className="fixed inset-0 z-[60] pointer-events-none opacity-[0.02] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] contrast-150" />
-
-            <Navbar />
 
             <main className="max-w-4xl mx-auto px-6 pt-32 pb-40">
                 <motion.div

@@ -87,9 +87,7 @@ export default function NoticesPage() {
     )
 
     return (
-        <div className="min-h-screen bg-black text-white selection:bg-blue-500/30">
-            <Navbar />
-
+        <div className="min-h-screen bg-black text-white selection:bg-blue-500/30 overflow-x-hidden">
             <main className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 pt-28 pb-20">
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">

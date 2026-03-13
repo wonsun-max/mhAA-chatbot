@@ -40,7 +40,7 @@ export function Navbar() {
             <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
                 <div className="flex justify-between items-center h-16 relative">
                     {/* Left Navigation */}
-                    <div className="hidden md:flex items-center space-x-10">
+                    <div className="hidden lg:flex items-center space-x-10">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.name}
@@ -79,7 +79,7 @@ export function Navbar() {
                         </div>
 
                         {session ? (
-                            <div className="hidden md:flex items-center space-x-6">
+                            <div className="hidden lg:flex items-center space-x-6">
                                 {session.user && (session.user as { role?: string }).role === "ADMIN" && (
                                     <Link
                                         href="/admin"
@@ -105,7 +105,7 @@ export function Navbar() {
                                 </button>
                             </div>
                         ) : (
-                            <div className="hidden md:flex items-center space-x-4">
+                            <div className="hidden lg:flex items-center space-x-4">
                                 <Link
                                     href="/login"
                                     className="text-[13px] font-medium text-white/70 hover:text-white transition-all duration-300 tracking-[0.1em] uppercase py-2 px-4 rounded-full border border-white/10 hover:border-white/30 backdrop-blur-sm"
@@ -116,12 +116,14 @@ export function Navbar() {
                         )}
 
                         {/* Mobile Menu Toggle */}
-                        <button
-                            onClick={() => setIsOpen(!isOpen)}
-                            className="md:hidden p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/5 transition-colors"
-                        >
-                            {isOpen ? <X size={24} /> : <Menu size={24} />}
-                        </button>
+                        <div className="lg:hidden flex items-center space-x-4">
+                            <button
+                                onClick={() => setIsOpen(!isOpen)}
+                                className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/5 transition-colors"
+                            >
+                                {isOpen ? <X size={24} /> : <Menu size={24} />}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -133,7 +135,7 @@ export function Navbar() {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="md:hidden border-t border-white/5 bg-black/98 backdrop-blur-2xl overflow-hidden"
+                        className="lg:hidden border-t border-white/5 bg-black/98 backdrop-blur-2xl overflow-hidden"
                     >
                         <div className="px-8 pt-8 pb-12 space-y-6">
                             {navLinks.map((link: any) => (

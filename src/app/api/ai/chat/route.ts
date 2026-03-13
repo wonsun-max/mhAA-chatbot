@@ -108,7 +108,7 @@ Today's English Word: ${word.word} (${word.meaning}) - Example: ${word.example}
         const userId = session.user.id;
 
         const result = streamText({
-            model: openai("gpt-4o"),
+            model: openai("gpt-4o-mini"),
             system: systemPrompt,
             messages,
             tools: aiTools,

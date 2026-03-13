@@ -40,8 +40,6 @@ export default function Home() {
       {/* Texture Overlay */}
       <div className="fixed inset-0 z-[60] pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] contrast-150" />
 
-      <Navbar />
-
       {/* Left Column: Visual Pillar (Desktop Only/Top on Mobile) */}
       <section className="relative w-full md:w-1/2 min-h-[50dvh] md:min-h-screen md:h-screen md:sticky md:top-0 overflow-hidden border-b md:border-b-0 md:border-r border-white/5">
         <Image
