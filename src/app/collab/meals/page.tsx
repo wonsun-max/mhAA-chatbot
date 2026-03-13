@@ -16,8 +16,10 @@ export default function MealsPage() {
   const [loading, setLoading] = useState(true);
   const [todayMeal, setTodayMeal] = useState<Meal | null>(null);
 
-  // Get today's date in YYYY-MM-DD format
-  const todayStr = new Date().toISOString().split('T')[0];
+  // Get today's date in YYYY-MM-DD format (Local Time)
+  const today = new Date();
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  const isWeekend = today.getDay() === 0 || today.getDay() === 6;
 
   useEffect(() => {
     const fetchMeals = async () => {
@@ -107,7 +109,14 @@ export default function MealsPage() {
                 </div>
               ) : (
                 <div className="py-8">
-                  <p className="text-xl text-gray-500 italic">오늘 등록된 급식 정보가 없습니다.</p>
+                  {isWeekend ? (
+                    <div className="space-y-2">
+                       <p className="text-xl text-emerald-400 font-bold italic">즐거운 주말 보충의 시간!</p>
+                       <p className="text-gray-500 text-sm">주말에는 급식이 운영되지 않습니다. 월요일에 만나요!</p>
+                    </div>
+                  ) : (
+                    <p className="text-xl text-gray-500 italic">오늘 등록된 급식 정보가 없습니다.</p>
+                  )}
                 </div>
               )}
             </div>
@@ -133,9 +142,10 @@ export default function MealsPage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {meals.filter(m => m.date !== todayStr).length > 0 ? (
+          {meals.filter(m => m.date >= todayStr && m.date !== todayStr).length > 0 ? (
             meals
-              .filter(m => m.date !== todayStr)
+              .filter(m => m.date >= todayStr && m.date !== todayStr)
+              .slice(0, 6) // Show only next 6 entries
               .map((meal, index) => (
                 <motion.div
                   key={meal.id}

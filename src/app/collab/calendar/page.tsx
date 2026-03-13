@@ -44,7 +44,8 @@ export default function CalendarPage() {
     fetchEvents();
   }, []);
 
-  const todayStr = new Date().toISOString().split('T')[0];
+  const today = new Date();
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
   const upcomingEvents = useMemo(() => {
     return events.filter(evt => evt.endDate >= todayStr);
@@ -59,9 +60,12 @@ export default function CalendarPage() {
 
   const getDDay = (dateStr: string) => {
     const target = new Date(dateStr);
-    const today = new Date(todayStr);
-    const diffTime = target.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    target.setHours(0, 0, 0, 0);
+    const todayBase = new Date(today);
+    todayBase.setHours(0, 0, 0, 0);
+    
+    const diffTime = target.getTime() - todayBase.getTime();
+    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
     
     if (diffDays === 0) return "D-Day";
     if (diffDays < 0) return `D+${Math.abs(diffDays)}`;
