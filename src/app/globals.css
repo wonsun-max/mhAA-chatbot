@@ -29,10 +29,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   word-break: keep-all;
-  /* Prevent horizontal overflow on all devices */
-  overflow-x: hidden;
-  /* Allow overscroll bounce on iOS but keep vertical scroll clean */
-  overscroll-behavior-y: none;
 }
 
 /* ── iOS Safe Area Utilities ── */

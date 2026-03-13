@@ -38,8 +38,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className="overflow-x-hidden">
-      <body className="min-h-screen bg-black text-white font-sans selection:bg-blue-500/30 overflow-x-hidden">
+    <html lang="ko">
+      <body className="min-h-screen bg-black text-white font-sans selection:bg-blue-500/30">
         <AuthProvider>
           {/* 3. Background Component */}
           <Background />
