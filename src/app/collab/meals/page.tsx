@@ -1,54 +1,186 @@
-import React from "react";
+"use client";
 
-// 임시 모의 데이터 (나중에 DB에서 불러올 예정)
-const mockMeals = [
-  { id: "1", date: "2026-03-09", dayOfWeek: "월요일", menu: "현미밥, 부대찌개, 계란말이, 깍두기" },
-  { id: "2", date: "2026-03-10", dayOfWeek: "화요일", menu: "어묵국, 닭강정, 판싯, 샐러드, 배추김치" },
-  { id: "3", date: "2026-03-11", dayOfWeek: "수요일", menu: "삼계탕, 녹두찹쌀밥, 부추겉절이, 깍두기" },
-  { id: "4", date: "2026-03-12", dayOfWeek: "목요일", menu: "육개장, 돼지불백, 가지무침, 백김치" },
-  { id: "5", date: "2026-03-13", dayOfWeek: "금요일", menu: "부추계란국, 마파두부, 야채고로케, 김치" },
-];
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Calendar, Utensils, ChevronRight, Clock, Info } from "lucide-react";
+
+interface Meal {
+  id: string;
+  date: string;
+  dayOfWeek: string;
+  menu: string;
+}
 
 export default function MealsPage() {
-  return (
-    <div className="min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      <div className="text-center mb-12">
-        <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-          주간 급식표
-        </h1>
-        <p className="mt-4 text-gray-400 text-lg">
-          이번 주 우리 학교 급식 메뉴를 확인하세요.
-        </p>
-      </div>
+  const [meals, setMeals] = useState<Meal[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [todayMeal, setTodayMeal] = useState<Meal | null>(null);
 
-      <div className="bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-gray-300">
-            <thead className="text-xs uppercase bg-white/10 text-gray-200">
-              <tr>
-                <th scope="col" className="px-6 py-4 font-semibold tracking-wider">Date</th>
-                <th scope="col" className="px-6 py-4 font-semibold tracking-wider">Day of Week</th>
-                <th scope="col" className="px-6 py-4 font-semibold tracking-wider">Menu</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/10">
-              {mockMeals.map((meal) => (
-                <tr key={meal.id} className="hover:bg-white/5 transition-colors duration-200">
-                  <td className="px-6 py-4 whitespace-nowrap text-emerald-400 font-medium tracking-wide">
-                    {meal.date}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-400">
-                    {meal.dayOfWeek}
-                  </td>
-                  <td className="px-6 py-4 text-white leading-relaxed">
+  // Get today's date in YYYY-MM-DD format
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  useEffect(() => {
+    const fetchMeals = async () => {
+      try {
+        const res = await fetch("/api/admin/collab/meals");
+        const data = await res.json();
+        if (data.meals) {
+          const sortedMeals = data.meals.sort((a: Meal, b: Meal) => a.date.localeCompare(b.date));
+          setMeals(sortedMeals);
+          
+          // Find if there's a meal for today
+          const foundToday = sortedMeals.find((m: Meal) => m.date === todayStr);
+          setTodayMeal(foundToday || null);
+        }
+      } catch (error) {
+        console.error("Failed to fetch meals:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMeals();
+  }, [todayStr]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <div className="w-8 h-8 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+      {/* Header Section */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mb-12 text-center"
+      >
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold mb-4">
+          <Utensils size={14} />
+          SCHOOL MEALS
+        </div>
+        <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tight mb-4">
+          오늘의 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-500">맛있는 식사</span>
+        </h1>
+        <p className="text-gray-400 max-w-2xl mx-auto">
+          학교급식법 시행규칙에 따른 영양성분 및 알레르기 유발 식품 정보를 포함한 식단입니다.
+        </p>
+      </motion.div>
+
+      {/* Today's Highlight Card */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.1 }}
+        className="relative mb-16"
+      >
+        <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-[2.5rem] blur-xl opacity-50" />
+        <div className="relative bg-zinc-900/40 backdrop-blur-2xl border border-white/10 rounded-[2rem] overflow-hidden p-8 sm:p-12">
+          <div className="flex flex-col md:flex-row gap-8 items-center">
+            <div className="flex-1 w-full">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="bg-emerald-500/20 p-3 rounded-2xl text-emerald-400">
+                  <Calendar size={24} />
+                </div>
+                <div>
+                  <h2 className="text-white font-bold text-xl">오늘의 메뉴</h2>
+                  <p className="text-gray-500 text-sm font-mono">{todayStr} ({new Date().toLocaleDateString('ko-KR', { weekday: 'long' })})</p>
+                </div>
+              </div>
+              
+              {todayMeal ? (
+                <div className="space-y-6">
+                  <p className="text-2xl sm:text-3xl text-gray-100 font-medium leading-relaxed">
+                    {todayMeal.menu.split(',').map((item, idx) => (
+                      <span key={idx} className="inline-block mr-3">
+                        {item.trim()}{idx < todayMeal.menu.split(',').length - 1 && ","}
+                      </span>
+                    ))}
+                  </p>
+                  <div className="flex flex-wrap gap-2 pt-4">
+                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-xs text-gray-400">#맛있게드세요</span>
+                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-xs text-gray-400">#균형잡힌식단</span>
+                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-xs text-gray-400">#WITHUS</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="py-8">
+                  <p className="text-xl text-gray-500 italic">오늘 등록된 급식 정보가 없습니다.</p>
+                </div>
+              )}
+            </div>
+            
+            <div className="w-full md:w-64 aspect-square bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-3xl border border-white/5 flex items-center justify-center relative group">
+              <Utensils size={64} className="text-emerald-500/20 group-hover:scale-110 transition-transform duration-500" />
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                 <span className="text-emerald-400 text-xs font-bold uppercase tracking-widest">Main Course</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Weekly View */}
+      <div className="space-y-6">
+        <div className="flex items-center justify-between px-2">
+          <h3 className="text-white font-bold flex items-center gap-2">
+            <Clock size={18} className="text-emerald-400" />
+            이번 주 식단표
+          </h3>
+          <span className="text-xs text-gray-500 uppercase tracking-widest">Weekly Menu</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {meals.filter(m => m.date !== todayStr).length > 0 ? (
+            meals
+              .filter(m => m.date !== todayStr)
+              .map((meal, index) => (
+                <motion.div
+                  key={meal.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 + 0.3 }}
+                  className="group bg-white/5 hover:bg-white/10 border border-white/5 hover:border-emerald-500/30 rounded-2xl p-6 transition-all duration-300"
+                >
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <span className="text-xs font-mono text-emerald-400/70">{meal.date}</span>
+                      <h4 className="text-white font-bold">{meal.dayOfWeek}</h4>
+                    </div>
+                    <div className="p-2 bg-white/5 rounded-lg text-gray-500 group-hover:text-emerald-400 transition-colors">
+                      <ChevronRight size={16} />
+                    </div>
+                  </div>
+                  <p className="text-gray-400 text-sm leading-relaxed line-clamp-3 group-hover:text-gray-200 transition-colors">
                     {meal.menu}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </p>
+                </motion.div>
+              ))
+          ) : (
+            <div className="col-span-full py-12 text-center bg-white/5 border border-dashed border-white/10 rounded-2xl text-gray-500">
+              추후 일정이 아직 등록되지 않았습니다.
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Footer Info */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+        className="mt-16 flex items-start gap-3 p-6 bg-zinc-900/30 border border-white/5 rounded-2xl"
+      >
+        <div className="bg-blue-500/10 p-2 rounded-lg text-blue-400 shrink-0">
+          <Info size={16} />
+        </div>
+        <p className="text-xs text-gray-500 leading-relaxed">
+          식단은 시장 및 학교 상황에 따라 변경될 수 있습니다. 
+          알레르기 유발 식품(난류, 우유, 메밀, 땅콩, 대두, 밀, 고등어, 게, 새우, 돼지고기, 복숭아, 토마토, 아황산염, 호두, 닭고기, 쇠고기, 오징어, 조개류 등)이 포함되어 있을 수 있으니 주의하시기 바랍니다.
+        </p>
+      </motion.div>
     </div>
   );
 }

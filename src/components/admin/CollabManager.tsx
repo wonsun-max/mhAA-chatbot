@@ -15,7 +15,7 @@ export function CollabManager() {
             <div className="flex items-center justify-between">
                 <div>
                     <h2 className="text-2xl font-bold tracking-tight">콜라보 관리</h2>
-                    <p className="text-sm text-zinc-500">통합 데이터 관리 센터</p>
+                    <p className="text-sm text-zinc-500">통합 데이터 관리 센터 — 학생들에게 보여질 학사 정보를 입력하세요.</p>
                 </div>
             </div>
 
@@ -127,37 +127,47 @@ function MealsAdmin() {
                     className="bg-zinc-900/50 p-6 rounded-2xl border border-white/5 space-y-4"
                 >
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <input
-                            type="text"
-                            placeholder="날짜 (예: 2024-03-15)"
-                            required
-                            value={formData.date}
-                            onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                            className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
-                        />
-                        <select
-                            required
-                            value={formData.dayOfWeek}
-                            onChange={(e) => setFormData({ ...formData, dayOfWeek: e.target.value })}
-                            className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors text-white"
-                        >
-                            <option value="">요일 선택</option>
-                            <option value="월">월요일</option>
-                            <option value="화">화요일</option>
-                            <option value="수">수요일</option>
-                            <option value="목">목요일</option>
-                            <option value="금">금요일</option>
-                        </select>
-                        <input
-                            type="text"
-                            placeholder="메뉴 (쉼표로 구분)"
-                            required
-                            value={formData.menu}
-                            onChange={(e) => setFormData({ ...formData, menu: e.target.value })}
-                            className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
-                        />
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-zinc-500 ml-1 uppercase">Date</label>
+                            <input
+                                type="text"
+                                placeholder="예: 2024-03-15"
+                                required
+                                value={formData.date}
+                                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                            />
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-zinc-500 ml-1 uppercase">Day</label>
+                            <select
+                                required
+                                value={formData.dayOfWeek}
+                                onChange={(e) => setFormData({ ...formData, dayOfWeek: e.target.value })}
+                                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors text-white"
+                            >
+                                <option value="">요일 선택</option>
+                                <option value="월">월요일</option>
+                                <option value="화">화요일</option>
+                                <option value="수">수요일</option>
+                                <option value="목">목요일</option>
+                                <option value="금">금요일</option>
+                            </select>
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-zinc-500 ml-1 uppercase">Menu</label>
+                            <input
+                                type="text"
+                                placeholder="예: 쌀밥, 미역국, 제육볶음"
+                                required
+                                value={formData.menu}
+                                onChange={(e) => setFormData({ ...formData, menu: e.target.value })}
+                                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                            />
+                        </div>
                     </div>
-                    <div className="flex justify-end pt-2">
+                    <div className="flex items-center justify-between pt-2">
+                        <p className="text-[11px] text-zinc-500">💡 팁: 메뉴는 쉼표(,)로 구분하면 모바일 앱에서 예쁘게 정렬됩니다.</p>
                         <button type="submit" className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-bold transition-all">
                             저장하기
                         </button>
@@ -287,42 +297,55 @@ function CalendarAdmin() {
                     className="bg-zinc-900/50 p-6 rounded-2xl border border-white/5 space-y-4"
                 >
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input
-                            type="text"
-                            placeholder="일정명 (예: 중간고사)"
-                            required
-                            value={formData.name}
-                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
-                        />
-                        <select
-                            required
-                            value={formData.eventType}
-                            onChange={(e) => setFormData({ ...formData, eventType: e.target.value })}
-                            className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors text-white"
-                        >
-                            <option value="Event">일반 행사 (Event)</option>
-                            <option value="Holiday">휴일/방학 (Holiday)</option>
-                            <option value="Exam">시험 (Exam)</option>
-                        </select>
-                        <input
-                            type="text"
-                            placeholder="시작 날짜 (예: 2024-04-20)"
-                            required
-                            value={formData.startDate}
-                            onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                            className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
-                        />
-                        <input
-                            type="text"
-                            placeholder="종료 날짜 (예: 2024-04-24)"
-                            required
-                            value={formData.endDate}
-                            onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                            className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
-                        />
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-zinc-500 ml-1 uppercase">Event Name</label>
+                            <input
+                                type="text"
+                                placeholder="예: 중간고사, 개교기념일"
+                                required
+                                value={formData.name}
+                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                            />
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-zinc-500 ml-1 uppercase">Type</label>
+                            <select
+                                required
+                                value={formData.eventType}
+                                onChange={(e) => setFormData({ ...formData, eventType: e.target.value })}
+                                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors text-white"
+                            >
+                                <option value="Event">일반 행사 (Event)</option>
+                                <option value="Holiday">휴일/방학 (Holiday)</option>
+                                <option value="Exam">시험 (Exam)</option>
+                            </select>
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-zinc-500 ml-1 uppercase">Start Date</label>
+                            <input
+                                type="text"
+                                placeholder="예: 2024-04-20"
+                                required
+                                value={formData.startDate}
+                                onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                            />
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-zinc-500 ml-1 uppercase">End Date</label>
+                            <input
+                                type="text"
+                                placeholder="예: 2024-04-24"
+                                required
+                                value={formData.endDate}
+                                onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                            />
+                        </div>
                     </div>
-                    <div className="flex justify-end pt-2">
+                    <div className="flex items-center justify-between pt-2">
+                        <p className="text-[11px] text-zinc-500">💡 팁: 당일 행사는 시작일과 종료일을 같게 적어주세요.</p>
                         <button type="submit" className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-bold transition-all">
                             저장하기
                         </button>
@@ -477,60 +500,79 @@ function TimetableAdmin() {
                     className="bg-zinc-900/50 p-6 rounded-2xl border border-white/5 space-y-4"
                 >
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <input
-                            type="text"
-                            placeholder="학년/반 (예: 12-2)"
-                            required
-                            value={formData.grade}
-                            onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
-                            className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
-                        />
-                        <select
-                            required
-                            value={formData.dayOfWeek}
-                            onChange={(e) => setFormData({ ...formData, dayOfWeek: e.target.value })}
-                            className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors text-white"
-                        >
-                            <option value="MON">월요일 (MON)</option>
-                            <option value="TUE">화요일 (TUE)</option>
-                            <option value="WED">수요일 (WED)</option>
-                            <option value="THU">목요일 (THU)</option>
-                            <option value="FRI">금요일 (FRI)</option>
-                        </select>
-                        <input
-                            type="text"
-                            placeholder="교시 (예: 1 또는 0-1)"
-                            required
-                            value={formData.period}
-                            onChange={(e) => setFormData({ ...formData, period: e.target.value })}
-                            className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
-                        />
-                        <input
-                            type="text"
-                            placeholder="시간 (예: 08:00-09:15)"
-                            required
-                            value={formData.time}
-                            onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                            className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
-                        />
-                        <input
-                            type="text"
-                            placeholder="과목명"
-                            required
-                            value={formData.subject}
-                            onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                            className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
-                        />
-                        <input
-                            type="text"
-                            placeholder="담당 교사"
-                            required
-                            value={formData.teacher}
-                            onChange={(e) => setFormData({ ...formData, teacher: e.target.value })}
-                            className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
-                        />
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-zinc-500 ml-1 uppercase">Grade/Class</label>
+                            <input
+                                type="text"
+                                placeholder="예: 12-2"
+                                required
+                                value={formData.grade}
+                                onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
+                                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                            />
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-zinc-500 ml-1 uppercase">Day</label>
+                            <select
+                                required
+                                value={formData.dayOfWeek}
+                                onChange={(e) => setFormData({ ...formData, dayOfWeek: e.target.value })}
+                                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors text-white"
+                            >
+                                <option value="MON">월요일 (MON)</option>
+                                <option value="TUE">화요일 (TUE)</option>
+                                <option value="WED">수요일 (WED)</option>
+                                <option value="THU">목요일 (THU)</option>
+                                <option value="FRI">금요일 (FRI)</option>
+                            </select>
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-zinc-500 ml-1 uppercase">Period</label>
+                            <input
+                                type="text"
+                                placeholder="예: 1 또는 점심"
+                                required
+                                value={formData.period}
+                                onChange={(e) => setFormData({ ...formData, period: e.target.value })}
+                                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                            />
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-zinc-500 ml-1 uppercase">Time Range</label>
+                            <input
+                                type="text"
+                                placeholder="예: 08:00-09:15"
+                                required
+                                value={formData.time}
+                                onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                            />
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-zinc-500 ml-1 uppercase">Subject</label>
+                            <input
+                                type="text"
+                                placeholder="예: 수학, 영어"
+                                required
+                                value={formData.subject}
+                                onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                            />
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-zinc-500 ml-1 uppercase">Teacher</label>
+                            <input
+                                type="text"
+                                placeholder="담당 선생님 성함"
+                                required
+                                value={formData.teacher}
+                                onChange={(e) => setFormData({ ...formData, teacher: e.target.value })}
+                                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                            />
+                        </div>
                     </div>
-                    <div className="flex justify-end pt-2">
+                    <div className="flex items-center justify-between pt-2">
+                        <p className="text-[11px] text-zinc-500">💡 팁: '학년/반' 이름이 사용자의 정보와 일치해야 해당 학생에게 보입니다.</p>
                         <button type="submit" className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-bold transition-all">
                             저장하기
                         </button>
