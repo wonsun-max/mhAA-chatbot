@@ -77,6 +77,12 @@ export function AdminLayout({
                         active={activeTab === "notices"}
                         onClick={() => setActiveTab("notices")}
                     />
+                    <SidebarItem
+                        icon={LayoutDashboard} // Reuse icon or choose another, e.g., Calendar/School
+                        label="콜라보"
+                        active={activeTab === "collab"}
+                        onClick={() => setActiveTab("collab")}
+                    />
                 </nav>
 
                 <div className="mt-auto pt-6 border-t border-white/5 space-y-2">

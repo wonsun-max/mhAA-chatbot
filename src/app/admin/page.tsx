@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation"
 import { AdminLayout } from "@/components/admin/AdminLayout"
 import { UserManager } from "@/components/admin/UserManager"
 import { NoticeManager } from "@/components/admin/NoticeManager"
+import { CollabManager } from "@/components/admin/CollabManager"
 
 interface Stats {
     totalUsers: number
@@ -108,6 +109,7 @@ export default function AdminDashboardPage() {
             {activeTab === "overview" && <Overview stats={stats} />}
             {activeTab === "users" && <UserManager />}
             {activeTab === "notices" && <NoticeManager />}
+            {activeTab === "collab" && <CollabManager />}
         </AdminLayout>
     )
 }

@@ -85,3 +85,68 @@ model Notice {
   @@index([createdAt])
   @@index([category])
 }
+
+// ============ Collab (콜라보) Models ============
+
+// 급식 정보 (School Meals)
+model SchoolMeal {
+  id          String   @id @default(cuid())
+  date        String   // 예: "2026-03-09"
+  dayOfWeek   String   // 예: "월요일"
+  menu        String   @db.Text
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([date])
+}
+
+// 학사 일정 (School Calendar)
+model SchoolCalendar {
+  id          String   @id @default(cuid())
+  name        String   // 일정 제목 (Name)
+  startDate   String   // 시작 날짜 (Start_Date)
+  endDate     String   // 종료 날짜 (End_Date)
+  eventType   String   // 이벤트 종류 (Event_Type: Holiday, Events 등)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([startDate])
+  @@index([eventType])
+}
+
+// 도서관 도서 목록 (Library Books)
+model LibraryBook {
+  id          String   @id @default(cuid())
+  title       String   // 책 제목
+  author      String   // 저자
+  publisher   String?  // 출판사
+  isbn        String?  // ISBN 번호
+  category    String?  // 도서 분류
+  status      String   @default("AVAILABLE") // AVAILABLE (대출 가능), BORROWED (대출 중)
+  location    String?  // 도서 위치 (예: 1열람실 A-3)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([title])
+  @@index([status])
+}
+
+// 시간표 (Timetable)
+model Timetable {
+  id          String   @id @default(cuid())
+  grade       String   // 학년/반 (Grade, 예: "12-2")
+  dayOfWeek   String   // 요일 (Day of week, 예: "MON", "TUE")
+  period      String   // 교시 (Period, 예: "1", "0-1")
+  time        String   // 시간 (Time, 예: "08:00-09:15")
+  subject     String   // 과목 (Subject, 예: "ENGLISH")
+  teacher     String   // 교사 (Teacher, 예: "임종현/김연수")
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([grade])
+  @@index([grade, dayOfWeek])
+}

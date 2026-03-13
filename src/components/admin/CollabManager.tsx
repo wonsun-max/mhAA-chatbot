@@ -1,0 +1,589 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { motion } from "framer-motion"
+import { Loader2, Plus, Trash2, Calendar, Clock, Utensils, BookOpen } from "lucide-react"
+
+// Types
+type CollabTab = "meals" | "calendar" | "timetable"
+
+export function CollabManager() {
+    const [subTab, setSubTab] = useState<CollabTab>("meals")
+
+    return (
+        <div className="space-y-8">
+            <div className="flex items-center justify-between">
+                <div>
+                    <h2 className="text-2xl font-bold tracking-tight">콜라보 관리</h2>
+                    <p className="text-sm text-zinc-500">통합 데이터 관리 센터</p>
+                </div>
+            </div>
+
+            {/* Sub-navigation for Collab categories */}
+            <div className="flex gap-2 p-1 bg-white/5 rounded-xl border border-white/10 w-fit">
+                {(["meals", "calendar", "timetable"] as CollabTab[]).map((tab) => (
+                    <button
+                        key={tab}
+                        onClick={() => setSubTab(tab)}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${subTab === tab
+                                ? "bg-white text-black shadow-md"
+                                : "text-zinc-400 hover:text-white hover:bg-white/5"
+                            }`}
+                    >
+                        {tab === "meals" && <span className="flex items-center gap-2"><Utensils size={16} /> 급식</span>}
+                        {tab === "calendar" && <span className="flex items-center gap-2"><Calendar size={16} /> 학사 일정</span>}
+                        {tab === "timetable" && <span className="flex items-center gap-2"><Clock size={16} /> 시간표</span>}
+                    </button>
+                ))}
+            </div>
+
+            {/* Content Area */}
+            <motion.div
+                key={subTab}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="bg-zinc-900/30 border border-white/5 rounded-[24px] overflow-hidden"
+            >
+                {subTab === "meals" && <MealsAdmin />}
+                {subTab === "calendar" && <CalendarAdmin />}
+                {subTab === "timetable" && <TimetableAdmin />}
+            </motion.div>
+        </div>
+    )
+}
+
+// ==========================================
+// 1. Meals Admin Component
+// ==========================================
+function MealsAdmin() {
+    const [meals, setMeals] = useState<any[]>([])
+    const [loading, setLoading] = useState(true)
+    const [isAdding, setIsAdding] = useState(false)
+    const [formData, setFormData] = useState({ date: "", dayOfWeek: "", menu: "" })
+
+    useEffect(() => {
+        fetchMeals()
+    }, [])
+
+    const fetchMeals = async () => {
+        try {
+            const res = await fetch("/api/admin/collab/meals")
+            const data = await res.json()
+            if (data.meals) setMeals(data.meals)
+        } catch (error) {
+            console.error(error)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleAdd = async (e: React.FormEvent) => {
+        e.preventDefault()
+        try {
+            const res = await fetch("/api/admin/collab/meals", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
+            })
+            if (res.ok) {
+                setFormData({ date: "", dayOfWeek: "", menu: "" })
+                setIsAdding(false)
+                fetchMeals()
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    const handleDelete = async (id: string) => {
+        if (!confirm("정말 이 급식 데이터를 삭제하시겠습니까?")) return
+        try {
+            const res = await fetch(`/api/admin/collab/meals?id=${id}`, { method: "DELETE" })
+            if (res.ok) fetchMeals()
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    return (
+        <div className="p-8 space-y-6">
+            <div className="flex items-center justify-between">
+                <h3 className="text-lg font-bold">급식 데이터 관리</h3>
+                <button
+                    onClick={() => setIsAdding(!isAdding)}
+                    className="px-4 py-2 bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 rounded-xl text-sm font-bold transition-all flex items-center gap-2"
+                >
+                    <Plus size={16} />
+                    {isAdding ? "취소" : "새 급식 추가"}
+                </button>
+            </div>
+
+            {isAdding && (
+                <motion.form
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    onSubmit={handleAdd}
+                    className="bg-zinc-900/50 p-6 rounded-2xl border border-white/5 space-y-4"
+                >
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <input
+                            type="text"
+                            placeholder="날짜 (예: 2024-03-15)"
+                            required
+                            value={formData.date}
+                            onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                            className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                        />
+                        <select
+                            required
+                            value={formData.dayOfWeek}
+                            onChange={(e) => setFormData({ ...formData, dayOfWeek: e.target.value })}
+                            className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors text-white"
+                        >
+                            <option value="">요일 선택</option>
+                            <option value="월">월요일</option>
+                            <option value="화">화요일</option>
+                            <option value="수">수요일</option>
+                            <option value="목">목요일</option>
+                            <option value="금">금요일</option>
+                        </select>
+                        <input
+                            type="text"
+                            placeholder="메뉴 (쉼표로 구분)"
+                            required
+                            value={formData.menu}
+                            onChange={(e) => setFormData({ ...formData, menu: e.target.value })}
+                            className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                        />
+                    </div>
+                    <div className="flex justify-end pt-2">
+                        <button type="submit" className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-bold transition-all">
+                            저장하기
+                        </button>
+                    </div>
+                </motion.form>
+            )}
+
+            {loading ? (
+                <div className="flex justify-center py-12">
+                    <Loader2 className="w-6 h-6 animate-spin text-zinc-500" />
+                </div>
+            ) : meals.length === 0 ? (
+                <div className="text-center py-12 text-zinc-500 border border-dashed border-white/10 rounded-2xl bg-white/5">
+                    등록된 급식 데이터가 없습니다.
+                </div>
+            ) : (
+                <div className="border border-white/5 rounded-2xl overflow-hidden">
+                    <table className="w-full text-sm text-left">
+                        <thead className="bg-white/5 text-zinc-400 font-medium">
+                            <tr>
+                                <th className="px-6 py-4">날짜</th>
+                                <th className="px-6 py-4">요일</th>
+                                <th className="px-6 py-4 w-1/2">메뉴</th>
+                                <th className="px-6 py-4 text-right">관리</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                            {meals.map((meal) => (
+                                <tr key={meal.id} className="hover:bg-white/5 transition-colors">
+                                    <td className="px-6 py-4 font-mono">{meal.date}</td>
+                                    <td className="px-6 py-4">
+                                        <span className="px-2 py-1 rounded-md bg-blue-500/10 text-blue-400 text-xs font-medium">
+                                            {meal.dayOfWeek}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4 text-zinc-300">{meal.menu}</td>
+                                    <td className="px-6 py-4 text-right">
+                                        <button
+                                            onClick={() => handleDelete(meal.id)}
+                                            className="p-2 text-zinc-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
+                                            title="삭제"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+        </div>
+    )
+}
+
+// ==========================================
+// 2. Calendar Admin Component
+// ==========================================
+function CalendarAdmin() {
+    const [events, setEvents] = useState<any[]>([])
+    const [loading, setLoading] = useState(true)
+    const [isAdding, setIsAdding] = useState(false)
+    const [formData, setFormData] = useState({ name: "", startDate: "", endDate: "", eventType: "Event" })
+
+    useEffect(() => {
+        fetchEvents()
+    }, [])
+
+    const fetchEvents = async () => {
+        try {
+            const res = await fetch("/api/admin/collab/calendar")
+            const data = await res.json()
+            if (data.events) setEvents(data.events)
+        } catch (error) {
+            console.error(error)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleAdd = async (e: React.FormEvent) => {
+        e.preventDefault()
+        try {
+            const res = await fetch("/api/admin/collab/calendar", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
+            })
+            if (res.ok) {
+                setFormData({ name: "", startDate: "", endDate: "", eventType: "Event" })
+                setIsAdding(false)
+                fetchEvents()
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    const handleDelete = async (id: string) => {
+        if (!confirm("정말 이 일정을 삭제하시겠습니까?")) return
+        try {
+            const res = await fetch(`/api/admin/collab/calendar?id=${id}`, { method: "DELETE" })
+            if (res.ok) fetchEvents()
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    return (
+        <div className="p-8 space-y-6">
+            <div className="flex items-center justify-between">
+                <h3 className="text-lg font-bold">학사 일정 관리</h3>
+                <button
+                    onClick={() => setIsAdding(!isAdding)}
+                    className="px-4 py-2 bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 rounded-xl text-sm font-bold transition-all flex items-center gap-2"
+                >
+                    <Plus size={16} />
+                    {isAdding ? "취소" : "새 일정 추가"}
+                </button>
+            </div>
+
+            {isAdding && (
+                <motion.form
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    onSubmit={handleAdd}
+                    className="bg-zinc-900/50 p-6 rounded-2xl border border-white/5 space-y-4"
+                >
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input
+                            type="text"
+                            placeholder="일정명 (예: 중간고사)"
+                            required
+                            value={formData.name}
+                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                            className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                        />
+                        <select
+                            required
+                            value={formData.eventType}
+                            onChange={(e) => setFormData({ ...formData, eventType: e.target.value })}
+                            className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors text-white"
+                        >
+                            <option value="Event">일반 행사 (Event)</option>
+                            <option value="Holiday">휴일/방학 (Holiday)</option>
+                            <option value="Exam">시험 (Exam)</option>
+                        </select>
+                        <input
+                            type="text"
+                            placeholder="시작 날짜 (예: 2024-04-20)"
+                            required
+                            value={formData.startDate}
+                            onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                            className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                        />
+                        <input
+                            type="text"
+                            placeholder="종료 날짜 (예: 2024-04-24)"
+                            required
+                            value={formData.endDate}
+                            onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                            className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                        />
+                    </div>
+                    <div className="flex justify-end pt-2">
+                        <button type="submit" className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-bold transition-all">
+                            저장하기
+                        </button>
+                    </div>
+                </motion.form>
+            )}
+
+            {loading ? (
+                <div className="flex justify-center py-12">
+                    <Loader2 className="w-6 h-6 animate-spin text-zinc-500" />
+                </div>
+            ) : events.length === 0 ? (
+                <div className="text-center py-12 text-zinc-500 border border-dashed border-white/10 rounded-2xl bg-white/5">
+                    등록된 학사 일정이 없습니다.
+                </div>
+            ) : (
+                <div className="border border-white/5 rounded-2xl overflow-hidden">
+                    <table className="w-full text-sm text-left">
+                        <thead className="bg-white/5 text-zinc-400 font-medium">
+                            <tr>
+                                <th className="px-6 py-4">일정명</th>
+                                <th className="px-6 py-4">시작 일자</th>
+                                <th className="px-6 py-4">종료 일자</th>
+                                <th className="px-6 py-4 text-center">유형</th>
+                                <th className="px-6 py-4 text-right">관리</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                            {events.map((evt) => (
+                                <tr key={evt.id} className="hover:bg-white/5 transition-colors">
+                                    <td className="px-6 py-4 font-medium text-zinc-200">{evt.name}</td>
+                                    <td className="px-6 py-4 font-mono text-zinc-400">{evt.startDate}</td>
+                                    <td className="px-6 py-4 font-mono text-zinc-400">{evt.endDate}</td>
+                                    <td className="px-6 py-4 text-center">
+                                        <span className={`px-2 py-1 rounded-md text-xs font-medium ${
+                                            evt.eventType === 'Holiday' ? 'bg-red-500/10 text-red-400' :
+                                            evt.eventType === 'Exam' ? 'bg-amber-500/10 text-amber-400' :
+                                            'bg-blue-500/10 text-blue-400'
+                                        }`}>
+                                            {evt.eventType}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4 text-right">
+                                        <button
+                                            onClick={() => handleDelete(evt.id)}
+                                            className="p-2 text-zinc-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
+                                            title="삭제"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+        </div>
+    )
+}
+
+// ==========================================
+// 3. Timetable Admin Component
+// ==========================================
+function TimetableAdmin() {
+    const [timetables, setTimetables] = useState<any[]>([])
+    const [loading, setLoading] = useState(true)
+    const [isAdding, setIsAdding] = useState(false)
+    const [filterGrade, setFilterGrade] = useState("")
+    const [formData, setFormData] = useState({
+        grade: "", dayOfWeek: "MON", period: "", time: "", subject: "", teacher: ""
+    })
+
+    useEffect(() => {
+        fetchTimetables()
+    }, [filterGrade]) // refetch when filter changes
+
+    const fetchTimetables = async () => {
+        setLoading(true)
+        try {
+            const url = filterGrade 
+                ? `/api/admin/collab/timetable?grade=${encodeURIComponent(filterGrade)}` 
+                : "/api/admin/collab/timetable"
+            
+            const res = await fetch(url)
+            const data = await res.json()
+            if (data.timetables) setTimetables(data.timetables)
+        } catch (error) {
+            console.error(error)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleAdd = async (e: React.FormEvent) => {
+        e.preventDefault()
+        try {
+            const res = await fetch("/api/admin/collab/timetable", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
+            })
+            if (res.ok) {
+                // Keep grade and dayOfWeek for faster data entry
+                setFormData(prev => ({ ...prev, period: "", time: "", subject: "", teacher: "" }))
+                setIsAdding(false)
+                fetchTimetables()
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    const handleDelete = async (id: string) => {
+        if (!confirm("정말 이 시간표 데이터를 삭제하시겠습니까?")) return
+        try {
+            const res = await fetch(`/api/admin/collab/timetable?id=${id}`, { method: "DELETE" })
+            if (res.ok) fetchTimetables()
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    return (
+        <div className="p-8 space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <h3 className="text-lg font-bold">시간표 관리</h3>
+                
+                <div className="flex items-center gap-4">
+                    <input
+                        type="text"
+                        placeholder="학년/반 필터 (예: 12-2)"
+                        value={filterGrade}
+                        onChange={(e) => setFilterGrade(e.target.value)}
+                        className="bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-blue-500 transition-colors w-40"
+                    />
+                    <button
+                        onClick={() => setIsAdding(!isAdding)}
+                        className="px-4 py-2 bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 rounded-xl text-sm font-bold transition-all flex items-center gap-2 whitespace-nowrap"
+                    >
+                        <Plus size={16} />
+                        {isAdding ? "취소" : "새 시간표 추가"}
+                    </button>
+                </div>
+            </div>
+
+            {isAdding && (
+                <motion.form
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    onSubmit={handleAdd}
+                    className="bg-zinc-900/50 p-6 rounded-2xl border border-white/5 space-y-4"
+                >
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <input
+                            type="text"
+                            placeholder="학년/반 (예: 12-2)"
+                            required
+                            value={formData.grade}
+                            onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
+                            className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                        />
+                        <select
+                            required
+                            value={formData.dayOfWeek}
+                            onChange={(e) => setFormData({ ...formData, dayOfWeek: e.target.value })}
+                            className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors text-white"
+                        >
+                            <option value="MON">월요일 (MON)</option>
+                            <option value="TUE">화요일 (TUE)</option>
+                            <option value="WED">수요일 (WED)</option>
+                            <option value="THU">목요일 (THU)</option>
+                            <option value="FRI">금요일 (FRI)</option>
+                        </select>
+                        <input
+                            type="text"
+                            placeholder="교시 (예: 1 또는 0-1)"
+                            required
+                            value={formData.period}
+                            onChange={(e) => setFormData({ ...formData, period: e.target.value })}
+                            className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                        />
+                        <input
+                            type="text"
+                            placeholder="시간 (예: 08:00-09:15)"
+                            required
+                            value={formData.time}
+                            onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                            className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                        />
+                        <input
+                            type="text"
+                            placeholder="과목명"
+                            required
+                            value={formData.subject}
+                            onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                            className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                        />
+                        <input
+                            type="text"
+                            placeholder="담당 교사"
+                            required
+                            value={formData.teacher}
+                            onChange={(e) => setFormData({ ...formData, teacher: e.target.value })}
+                            className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                        />
+                    </div>
+                    <div className="flex justify-end pt-2">
+                        <button type="submit" className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-bold transition-all">
+                            저장하기
+                        </button>
+                    </div>
+                </motion.form>
+            )}
+
+            {loading ? (
+                <div className="flex justify-center py-12">
+                    <Loader2 className="w-6 h-6 animate-spin text-zinc-500" />
+                </div>
+            ) : timetables.length === 0 ? (
+                <div className="text-center py-12 text-zinc-500 border border-dashed border-white/10 rounded-2xl bg-white/5">
+                    {filterGrade ? `'${filterGrade}' 반에 등록된 시간표가 없습니다.` : "등록된 시간표 데이터가 없습니다."}
+                </div>
+            ) : (
+                <div className="border border-white/5 rounded-2xl overflow-hidden">
+                    <table className="w-full text-sm text-left">
+                        <thead className="bg-white/5 text-zinc-400 font-medium">
+                            <tr>
+                                <th className="px-6 py-4">반</th>
+                                <th className="px-6 py-4">요일/교시</th>
+                                <th className="px-6 py-4">시간</th>
+                                <th className="px-6 py-4">과목</th>
+                                <th className="px-6 py-4">선생님</th>
+                                <th className="px-6 py-4 text-right">관리</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                            {timetables.map((tt) => (
+                                <tr key={tt.id} className="hover:bg-white/5 transition-colors">
+                                    <td className="px-6 py-4 font-bold text-zinc-200">{tt.grade}</td>
+                                    <td className="px-6 py-4 font-mono text-zinc-400">
+                                        <span className="text-blue-400 font-bold">{tt.dayOfWeek}</span> {tt.period}교시
+                                    </td>
+                                    <td className="px-6 py-4 font-mono text-zinc-400">{tt.time}</td>
+                                    <td className="px-6 py-4 text-zinc-300 font-medium">{tt.subject}</td>
+                                    <td className="px-6 py-4 text-zinc-400">{tt.teacher}</td>
+                                    <td className="px-6 py-4 text-right">
+                                        <button
+                                            onClick={() => handleDelete(tt.id)}
+                                            className="p-2 text-zinc-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
+                                            title="삭제"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+        </div>
+    )
+}
