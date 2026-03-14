@@ -238,7 +238,7 @@ export default function TimetablePage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="grid gap-5"
+              className="grid gap-2.5"
             >
               {dailyEntries.length > 0 ? (
                 dailyEntries.map((entry, idx) => {
@@ -250,7 +250,7 @@ export default function TimetablePage() {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: idx * 0.05 }}
-                      className={`group relative overflow-hidden bg-zinc-900/40 backdrop-blur-3xl border transition-all duration-500 p-6 rounded-[2rem] flex flex-col md:flex-row md:items-center justify-between gap-6 ${
+                      className={`group relative overflow-hidden bg-zinc-900/40 backdrop-blur-3xl border transition-all duration-500 p-3 px-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 ${
                         active 
                           ? "border-purple-500/50 bg-purple-500/5 shadow-[0_0_30px_rgba(168,85,247,0.1)]" 
                           : "border-white/5 hover:border-white/10"
@@ -267,18 +267,18 @@ export default function TimetablePage() {
                       )}
 
                       <div className="flex items-center gap-6 relative z-10">
-                        <div className={`flex flex-col items-center justify-center w-16 h-16 rounded-2xl border font-black transition-colors ${
+                        <div className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl border font-black transition-colors ${
                           active 
                             ? "bg-purple-500 border-purple-400 text-white shadow-lg shadow-purple-500/20" 
                             : "bg-white/5 border-white/5 text-zinc-500 group-hover:text-zinc-300"
                         }`}>
-                          <span className="text-[10px] opacity-70">PER</span>
-                          <span className="text-2xl mt-[-2px]">{entry.period}</span>
+                          <span className="text-[8px] opacity-70">PER</span>
+                          <span className="text-xl mt-[-2px]">{entry.period}</span>
                         </div>
                         
                         <div>
                           <div className="flex flex-wrap items-center gap-3 mb-2">
-                            <h4 className="text-xl font-black text-white tracking-tight flex items-center gap-2">
+                            <h4 className="text-lg font-black text-white tracking-tight flex items-center gap-2">
                                <span className="text-purple-400">{getSubjectIcon(entry.subject)}</span>
                                {entry.subject}
                             </h4>
@@ -286,7 +286,7 @@ export default function TimetablePage() {
                               <span className="px-2 py-0.5 rounded-md bg-pink-500 text-[10px] font-black text-white animate-bounce">NOW</span>
                             )}
                           </div>
-                          <div className="flex flex-wrap items-center gap-5 text-sm text-zinc-500 font-medium">
+                          <div className="flex flex-wrap items-center gap-4 text-xs text-zinc-500 font-medium">
                             <div className="flex items-center gap-2 group-hover:text-zinc-300 transition-colors">
                               <Clock size={16} className="text-purple-500/50" />
                               <span className="font-mono">{entry.time}</span>
