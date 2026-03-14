@@ -142,15 +142,30 @@ export default function MealsPage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {meals.filter(m => m.date >= todayStr && m.date !== todayStr).length > 0 ? (
-            meals
-              .filter(m => {
-                // Filter out Saturday (6) and Sunday (0) from the list view
-                const d = new Date(m.date);
-                const day = d.getDay();
-                return m.date >= todayStr && m.date !== todayStr && day !== 0 && day !== 6;
-              })
-              .slice(0, 6) // Show only next 6 entries
+          {(() => {
+            const filteredUpcoming = meals.filter(m => {
+              const d = new Date(m.date);
+              const day = d.getDay();
+              return m.date >= todayStr && m.date !== todayStr && day !== 0 && day !== 6;
+            });
+
+            if (filteredUpcoming.length === 0) return (
+              <div className="col-span-full py-12 text-center bg-white/5 border border-dashed border-white/10 rounded-2xl text-gray-500">
+                추후 일정이 아직 등록되지 않았습니다.
+              </div>
+            );
+
+            // Logic to limit view to Monday-Friday of the first upcoming week
+            const firstDate = new Date(filteredUpcoming[0].date);
+            const firstDay = firstDate.getDay(); // 1 (Mon) to 5 (Fri)
+            const diffToFriday = 5 - firstDay;
+            const fridayDate = new Date(firstDate);
+            fridayDate.setDate(firstDate.getDate() + diffToFriday);
+            const fridayStr = `${fridayDate.getFullYear()}-${String(fridayDate.getMonth() + 1).padStart(2, '0')}-${String(fridayDate.getDate()).padStart(2, '0')}`;
+
+            return filteredUpcoming
+              .filter(m => m.date <= fridayStr)
+              .slice(0, 5)
               .map((meal, index) => (
                 <motion.div
                   key={meal.id}
@@ -172,12 +187,8 @@ export default function MealsPage() {
                     {meal.menu}
                   </p>
                 </motion.div>
-              ))
-          ) : (
-            <div className="col-span-full py-12 text-center bg-white/5 border border-dashed border-white/10 rounded-2xl text-gray-500">
-              추후 일정이 아직 등록되지 않았습니다.
-            </div>
-          )}
+              ));
+          })()}
         </div>
       </div>
 

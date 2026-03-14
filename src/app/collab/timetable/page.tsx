@@ -329,15 +329,11 @@ export default function TimetablePage() {
               ) : (
                 <div className="text-center py-24 bg-zinc-900/20 rounded-[3rem] border border-dashed border-white/10">
                    <div className="p-5 bg-white/5 rounded-2xl inline-block text-zinc-600 mb-4">
-                      {new Date().getDay() === 0 || new Date().getDay() === 6 ? <Sparkles size={40} strokeWidth={1} /> : <LayoutGrid size={40} strokeWidth={1} />}
+                      <LayoutGrid size={40} strokeWidth={1} />
                    </div>
-                   <p className="text-zinc-400 font-bold mb-1">
-                      {new Date().getDay() === 0 || new Date().getDay() === 6 ? "즐거운 주말 보충 시간!" : "앗! 일정이 없어요."}
-                   </p>
+                   <p className="text-zinc-400 font-bold mb-1">앗! 일정이 없어요.</p>
                    <p className="text-zinc-600 text-sm">
-                      {new Date().getDay() === 0 || new Date().getDay() === 6 
-                        ? "주말에는 시간표가 없습니다. 푹 쉬고 활기찬 월요일에 만나요!" 
-                        : `현재 ${DAYS.find(d => d.key === activeTab)?.label}에 등록된 수업이 없습니다.`}
+                      현재 {DAYS.find(d => d.key === activeTab)?.label}에 등록된 수업이 없습니다.
                    </p>
                 </div>
               )}
