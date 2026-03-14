@@ -40,7 +40,7 @@ export default function CollabPage() {
           </div>
         </Link>
 
-        
+
         <Link href="/collab/timetable" className="group">
           <div className="h-full bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-orange-400/50 hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-2">
             <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-orange-400/20 to-amber-400/20 flex items-center justify-center mb-6 border border-orange-400/20 group-hover:scale-110 transition-transform duration-300">
@@ -55,29 +55,29 @@ export default function CollabPage() {
       </div>
 
       <div className="mt-16">
-        <a 
-          href="https://forms.gle/RvQrTaimSpJ5Saj18" 
-          target="_blank" 
-          rel="noopener noreferrer" 
+        <a
+          href="https://forms.gle/ijQgKpGLvUexQ2tBA"
+          target="_blank"
+          rel="noopener noreferrer"
           className="group block"
         >
           <div className="bg-white/5 backdrop-blur-md rounded-3xl p-8 md:p-10 border border-white/10 hover:border-yellow-400/50 hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden">
             {/* Background Glow Effect */}
             <div className="absolute -right-20 -top-20 w-64 h-64 bg-yellow-400/5 blur-[80px] rounded-full group-hover:bg-yellow-400/10 transition-colors duration-300" />
-            
+
             <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
               <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-yellow-400/20 to-orange-400/20 flex items-center justify-center border border-yellow-400/20 group-hover:scale-110 transition-transform duration-300 flex-shrink-0 shadow-lg shadow-yellow-400/10">
                 <Lightbulb className="w-10 h-10 text-yellow-400" />
               </div>
-              
+
               <div className="flex-grow text-center md:text-left">
                 <h3 className="text-3xl font-bold text-white mb-3">아이디어 포털</h3>
                 <p className="text-gray-400 text-lg leading-relaxed max-w-3xl">
-                  학교 생활을 더 즐겁고 편리하게 만들 특별한 아이디어가 있으신가요? 
+                  학교 생활을 더 즐겁고 편리하게 만들 특별한 아이디어가 있으신가요?
                   작은 제안부터 대규모 프로젝트 아이디어까지, 여러분의 소중한 의견을 들려주세요.
                 </p>
               </div>
-              
+
               <div className="flex-shrink-0 w-full md:w-auto mt-4 md:mt-0">
                 <div className="inline-flex items-center justify-center w-full md:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-950 font-bold text-lg group-hover:from-yellow-300 group-hover:to-orange-300 transition-all duration-300 shadow-xl shadow-yellow-400/20">
                   의견 제출하기
