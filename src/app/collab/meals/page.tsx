@@ -92,7 +92,7 @@ export default function MealsPage() {
                 </div>
               </div>
               
-              {todayMeal ? (
+              {todayMeal && !isWeekend ? (
                 <div className="space-y-6">
                   <p className="text-2xl sm:text-3xl text-gray-100 font-medium leading-relaxed">
                     {todayMeal.menu.split(',').map((item, idx) => (
@@ -115,7 +115,7 @@ export default function MealsPage() {
                        <p className="text-gray-500 text-sm">주말에는 급식이 운영되지 않습니다. 월요일에 만나요!</p>
                     </div>
                   ) : (
-                    <p className="text-xl text-gray-500 italic">오늘 등록된 급식 정보가 없습니다.</p>
+                    <p className="text-xl text-gray-500 italic font-medium">오늘 등록된 급식 정보가 없습니다.</p>
                   )}
                 </div>
               )}
@@ -136,15 +136,20 @@ export default function MealsPage() {
         <div className="flex items-center justify-between px-2">
           <h3 className="text-white font-bold flex items-center gap-2">
             <Clock size={18} className="text-emerald-400" />
-            이번 주 식단표
+            다가오는 식단표
           </h3>
-          <span className="text-xs text-gray-500 uppercase tracking-widest">Weekly Menu</span>
+          <span className="text-xs text-gray-500 uppercase tracking-widest">Upcoming Menu</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {meals.filter(m => m.date >= todayStr && m.date !== todayStr).length > 0 ? (
             meals
-              .filter(m => m.date >= todayStr && m.date !== todayStr)
+              .filter(m => {
+                // Filter out Saturday (6) and Sunday (0) from the list view
+                const d = new Date(m.date);
+                const day = d.getDay();
+                return m.date >= todayStr && m.date !== todayStr && day !== 0 && day !== 6;
+              })
               .slice(0, 6) // Show only next 6 entries
               .map((meal, index) => (
                 <motion.div
