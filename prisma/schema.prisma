@@ -116,23 +116,6 @@ model SchoolCalendar {
   @@index([eventType])
 }
 
-// 도서관 도서 목록 (Library Books)
-model LibraryBook {
-  id          String   @id @default(cuid())
-  title       String   // 책 제목
-  author      String   // 저자
-  publisher   String?  // 출판사
-  isbn        String?  // ISBN 번호
-  category    String?  // 도서 분류
-  status      String   @default("AVAILABLE") // AVAILABLE (대출 가능), BORROWED (대출 중)
-  location    String?  // 도서 위치 (예: 1열람실 A-3)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@index([title])
-  @@index([status])
-}
 
 // 시간표 (Timetable)
 model Timetable {

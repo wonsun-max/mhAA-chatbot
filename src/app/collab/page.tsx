@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Utensils, CalendarDays, BookOpen, Clock } from "lucide-react";
+import { Utensils, CalendarDays, Clock } from "lucide-react";
 
 export default function CollabPage() {
   return (
@@ -15,7 +15,7 @@ export default function CollabPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4 mt-12">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 mt-12">
         <Link href="/collab/meals" className="group">
           <div className="h-full bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-emerald-400/50 hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-2">
             <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-teal-400/20 to-emerald-400/20 flex items-center justify-center mb-6 border border-emerald-400/20 group-hover:scale-110 transition-transform duration-300">
@@ -40,17 +40,6 @@ export default function CollabPage() {
           </div>
         </Link>
 
-        <Link href="/collab/library" className="group">
-          <div className="h-full bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-purple-400/50 hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-2">
-            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-purple-400/20 to-pink-400/20 flex items-center justify-center mb-6 border border-purple-400/20 group-hover:scale-110 transition-transform duration-300">
-              <BookOpen className="w-8 h-8 text-purple-400" />
-            </div>
-            <h3 className="text-2xl font-bold text-white mb-3">도서관 검색</h3>
-            <p className="text-gray-400 leading-relaxed">
-              학교 도서관에 있는 책 목록을 확인하고, 대출 가능한지 미리 알아보세요.
-            </p>
-          </div>
-        </Link>
         
         <Link href="/collab/timetable" className="group">
           <div className="h-full bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-orange-400/50 hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-2">
