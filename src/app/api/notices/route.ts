@@ -15,9 +15,10 @@ export async function GET(req: Request) {
                 isVisible: true,
                 ...(category ? { category } : {}),
             },
-            orderBy: {
-                createdAt: "desc",
-            },
+            orderBy: [
+                { isPinned: "desc" },
+                { createdAt: "desc" },
+            ],
             take: limit,
         });
 
@@ -35,7 +36,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const { title, content, category } = await req.json();
+        const { title, content, category, isPinned } = await req.json();
 
         if (!title || !content || !category) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -47,6 +48,7 @@ export async function POST(req: Request) {
                 title,
                 content,
                 category,
+                isPinned: isPinned || false,
                 authorId: session.user.id,
             },
         });

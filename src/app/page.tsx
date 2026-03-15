@@ -57,8 +57,9 @@ export default function Home() {
 
             <blockquote className="space-y-4">
               <p className="text-xl md:text-2xl font-serif italic text-white/80 leading-relaxed font-light">
-                "지능은 학습하는 능력뿐만 아니라, 그 지식을 통해 세상을 변화시키는 능력입니다."
+                "이스라엘아 들으라 우리 하나님 여호와는 오직 유일한 여호와이시니 너는 마음을 다하고 뜻을 다하고 힘을 다하여 네 하나님 여호와를 사랑하라."
               </p>
+              <p className="text-[10px] text-white/20 uppercase tracking-[0.4em] font-bold">신명기 6:4-5</p>
             </blockquote>
           </motion.div>
         </section>

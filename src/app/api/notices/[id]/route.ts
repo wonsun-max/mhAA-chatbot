@@ -30,7 +30,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const { title, content, category, isVisible } = await req.json();
+        const { title, content, category, isVisible, isPinned } = await req.json();
 
         // @ts-ignore - Prisma type issue in IDE (Verified in Production Build)
         const notice = await prisma.notice.update({
@@ -40,6 +40,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
                 ...(content && { content }),
                 ...(category && { category }),
                 ...(isVisible !== undefined && { isVisible }),
+                ...(isPinned !== undefined && { isPinned }),
             },
         });
 

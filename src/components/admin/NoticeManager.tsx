@@ -9,6 +9,7 @@ interface Notice {
     title: string
     content: string
     category: string
+    isPinned: boolean
     createdAt: string
 }
 
@@ -18,7 +19,7 @@ export function NoticeManager() {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [showModal, setShowModal] = useState(false)
     const [editingNotice, setEditingNotice] = useState<Notice | null>(null)
-    const [formData, setFormData] = useState({ title: "", content: "", category: "Notice" })
+    const [formData, setFormData] = useState({ title: "", content: "", category: "Notice", isPinned: false })
 
     const fetchNotices = async () => {
         try {
@@ -47,7 +48,7 @@ export function NoticeManager() {
             if (res.ok) {
                 setShowModal(false)
                 setEditingNotice(null)
-                setFormData({ title: "", content: "", category: "Notice" })
+                setFormData({ title: "", content: "", category: "Notice", isPinned: false })
                 fetchNotices()
             }
         } catch (err) {
@@ -69,7 +70,7 @@ export function NoticeManager() {
 
     const openEdit = (notice: Notice) => {
         setEditingNotice(notice)
-        setFormData({ title: notice.title, content: notice.content, category: notice.category })
+        setFormData({ title: notice.title, content: notice.content, category: notice.category, isPinned: notice.isPinned })
         setShowModal(true)
     }
 
@@ -81,7 +82,7 @@ export function NoticeManager() {
                     <p className="text-sm text-zinc-500">미션 업데이트 생성 및 관리</p>
                 </div>
                 <button
-                    onClick={() => { setEditingNotice(null); setFormData({ title: "", content: "", category: "Notice" }); setShowModal(true) }}
+                    onClick={() => { setEditingNotice(null); setFormData({ title: "", content: "", category: "Notice", isPinned: false }); setShowModal(true) }}
                     className="flex items-center gap-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-sm font-bold uppercase tracking-wider"
                 >
                     <Plus size={18} /> 새 글 작성
@@ -95,11 +96,20 @@ export function NoticeManager() {
                     <motion.div
                         key={notice.id}
                         layout
-                        className="p-6 rounded-2xl border border-white/5 bg-zinc-900/10 hover:bg-zinc-900/30 transition-all flex items-center justify-between group"
+                        className={`p-6 rounded-2xl border transition-all flex items-center justify-between group ${
+                            notice.isPinned 
+                                ? "bg-blue-500/5 border-blue-500/20 hover:bg-blue-500/10" 
+                                : "bg-zinc-900/10 border-white/5 hover:bg-zinc-900/30"
+                        }`}
                     >
                         <div className="space-y-2">
                             <div className="flex items-center gap-3">
-                                <span className="text-[10px] uppercase font-bold text-blue-500 tracking-widest">
+                                {notice.isPinned && (
+                                    <span className="flex items-center gap-1 text-[10px] font-black text-blue-400 uppercase tracking-widest bg-blue-400/10 px-2 py-0.5 rounded-full">
+                                        <Bell size={10} className="fill-blue-400" /> 고정됨
+                                    </span>
+                                )}
+                                <span className="text-[10px] uppercase font-bold text-zinc-500 tracking-widest">
                                     {notice.category === "Notice" ? "공지사항" : notice.category === "Mission" ? "미션" : notice.category === "Event" ? "이벤트" : notice.category === "Bible" ? "주제 말씀" : notice.category}
                                 </span>
                                 <span className="text-[10px] text-zinc-600">{new Date(notice.createdAt).toLocaleDateString()}</span>
@@ -123,14 +133,30 @@ export function NoticeManager() {
                             <h3 className="text-2xl font-light mb-8">{editingNotice ? "공지사항 수정" : "새 공지사항"}</h3>
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="space-y-4">
-                                    <div className="space-y-1">
-                                        <label className="text-[10px] uppercase font-bold text-zinc-500 tracking-widest px-2">카테고리</label>
-                                        <select value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-sm focus:outline-none focus:border-white/20">
-                                            <option value="Notice">공지사항</option>
-                                            <option value="Mission">미션</option>
-                                            <option value="Event">이벤트</option>
-                                            <option value="Bible">주제 말씀</option>
-                                        </select>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] uppercase font-bold text-zinc-500 tracking-widest px-2">카테고리</label>
+                                            <select value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-sm focus:outline-none focus:border-white/20">
+                                                <option value="Notice">공지사항</option>
+                                                <option value="Mission">미션</option>
+                                                <option value="Event">이벤트</option>
+                                                <option value="Bible">주제 말씀</option>
+                                            </select>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] uppercase font-bold text-zinc-500 tracking-widest px-2">상단 고정</label>
+                                            <div 
+                                                onClick={() => setFormData({ ...formData, isPinned: !formData.isPinned })}
+                                                className={`w-full bg-white/5 border rounded-2xl py-4 px-6 text-sm cursor-pointer transition-all flex items-center justify-between ${
+                                                    formData.isPinned ? "border-blue-500/50 text-blue-400" : "border-white/10 text-zinc-500"
+                                                }`}
+                                            >
+                                                <span>메인 페이지 상단 노출</span>
+                                                <div className={`w-4 h-4 rounded-full border-2 transition-all ${
+                                                    formData.isPinned ? "bg-blue-500 border-blue-400" : "bg-transparent border-zinc-700"
+                                                }`} />
+                                            </div>
+                                        </div>
                                     </div>
                                     <div className="space-y-1">
                                         <label className="text-[10px] uppercase font-bold text-zinc-500 tracking-widest px-2">제목</label>

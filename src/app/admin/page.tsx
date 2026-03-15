@@ -59,8 +59,8 @@ function Overview({ stats }: { stats: Stats | null }) {
                 <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 to-transparent pointer-events-none" />
                 <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
                     <div className="space-y-2 text-center md:text-left">
-                        <h3 className="text-xl font-light tracking-tight italic">"Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go."</h3>
-                        <p className="text-xs text-white/20 uppercase tracking-[0.4em] font-bold">Joshua 1:9</p>
+                        <h3 className="text-xl font-light tracking-tight italic">"이스라엘아 들으라 우리 하나님 여호와는 오직 유일한 여호와이시니 너는 마음을 다하고 뜻을 다하고 힘을 다하여 네 하나님 여호와를 사랑하라."</h3>
+                        <p className="text-xs text-white/20 uppercase tracking-[0.4em] font-bold">신명기 6:4-5</p>
                     </div>
                 </div>
             </div>
