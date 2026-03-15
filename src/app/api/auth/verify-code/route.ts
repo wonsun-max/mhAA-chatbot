@@ -7,7 +7,7 @@ export async function POST(request: Request) {
         const { email, code } = await request.json();
 
         if (!email || !code) {
-            return NextResponse.json({ error: "Email and code are required" }, { status: 400 });
+            return NextResponse.json({ error: "이메일과 인증 코드가 필요합니다." }, { status: 400 });
         }
 
         const verification = await prisma.verificationCode.findFirst({
@@ -21,12 +21,12 @@ export async function POST(request: Request) {
         });
 
         if (!verification) {
-            return NextResponse.json({ error: "Invalid or expired verification code" }, { status: 400 });
+            return NextResponse.json({ error: "인증 코드가 올바르지 않거나 만료되었습니다." }, { status: 400 });
         }
 
-        return NextResponse.json({ message: "Code is valid" });
+        return NextResponse.json({ message: "인증 코드가 확인되었습니다." });
     } catch (error) {
         console.error("Error in verify-code route:", error);
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+        return NextResponse.json({ error: "서버 오류가 발생했습니다." }, { status: 500 });
     }
 }

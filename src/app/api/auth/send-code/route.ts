@@ -7,7 +7,7 @@ export async function POST(request: Request) {
         const { email } = await request.json();
 
         if (!email) {
-            return NextResponse.json({ error: "Email is required" }, { status: 400 });
+            return NextResponse.json({ error: "이메일 주소가 필요합니다." }, { status: 400 });
         }
 
         // Check if user already exists
@@ -36,12 +36,12 @@ export async function POST(request: Request) {
         const emailSent = await sendVerificationEmail(email, code);
 
         if (!emailSent) {
-            return NextResponse.json({ error: "Failed to send email" }, { status: 500 });
+            return NextResponse.json({ error: "이메일 전송에 실패했습니다." }, { status: 500 });
         }
 
-        return NextResponse.json({ message: "Verification code sent" });
+        return NextResponse.json({ message: "인증 코드가 전송되었습니다." });
     } catch (error) {
         console.error("Error in send-code route:", error);
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+        return NextResponse.json({ error: "서버 오류가 발생했습니다." }, { status: 500 });
     }
 }

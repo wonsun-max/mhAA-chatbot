@@ -47,7 +47,11 @@ function LoginContent() {
             })
 
             if (!res || res.error) {
-                setError("이메일/닉네임 또는 비밀번호가 올바르지 않습니다.")
+                if (res?.error === "계정이 아직 승인되지 않았거나 정지된 상태입니다.") {
+                    setError("아직 승인되지 않은 계정입니다. 관리자의 승인을 기다려주세요.")
+                } else {
+                    setError("이메일/닉네임 또는 비밀번호가 올바르지 않습니다.")
+                }
                 setIsLoading(false)
                 return
             }
