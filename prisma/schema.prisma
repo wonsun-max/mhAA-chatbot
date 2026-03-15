@@ -30,7 +30,7 @@ model User {
   passwordHash  String?   // bcrypt hash
 
   name          String?
-  grade         String?   // "1", "2", ..., "12-1", "12-2"
+  grade         String?   // "7", "8", ..., "12-1", "12-2"
   
   role          UserRole  @default(STUDENT)
   status        UserStatus @default(PENDING)

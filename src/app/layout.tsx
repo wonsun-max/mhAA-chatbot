@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Outfit } from "next/font/google";
 import "./globals.css";
 import Background from "@/components/Background";
 import { AuthProvider } from "@/components/providers/AuthProvider";
@@ -7,6 +8,12 @@ import { Footer } from "@/components/layout/Footer";
 import { PromotionModal } from "@/components/modals/PromotionModal";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  variable: "--font-outfit",
+  display: "swap",
+});
 
 // 1. Metadata setup
 
@@ -42,7 +49,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className="min-h-screen bg-black text-white font-sans selection:bg-blue-500/30">
+      <body className={`${outfit.variable} min-h-screen bg-black text-white font-sans selection:bg-blue-500/30`}>
         <AuthProvider>
           {/* 3. Background Component */}
           <Background />

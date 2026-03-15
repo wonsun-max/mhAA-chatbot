@@ -29,7 +29,7 @@ const DAYS = [
   { key: "FRI", label: "금요일" },
 ];
 
-const GRADES = ["10-1", "10-2", "11-1", "11-2", "12-1", "12-2"];
+const GRADES = ["7", "8", "9", "10", "11", "12-1", "12-2"];
 
 const SUBJECT_ICONS: Record<string, React.ReactNode> = {
   "수학": <Calculator size={18} />,
@@ -54,7 +54,7 @@ const getSubjectIcon = (subject: string) => {
 
 export default function TimetablePage() {
   const { data: session } = useSession();
-  const [selectedGrade, setSelectedGrade] = useState<string>("10-1");
+  const [selectedGrade, setSelectedGrade] = useState<string>("7");
   const [activeTab, setActiveTab] = useState<string>("MON");
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [timetable, setTimetable] = useState<TimetableEntry[]>([]);
