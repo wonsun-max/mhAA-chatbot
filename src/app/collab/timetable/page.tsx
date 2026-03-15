@@ -105,11 +105,18 @@ export default function TimetablePage() {
   }, []);
 
   const isCurrentPeriod = (timeRange: string, dayKey: string) => {
+    if (!timeRange || !timeRange.includes(" - ")) return false;
+
     const today = new Date().getDay();
     const dayMap: Record<number, string> = { 1: "MON", 2: "TUE", 3: "WED", 4: "THU", 5: "FRI" };
     if (dayMap[today] !== dayKey) return false;
 
-    const [start, end] = timeRange.split(" - ");
+    const parts = timeRange.split(" - ");
+    if (parts.length < 2) return false;
+    
+    const [start, end] = parts;
+    if (!start.includes(":") || !end.includes(":")) return false;
+
     const [sH, sM] = start.split(":").map(Number);
     const [eH, eM] = end.split(":").map(Number);
 
@@ -124,7 +131,14 @@ export default function TimetablePage() {
   };
 
   const getProgress = (timeRange: string) => {
-    const [start, end] = timeRange.split(" - ");
+    if (!timeRange || !timeRange.includes(" - ")) return 0;
+
+    const parts = timeRange.split(" - ");
+    if (parts.length < 2) return 0;
+
+    const [start, end] = parts;
+    if (!start.includes(":") || !end.includes(":")) return 0;
+
     const [sH, sM] = start.split(":").map(Number);
     const [eH, eM] = end.split(":").map(Number);
 
@@ -133,6 +147,8 @@ export default function TimetablePage() {
     const nowVal = currentTime.getHours() * 60 + currentTime.getMinutes();
 
     const total = endVal - startVal;
+    if (total <= 0) return 0;
+    
     const current = nowVal - startVal;
     return Math.min(Math.max((current / total) * 100, 0), 100);
   };
