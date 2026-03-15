@@ -18,11 +18,25 @@ const outfit = Outfit({
 // 1. Metadata setup
 
 export const metadata: Metadata = {
-  title: "WITHUS",
-  description: "WITHUS - 학생들의 학습과 효율성을 위한 AI 어시스턴트.",
+  title: "WITHUS | 마닐라한국아카데미 MHA",
+  description: "WITHUS - 마닐라한국아카데미(MHA) 학생들의 학습 효율성과 성장을 위한 통합 스마트 허브 및 AI 어시스턴트 플랫폼입니다.",
+  keywords: ["MHA", "WITHUS", "마닐라한국아카데미", "Manila Hankuk Academy", "위더스", "마한아", "필리핀 한국학교"],
+  applicationName: "WITHUS",
+  appleWebApp: {
+    title: "WITHUS",
+    statusBarStyle: "default",
+    capable: true,
+  },
   icons: {
     icon: "/images/site-favicon.png",
     apple: "/images/site-favicon.png",
+  },
+  openGraph: {
+    title: "WITHUS | 마닐라한국아카데미 MHA",
+    description: "마닐라한국아카데미(MHA) 학생들을 위한 스마트 학습 플랫폼 WITHUS",
+    type: "website",
+    siteName: "WITHUS",
+    locale: "ko_KR",
   },
   verification: {
     google: "DEKgJttmf7dYRdnjv9mswaqltxz445K-kZJuQ_JNtrM",
