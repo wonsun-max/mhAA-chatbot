@@ -259,12 +259,6 @@ export default function NoticesPage() {
                         <p className="text-sm italic">검색 결과가 없습니다.</p>
                     </div>
                 )}
-                ) : (
-                    <div className="py-40 text-center space-y-4 opacity-20">
-                        <Bell size={40} className="mx-auto" />
-                        <p className="text-sm italic">검색 결과가 없습니다.</p>
-                    </div>
-                )}
             </main>
 
             {/* Add Notice Modal */}
