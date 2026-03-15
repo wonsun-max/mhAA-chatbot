@@ -133,75 +133,132 @@ export default function NoticesPage() {
                     </div>
                 </div>
 
-                {/* List Section */}
+                {/* List Section with 30/70 Split */}
                 {loading ? (
                     <div className="flex flex-col items-center justify-center py-32 space-y-4">
                         <Loader2 className="animate-spin text-blue-500" size={32} />
                         <p className="text-zinc-500 text-xs tracking-widest uppercase">소식을 가져오는 중</p>
                     </div>
                 ) : filteredNotices.length > 0 ? (
-                    <div className="space-y-1">
-                        {filteredNotices.map((notice, i) => (
-                            <motion.div
-                                key={notice.id}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: i * 0.03 }}
-                                className={`group relative p-6 rounded-2xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-6 ${
-                                    notice.isPinned 
-                                        ? "bg-blue-500/5 border-blue-500/20 hover:bg-blue-500/10" 
-                                        : "bg-transparent border-transparent hover:bg-white/[0.02] border-b-white/5 last:border-b-0"
-                                }`}
-                            >
-                                <div className="flex-1 space-y-3">
-                                    <div className="flex items-center flex-wrap gap-3">
-                                        {notice.isPinned && (
-                                            <span className="flex items-center gap-1 text-[9px] font-black text-blue-400 uppercase tracking-widest bg-blue-400/10 px-2 py-0.5 rounded-full">
-                                                <Bell size={10} className="fill-blue-400" /> 고정됨
-                                            </span>
-                                        )}
-                                        <span className={`px-2 py-0.5 rounded text-[9px] uppercase tracking-widest font-bold ${
-                                            notice.category === 'Notice' ? 'text-blue-400 bg-blue-400/5' :
-                                            notice.category === 'Mission' ? 'text-purple-400 bg-purple-400/5' :
-                                            'text-zinc-500 bg-white/5'
-                                        }`}>
-                                            {notice.category === "Notice" ? "공지사항" : notice.category === "Mission" ? "미션" : notice.category === "Event" ? "이벤트" : notice.category === "Bible" ? "주제 말씀" : notice.category}
-                                        </span>
-                                        <span className="text-[10px] text-white/20 font-mono">
-                                            {new Date(notice.createdAt).toLocaleDateString("ko-KR")}
-                                        </span>
+                    (() => {
+                        const pinnedNotices = filteredNotices.filter(n => n.isPinned);
+                        const normalNotices = filteredNotices.filter(n => !n.isPinned);
+                        const hasPinned = pinnedNotices.length > 0;
+
+                        return (
+                            <div className={`flex flex-col ${hasPinned ? 'md:grid md:grid-cols-[3fr_7fr]' : ''} gap-12 md:gap-20`}>
+                                {/* Pinned Column (30%) */}
+                                {hasPinned && (
+                                    <div className="space-y-8">
+                                        <div className="flex items-center gap-2 text-blue-400">
+                                            <span className="text-[10px] font-black uppercase tracking-widest">Important</span>
+                                            <div className="h-px flex-1 bg-blue-500/20" />
+                                        </div>
+                                        <div className="space-y-4">
+                                            {pinnedNotices.map((notice, i) => (
+                                                <motion.div
+                                                    key={notice.id}
+                                                    initial={{ opacity: 0, x: -10 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    transition={{ delay: i * 0.05 }}
+                                                    className="group p-6 rounded-2xl bg-blue-500/5 border border-blue-500/20 hover:bg-blue-500/10 transition-all"
+                                                >
+                                                    <div className="space-y-4">
+                                                        <div className="flex items-center justify-between">
+                                                            <span className="px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-black text-blue-400 bg-blue-400/10">
+                                                                {notice.category}
+                                                            </span>
+                                                            <span className="text-[9px] text-white/20 font-mono">
+                                                                {new Date(notice.createdAt).toLocaleDateString("ko-KR")}
+                                                            </span>
+                                                        </div>
+                                                        <Link href={`/notices/${notice.id}`} className="block">
+                                                            <h2 className="text-xl font-medium text-white group-hover:text-blue-400 transition-colors leading-tight">
+                                                                {notice.title}
+                                                            </h2>
+                                                        </Link>
+                                                        <p className="text-xs text-white/40 line-clamp-2 leading-relaxed font-light">
+                                                            {notice.content}
+                                                        </p>
+                                                        {isAdmin && (
+                                                            <button
+                                                                onClick={() => handleDeleteNotice(notice.id)}
+                                                                className="text-red-500/30 hover:text-red-500 transition-colors"
+                                                            >
+                                                                <Trash2 size={14} />
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </motion.div>
+                                            ))}
+                                        </div>
                                     </div>
+                                )}
 
-                                    <Link href={`/notices/${notice.id}`} className="block group/title">
-                                        <h2 className="text-lg font-medium text-white/80 group-hover/title:text-white transition-colors tracking-tight leading-snug">
-                                            {notice.title}
-                                        </h2>
-                                    </Link>
-                                    
-                                    <p className="text-xs text-white/30 font-light leading-relaxed line-clamp-1 max-w-2xl">
-                                        {notice.content}
-                                    </p>
-                                </div>
-
-                                <div className="flex items-center gap-4 shrink-0">
-                                    {isAdmin && (
-                                        <button
-                                            onClick={() => handleDeleteNotice(notice.id)}
-                                            className="p-2 text-red-500/20 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
-                                        >
-                                            <Trash2 size={16} />
-                                        </button>
+                                {/* Normal Column (70% or 100%) */}
+                                <div className="space-y-8">
+                                    {hasPinned && (
+                                        <div className="flex items-center gap-2 text-white/10">
+                                            <span className="text-[10px] font-black uppercase tracking-widest">General Feed</span>
+                                            <div className="h-px flex-1 bg-white/5" />
+                                        </div>
                                     )}
-                                    <Link
-                                        href={`/notices/${notice.id}`}
-                                        className="h-10 w-10 rounded-full border border-white/5 flex items-center justify-center text-zinc-600 group-hover:text-white group-hover:border-white/20 transition-all"
-                                    >
-                                        <ChevronRight size={18} />
-                                    </Link>
+                                    <div className="divide-y divide-white/5">
+                                        {normalNotices.map((notice, i) => (
+                                            <motion.div
+                                                key={notice.id}
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: i * 0.02 }}
+                                                className="group py-6 first:pt-0 flex items-center justify-between gap-8"
+                                            >
+                                                <div className="flex-1 min-w-0 space-y-2">
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="text-[9px] uppercase tracking-widest text-white/30 font-bold">{notice.category}</span>
+                                                        <span className="text-[9px] text-white/10 font-mono">
+                                                            {new Date(notice.createdAt).toLocaleDateString("ko-KR")}
+                                                        </span>
+                                                    </div>
+                                                    <Link href={`/notices/${notice.id}`} className="block">
+                                                        <h4 className="text-base font-light text-white/70 group-hover:text-white transition-colors truncate">
+                                                            {notice.title}
+                                                        </h4>
+                                                    </Link>
+                                                </div>
+                                                <div className="flex items-center gap-4 shrink-0">
+                                                    {isAdmin && (
+                                                        <button
+                                                            onClick={() => handleDeleteNotice(notice.id)}
+                                                            className="p-2 text-red-500/10 hover:text-red-500 transition-all"
+                                                        >
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    )}
+                                                    <Link
+                                                        href={`/notices/${notice.id}`}
+                                                        className="h-8 w-8 rounded-full border border-white/5 flex items-center justify-center text-zinc-700 hover:text-white hover:border-white/20 transition-all"
+                                                    >
+                                                        <ChevronRight size={14} />
+                                                    </Link>
+                                                </div>
+                                            </motion.div>
+                                        ))}
+                                        {normalNotices.length === 0 && !hasPinned && (
+                                            <div className="py-20 text-center opacity-20">
+                                                <p className="text-sm italic">등록된 소식이 없습니다.</p>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
-                            </motion.div>
-                        ))}
+                            </div>
+                        );
+                    })()
+                ) : (
+                    <div className="py-40 text-center space-y-4 opacity-20">
+                        <Bell size={40} className="mx-auto" />
+                        <p className="text-sm italic">검색 결과가 없습니다.</p>
                     </div>
+                )}
                 ) : (
                     <div className="py-40 text-center space-y-4 opacity-20">
                         <Bell size={40} className="mx-auto" />
