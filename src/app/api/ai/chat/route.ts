@@ -63,23 +63,8 @@ export async function POST(req: Request) {
 
         const messages: ModelMessage[] = convertToModelMessages(clientMessages);
 
-        const user = await prisma.user.findUnique({
-            where: { id: session.user.id },
-            select: {
-                name: true,
-                grade: true,
-            }
-        });
-
-        if (!user) {
-            return new Response(
-                JSON.stringify({ error: "Forbidden: User record synchronization failure." }),
-                { status: 403, headers: { 'Content-Type': 'application/json' } }
-            );
-        }
-
-        const displayName = user.name || "Member";
-        const userGradeText = user.grade || "Unknown";
+        const displayName = (session.user as any)?.name || "Member";
+        const userGradeText = (session.user as any)?.grade || "Unknown";
 
         const currentTime = new Intl.DateTimeFormat("ko-KR", {
             timeZone: "Asia/Manila",

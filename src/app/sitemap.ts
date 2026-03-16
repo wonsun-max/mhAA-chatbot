@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://mha-withus.vercel.app'
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://withus-mha.vercel.app'
   
   return [
     {
