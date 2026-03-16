@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ExternalLink } from "lucide-react";
 import Link from "next/link";
@@ -10,6 +11,7 @@ import Link from "next/link";
  * Includes logic to hide the modal for 24 hours if requested by the user.
  */
 export function PromotionModal() {
+    const { status } = useSession();
     const [isOpen, setIsOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
 
@@ -31,7 +33,7 @@ export function PromotionModal() {
         setIsOpen(false);
     };
 
-    if (!mounted) return null;
+    if (!mounted || status === "authenticated") return null;
 
     return (
         <AnimatePresence>

@@ -53,8 +53,8 @@ const getSubjectIcon = (subject: string) => {
 };
 
 export default function TimetablePage() {
-  const { data: session } = useSession();
-  const [selectedGrade, setSelectedGrade] = useState<string>("7");
+  const { data: session, status } = useSession();
+  const [selectedGrade, setSelectedGrade] = useState<string>("");
   const [activeTab, setActiveTab] = useState<string>("MON");
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [timetable, setTimetable] = useState<TimetableEntry[]>([]);
@@ -68,13 +68,20 @@ export default function TimetablePage() {
   }, []);
 
   useEffect(() => {
+    if (status === "loading") return;
+
     if (session?.user && (session.user as any).grade) {
       setSelectedGrade((session.user as any).grade);
+    } else {
+      // Default to Grade 7 if not logged in or no grade set
+      setSelectedGrade("7");
     }
-  }, [session]);
+  }, [session, status]);
 
   useEffect(() => {
     const fetchTimetable = async () => {
+      if (!selectedGrade) return;
+      
       setLoading(true);
       try {
         const res = await fetch(`/api/admin/collab/timetable?grade=${encodeURIComponent(selectedGrade)}`);
