@@ -20,10 +20,10 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   title: "WITHUS | 마닐라한국아카데미 MHA",
   description: "WITHUS - 마닐라한국아카데미(MHA) 학생들의 학습 효율성과 성장을 위한 통합 스마트 허브 및 AI 어시스턴트 플랫폼입니다.",
-  keywords: ["MHA", "WITHUS", "마닐라한국아카데미", "Manila Hankuk Academy", "위더스", "마한아", "필리핀 한국학교"],
-  applicationName: "WITHUS",
+  keywords: ["MHA", "withus", "마닐라한국아카데미", "Manila Hankuk Academy", "위더스", "마한아", "필리핀 한국학교", "mha withus", "withus mha"],
+  applicationName: "withus",
   appleWebApp: {
-    title: "WITHUS",
+    title: "withus",
     statusBarStyle: "default",
     capable: true,
   },
