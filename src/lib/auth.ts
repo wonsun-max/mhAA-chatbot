@@ -47,6 +47,7 @@ export const authOptions: NextAuthOptions = {
                     role: user.role,
                     status: user.status,
                     grade: user.grade,
+                    qtGroup: user.qtGroup,
                 };
             }
         }),
@@ -59,10 +60,12 @@ export const authOptions: NextAuthOptions = {
                 token.status = (user as any).status;
                 token.grade = (user as any).grade;
                 token.nickname = (user as any).nickname;
+                token.qtGroup = (user as any).qtGroup;
             }
             // Support updating token values if needed
-            if (trigger === "update" && session?.nickname) {
-                token.nickname = session.nickname;
+            if (trigger === "update") {
+                if (session?.nickname) token.nickname = session.nickname;
+                if (session?.qtGroup) token.qtGroup = session.qtGroup;
             }
             return token;
         },
@@ -73,6 +76,7 @@ export const authOptions: NextAuthOptions = {
                 (session.user as any).status = token.status;
                 (session.user as any).grade = token.grade;
                 (session.user as any).nickname = token.nickname;
+                (session.user as any).qtGroup = token.qtGroup;
             }
             return session;
         }

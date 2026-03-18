@@ -9,6 +9,7 @@ declare module "next-auth" {
             status: UserStatus;
             nickname?: string | null;
             grade?: string | null;
+            qtGroup?: string | null;
         } & DefaultSession["user"]
     }
 
@@ -17,6 +18,7 @@ declare module "next-auth" {
         status: UserStatus;
         nickname?: string | null;
         grade?: string | null;
+        qtGroup?: string | null;
     }
 }
 
@@ -27,5 +29,6 @@ declare module "next-auth/jwt" {
         status: UserStatus;
         nickname?: string | null;
         grade?: string | null;
+        qtGroup?: string | null;
     }
 }

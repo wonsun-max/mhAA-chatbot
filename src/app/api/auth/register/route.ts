@@ -4,9 +4,9 @@ import bcrypt from "bcryptjs";
 
 export async function POST(request: Request) {
     try {
-        const { email, code, name, nickname, grade, password } = await request.json();
+        const { email, code, name, nickname, grade, password, qtGroup } = await request.json();
 
-        if (!email || !code || !name || !nickname || !grade || !password) {
+        if (!email || !code || !name || !nickname || !grade || !password || !qtGroup) {
             return NextResponse.json({ error: "모든 필드를 입력해야 합니다." }, { status: 400 });
         }
 
@@ -53,6 +53,7 @@ export async function POST(request: Request) {
                 nickname,
                 grade,
                 passwordHash,
+                qtGroup,
                 status: "PENDING", // Require admin approval
                 role: "STUDENT",   // Default role
             },

@@ -16,6 +16,7 @@ export default function SignupPage() {
     const [name, setName] = useState("")
     const [nickname, setNickname] = useState("")
     const [grade, setGrade] = useState("")
+    const [qtGroup, setQtGroup] = useState("");
     const [password, setPassword] = useState("")
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState("")
@@ -24,6 +25,7 @@ export default function SignupPage() {
     const grades = [
         "7", "8", "9", "10", "11", "12-1", "12-2"
     ]
+    const qtGroups = ["1", "2", "3", "4", "5", "6", "7", "8"];
 
     /** Step 1 → 2: send verification code */
     const handleSendCode = async (e: React.FormEvent) => {
@@ -86,7 +88,7 @@ export default function SignupPage() {
             const res = await fetch("/api/auth/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, code, name, nickname, grade, password }),
+                body: JSON.stringify({ email, code, name, nickname, grade, qtGroup, password }),
             })
             if (res.ok) {
                 setStep(4)
@@ -298,6 +300,24 @@ export default function SignupPage() {
                                         >
                                             <option value="">학년 선택</option>
                                             {grades.map(g => <option key={g} value={g}>{g}학년</option>)}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-zinc-400 ml-1">QT조</label>
+                                    <div className="relative">
+                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500">
+                                            <User size={20} />
+                                        </div>
+                                        <select
+                                            required
+                                            value={qtGroup}
+                                            onChange={(e) => setQtGroup(e.target.value)}
+                                            className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none appearance-none"
+                                        >
+                                            <option value="">QT조 선택</option>
+                                            {qtGroups.map(group => <option key={group} value={group}>{group}조</option>)}
                                         </select>
                                     </div>
                                 </div>

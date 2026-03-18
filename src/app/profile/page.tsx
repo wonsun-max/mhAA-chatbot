@@ -26,26 +26,25 @@ export default function ProfilePage() {
     const [stats, setStats] = useState<UserStats | null>(null)
     const [loadingStats, setLoadingStats] = useState(true)
 
-    // Nickname Edit State
+    // Profile Edit State
     const [isEditingNickname, setIsEditingNickname] = useState(false)
     const [newNickname, setNewNickname] = useState("")
+    const [isEditingQtGroup, setIsEditingQtGroup] = useState(false)
+    const [newQtGroup, setNewQtGroup] = useState("")
     const [isSaving, setIsSaving] = useState(false)
     const [updateError, setUpdateError] = useState<string | null>(null)
 
-    const handleNicknameUpdate = async () => {
-        if (!newNickname || newNickname.trim() === (session?.user as any)?.nickname) {
-            setIsEditingNickname(false)
-            return
-        }
+    const qtGroups = ["1", "2", "3", "4", "5", "6", "7", "8"];
 
+    const handleUpdate = async (fields: { nickname?: string, qtGroup?: string }) => {
         setIsSaving(true)
         setUpdateError(null)
 
         try {
-            const res = await fetch("/api/user/nickname", {
+            const res = await fetch("/api/user/update", {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ nickname: newNickname.trim() })
+                body: JSON.stringify(fields)
             })
 
             const data = await res.json()
@@ -53,8 +52,11 @@ export default function ProfilePage() {
             if (!res.ok) throw new Error(data.error || "변경에 실패했습니다.")
 
             // Update session locally
-            await update({ nickname: newNickname.trim() })
-            setIsEditingNickname(false)
+            await update(fields)
+            
+            if (fields.nickname) setIsEditingNickname(false)
+            if (fields.qtGroup) setIsEditingQtGroup(false)
+            
             setUpdateError(null)
         } catch (err: any) {
             setUpdateError(err.message)
@@ -229,7 +231,7 @@ export default function ProfilePage() {
                                                     autoFocus
                                                 />
                                                 <button
-                                                    onClick={handleNicknameUpdate}
+                                                    onClick={() => handleUpdate({ nickname: newNickname.trim() })}
                                                     disabled={isSaving}
                                                     className="p-1.5 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors disabled:opacity-50"
                                                 >
@@ -265,6 +267,52 @@ export default function ProfilePage() {
                                 </div>
 
                                 <div className="w-full space-y-4 pt-8 border-t border-white/5">
+                                    <div className="w-full">
+                                        {isEditingQtGroup ? (
+                                            <div className="flex items-center space-x-2 w-full">
+                                                <div className="text-zinc-600">
+                                                    <User size={16} />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-600 leading-tight">QT조</p>
+                                                    <select
+                                                        value={newQtGroup}
+                                                        onChange={(e) => setNewQtGroup(e.target.value)}
+                                                        className="w-full bg-black/50 border border-white/20 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-blue-500 transition-colors mt-1"
+                                                    >
+                                                        <option value="">QT조 선택</option>
+                                                        {qtGroups.map(group => <option key={group} value={group}>{group}조</option>)}
+                                                    </select>
+                                                </div>
+                                                <button
+                                                    onClick={() => handleUpdate({ qtGroup: newQtGroup })}
+                                                    disabled={isSaving}
+                                                    className="p-1.5 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors disabled:opacity-50"
+                                                >
+                                                    {isSaving ? <Activity size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
+                                                </button>
+                                                <button
+                                                    onClick={() => setIsEditingQtGroup(false)}
+                                                    className="p-1.5 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors"
+                                                >
+                                                    <X size={14} />
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center justify-between group">
+                                                <InfoRow icon={User} label="QT조" value={(session.user as any)?.qtGroup ? `${(session.user as any).qtGroup}조` : "미지정"} />
+                                                <button
+                                                    onClick={() => {
+                                                        setNewQtGroup((session.user as any)?.qtGroup || "")
+                                                        setIsEditingQtGroup(true)
+                                                    }}
+                                                    className="opacity-0 group-hover:opacity-100 p-1 hover:bg-white/10 rounded-md transition-all text-zinc-500 hover:text-white"
+                                                >
+                                                    <Edit3 size={14} />
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
                                     <InfoRow icon={Mail} label="이메일" value={session.user?.email || "이메일 없음"} />
                                     <InfoRow icon={Shield} label="계정 등급" value={(session.user as any)?.role || "사용자"} />
                                 </div>
