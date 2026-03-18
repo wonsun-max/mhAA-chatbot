@@ -81,7 +81,7 @@ export function ChatInterface() {
             <div
                 ref={messagesContainerRef}
                 onScroll={handleScroll}
-                className={`flex-1 overflow-y-auto pt-12 pb-48 space-y-2 scrollbar-hide [&::-webkit-scrollbar]:hidden ${messages.length === 0 ? 'flex items-center justify-center' : ''}`}
+                className={`flex-1 overflow-y-auto pt-12 pb-60 space-y-2 scrollbar-hide [&::-webkit-scrollbar]:hidden ${messages.length === 0 ? 'flex items-center justify-center' : ''}`}
             >
                 {messages.length === 0 ? (
                     <motion.div
@@ -195,7 +195,7 @@ export function ChatInterface() {
                                 </div>
                             </motion.div>
                         )}
-                        <div ref={messagesEndRef} className="h-4" />
+                        <div ref={messagesEndRef} className="h-20" />
                     </div>
                 )}
             </div>
