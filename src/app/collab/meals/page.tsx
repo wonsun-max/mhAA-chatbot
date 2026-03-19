@@ -11,6 +11,14 @@ interface Meal {
   menu: string;
 }
 
+const GROUP_1 = "7, 9, 11";
+const GROUP_2 = "8, 10, 12-1, 12-2";
+
+// Friday, March 20, 2026 is part of the week starting March 16, 2026.
+// Reverting to the user's information: "this week was group 2 (8,10,12-1,12-2) ate fast."
+// Let's assume the week starts on Sunday or Monday.
+// March 16, 2026 (Monday) -> Group 2 is priority.
+
 export default function MealsPage() {
   const [meals, setMeals] = useState<Meal[]>([]);
   const [loading, setLoading] = useState(true);
@@ -43,6 +51,43 @@ export default function MealsPage() {
     fetchMeals();
   }, [todayStr]);
 
+  // Meal Order Logic
+  const getMealOrder = () => {
+    const day = today.getDay(); // 0 (Sun) to 6 (Sat)
+    if (day === 0 || day === 6) return null;
+
+    // Reference Monday: 2026-03-16
+    // User clarified: This week Tuesday (day 2) and Thursday (day 4) Group 2 eats fast.
+    // This means Monday (day 1), Wednesday (day 3), Friday (day 5) Group 1 eats fast.
+    const refDate = new Date("2026-03-16");
+    const diffTime = today.getTime() - refDate.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    const diffWeeks = Math.floor(diffDays / 7);
+
+    // Swap base priority every week
+    const isGroup1BaseWeek = diffWeeks % 2 === 0;
+
+    // Based on user: This week (isGroup1BaseWeek=true), day 2 & 4 are Group 2 priority.
+    // day 1, 3, 5 are Group 1 priority.
+    // This aligns with: (day % 2 !== 0) ? Group 1 : Group 2
+    
+    let firstGroup, secondGroup;
+    const isPriorityDay = (day % 2) !== 0; // Mon(1), Wed(3), Fri(5)
+
+    if (isGroup1BaseWeek) {
+      firstGroup = isPriorityDay ? GROUP_1 : GROUP_2;
+      secondGroup = isPriorityDay ? GROUP_2 : GROUP_1;
+    } else {
+      // Next week, swap
+      firstGroup = isPriorityDay ? GROUP_2 : GROUP_1;
+      secondGroup = isPriorityDay ? GROUP_1 : GROUP_2;
+    }
+
+    return { firstGroup, secondGroup };
+  };
+
+  const mealOrder = getMealOrder();
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black">
@@ -71,65 +116,113 @@ export default function MealsPage() {
         </p>
       </motion.div>
 
-      {/* Today's Highlight Card */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.1 }}
-        className="relative mb-16"
-      >
-        <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-[2.5rem] blur-xl opacity-50" />
-        <div className="relative bg-zinc-900/40 backdrop-blur-2xl border border-white/10 rounded-[2rem] overflow-hidden p-8 sm:p-12">
-          <div className="flex flex-col md:flex-row gap-8 items-center">
-            <div className="flex-1 w-full">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="bg-emerald-500/20 p-3 rounded-2xl text-emerald-400">
-                  <Calendar size={24} />
-                </div>
-                <div>
-                  <h2 className="text-white font-bold text-xl">오늘의 메뉴</h2>
-                  <p className="text-gray-500 text-sm font-mono">{todayStr} ({new Date().toLocaleDateString('ko-KR', { weekday: 'long' })})</p>
-                </div>
-              </div>
-              
-              {todayMeal && !isWeekend ? (
-                <div className="space-y-6">
-                  <p className="text-2xl sm:text-3xl text-gray-100 font-medium leading-relaxed">
-                    {todayMeal.menu.split(',').map((item, idx) => (
-                      <span key={idx} className="inline-block mr-3">
-                        {item.trim()}{idx < todayMeal.menu.split(',').length - 1 && ","}
-                      </span>
-                    ))}
-                  </p>
-                  <div className="flex flex-wrap gap-2 pt-4">
-                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-xs text-gray-400">#맛있게드세요</span>
-                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-xs text-gray-400">#균형잡힌식단</span>
-                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-xs text-gray-400">#WITHUS</span>
+      {/* Today's Section: Menu & Meal Order */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16 items-start">
+        {/* Today's Highlight Card */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.1 }}
+          className="relative lg:col-span-2"
+        >
+          <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-[2.5rem] blur-xl opacity-50" />
+          <div className="relative bg-zinc-900/40 backdrop-blur-2xl border border-white/10 rounded-[2rem] overflow-hidden p-8 sm:p-10 h-full">
+            <div className="flex flex-col sm:flex-row gap-8 items-start">
+              <div className="flex-1 w-full">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="bg-emerald-500/20 p-3 rounded-2xl text-emerald-400">
+                    <Calendar size={24} />
+                  </div>
+                  <div>
+                    <h2 className="text-white font-bold text-xl">오늘의 메뉴</h2>
+                    <p className="text-gray-500 text-sm font-mono">{todayStr} ({new Date().toLocaleDateString('ko-KR', { weekday: 'long' })})</p>
                   </div>
                 </div>
-              ) : (
-                <div className="py-8">
-                  {isWeekend ? (
-                    <div className="space-y-2">
-                       <p className="text-xl text-emerald-400 font-bold italic">즐거운 주말 보충의 시간!</p>
-                       <p className="text-gray-500 text-sm">주말에는 급식이 운영되지 않습니다. 월요일에 만나요!</p>
+                
+                {todayMeal && !isWeekend ? (
+                  <div className="space-y-6">
+                    <p className="text-2xl sm:text-3xl text-gray-100 font-medium leading-relaxed">
+                      {todayMeal.menu.split(',').map((item, idx) => (
+                        <span key={idx} className="inline-block mr-3">
+                          {item.trim()}{idx < todayMeal.menu.split(',').length - 1 && ","}
+                        </span>
+                      ))}
+                    </p>
+                    <div className="flex flex-wrap gap-2 pt-4">
+                      <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-xs text-gray-400">#맛있게드세요</span>
+                      <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-xs text-gray-400">#균형잡힌식단</span>
                     </div>
-                  ) : (
-                    <p className="text-xl text-gray-500 italic font-medium">오늘 등록된 급식 정보가 없습니다.</p>
-                  )}
-                </div>
-              )}
-            </div>
-            
-            <div className="w-full md:w-64 aspect-square bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-3xl border border-white/5 flex items-center justify-center relative group">
-              <Utensils size={64} className="text-emerald-500/20 group-hover:scale-110 transition-transform duration-500" />
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                 <span className="text-emerald-400 text-xs font-bold uppercase tracking-widest">Main Course</span>
+                  </div>
+                ) : (
+                  <div className="py-8">
+                    {isWeekend ? (
+                      <div className="space-y-2">
+                         <p className="text-xl text-emerald-400 font-bold italic">즐거운 주말 보충!</p>
+                         <p className="text-gray-500 text-sm">월요일에 다시 만나요.</p>
+                      </div>
+                    ) : (
+                      <p className="text-xl text-gray-500 italic font-medium">등록된 정보가 없습니다.</p>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
+
+        {/* Meal Order Card */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.2 }}
+          className="relative lg:col-span-1 h-full"
+        >
+          <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 rounded-[2.5rem] blur-xl opacity-30" />
+          <div className="relative bg-zinc-900/40 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-8 h-full flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-3 mb-8">
+                <div className="bg-blue-500/20 p-3 rounded-2xl text-blue-400">
+                  <Clock size={24} />
+                </div>
+                <div>
+                  <h2 className="text-white font-bold text-xl">식사 순서</h2>
+                  <p className="text-gray-500 text-xs uppercase tracking-widest">Entry Priority</p>
+                </div>
+              </div>
+
+              {mealOrder && !isWeekend ? (
+                <div className="space-y-8">
+                  <div className="relative pl-6 border-l-2 border-emerald-500/30">
+                    <div className="absolute -left-[5px] top-0 w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                    <p className="text-emerald-400 text-xs font-bold uppercase tracking-tighter mb-1">12:00 우선 식사</p>
+                    <p className="text-white text-lg font-medium tracking-tight leading-tight">
+                      {mealOrder.firstGroup} <span className="text-white/40 font-light text-sm">학년</span>
+                    </p>
+                  </div>
+
+                  <div className="relative pl-6 border-l-2 border-white/10">
+                    <div className="absolute -left-[5px] top-0 w-2 h-2 rounded-full bg-gray-600" />
+                    <p className="text-gray-500 text-xs font-bold uppercase tracking-tighter mb-1">12:10 일반 식사</p>
+                    <p className="text-white/70 text-lg font-medium tracking-tight leading-tight">
+                      {mealOrder.secondGroup} <span className="text-white/30 font-light text-sm">학년</span>
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="py-6 text-center">
+                  <p className="text-gray-500 italic text-sm">주말에는 식사 순서가 없습니다.</p>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-8 p-4 bg-white/5 rounded-2xl border border-white/5">
+              <p className="text-[10px] text-gray-500 leading-relaxed">
+                <span className="text-blue-400 font-bold">INFO:</span> 매주 순서가 교차되며, 해당 주 내에서도 매일 순환됩니다.
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      </div>
 
       {/* Weekly View */}
       <div className="space-y-6">
