@@ -37,7 +37,7 @@ export default function MealsPage() {
         if (data.meals) {
           const sortedMeals = data.meals.sort((a: Meal, b: Meal) => a.date.localeCompare(b.date));
           setMeals(sortedMeals);
-          
+
           // Find if there's a meal for today
           const foundToday = sortedMeals.find((m: Meal) => m.date === todayStr);
           setTodayMeal(foundToday || null);
@@ -70,7 +70,7 @@ export default function MealsPage() {
     // Based on user: This week (isGroup1BaseWeek=true), day 2 & 4 are Group 2 priority.
     // day 1, 3, 5 are Group 1 priority.
     // This aligns with: (day % 2 !== 0) ? Group 1 : Group 2
-    
+
     let firstGroup, secondGroup;
     const isPriorityDay = (day % 2) !== 0; // Mon(1), Wed(3), Fri(5)
 
@@ -99,7 +99,7 @@ export default function MealsPage() {
   return (
     <div className="min-h-screen pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
       {/* Header Section */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="mb-12 text-center"
@@ -138,7 +138,7 @@ export default function MealsPage() {
                     <p className="text-gray-500 text-sm font-mono">{todayStr} ({new Date().toLocaleDateString('ko-KR', { weekday: 'long' })})</p>
                   </div>
                 </div>
-                
+
                 {todayMeal && !isWeekend ? (
                   <div className="space-y-6">
                     <p className="text-2xl sm:text-3xl text-gray-100 font-medium leading-relaxed">
@@ -157,8 +157,8 @@ export default function MealsPage() {
                   <div className="py-8">
                     {isWeekend ? (
                       <div className="space-y-2">
-                         <p className="text-xl text-emerald-400 font-bold italic">즐거운 주말 보충!</p>
-                         <p className="text-gray-500 text-sm">월요일에 다시 만나요.</p>
+                        <p className="text-xl text-emerald-400 font-bold italic">즐거운 주말 보충!</p>
+                        <p className="text-gray-500 text-sm">월요일에 다시 만나요.</p>
                       </div>
                     ) : (
                       <p className="text-xl text-gray-500 italic font-medium">등록된 정보가 없습니다.</p>
@@ -194,7 +194,7 @@ export default function MealsPage() {
                 <div className="space-y-8">
                   <div className="relative pl-6 border-l-2 border-emerald-500/30">
                     <div className="absolute -left-[5px] top-0 w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                    <p className="text-emerald-400 text-xs font-bold uppercase tracking-tighter mb-1">12:00 우선 식사</p>
+                    <p className="text-emerald-400 text-xs font-bold uppercase tracking-tighter mb-1">12:00  식사</p>
                     <p className="text-white text-lg font-medium tracking-tight leading-tight">
                       {mealOrder.firstGroup} <span className="text-white/40 font-light text-sm">학년</span>
                     </p>
@@ -202,7 +202,7 @@ export default function MealsPage() {
 
                   <div className="relative pl-6 border-l-2 border-white/10">
                     <div className="absolute -left-[5px] top-0 w-2 h-2 rounded-full bg-gray-600" />
-                    <p className="text-gray-500 text-xs font-bold uppercase tracking-tighter mb-1">12:10 일반 식사</p>
+                    <p className="text-gray-500 text-xs font-bold uppercase tracking-tighter mb-1">12:10 늦게 식사</p>
                     <p className="text-white/70 text-lg font-medium tracking-tight leading-tight">
                       {mealOrder.secondGroup} <span className="text-white/30 font-light text-sm">학년</span>
                     </p>
@@ -286,7 +286,7 @@ export default function MealsPage() {
       </div>
 
       {/* Footer Info */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
@@ -296,7 +296,7 @@ export default function MealsPage() {
           <Info size={16} />
         </div>
         <p className="text-xs text-gray-500 leading-relaxed">
-          식단은 시장 및 학교 상황에 따라 변경될 수 있습니다. 
+          식단은 시장 및 학교 상황에 따라 변경될 수 있습니다.
           알레르기 유발 식품(난류, 우유, 메밀, 땅콩, 대두, 밀, 고등어, 게, 새우, 돼지고기, 복숭아, 토마토, 아황산염, 호두, 닭고기, 쇠고기, 오징어, 조개류 등)이 포함되어 있을 수 있으니 주의하시기 바랍니다.
         </p>
       </motion.div>
