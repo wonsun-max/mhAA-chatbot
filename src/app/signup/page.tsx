@@ -18,6 +18,7 @@ export default function SignupPage() {
     const [grade, setGrade] = useState("")
     const [qtGroup, setQtGroup] = useState("");
     const [password, setPassword] = useState("")
+    const [role, setRole] = useState<"STUDENT" | "TEACHER">("STUDENT")
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState("")
     const [agreed, setAgreed] = useState(false)
@@ -88,7 +89,7 @@ export default function SignupPage() {
             const res = await fetch("/api/auth/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, code, name, nickname, grade, qtGroup, password }),
+                body: JSON.stringify({ email, code, name, nickname, grade, qtGroup, password, role }),
             })
             if (res.ok) {
                 setStep(4)
@@ -258,6 +259,25 @@ export default function SignupPage() {
                                     <p className="text-xs text-zinc-500">계정 생성에 필요한 정보를 입력해주세요.</p>
                                 </div>
 
+                                <div className="grid grid-cols-2 gap-2 p-1 bg-zinc-950 border border-zinc-800 rounded-2xl">
+                                    <button
+                                        type="button"
+                                        onClick={() => setRole("STUDENT")}
+                                        className={`py-3 rounded-xl text-sm font-bold transition-all ${role === "STUDENT" ? "bg-zinc-800 text-white shadow-lg" : "text-zinc-500 hover:text-zinc-300"
+                                            }`}
+                                    >
+                                        학생
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setRole("TEACHER")}
+                                        className={`py-3 rounded-xl text-sm font-bold transition-all ${role === "TEACHER" ? "bg-zinc-800 text-white shadow-lg" : "text-zinc-500 hover:text-zinc-300"
+                                            }`}
+                                    >
+                                        선생님
+                                    </button>
+                                </div>
+
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium text-zinc-400 ml-1">성명</label>
                                     <div className="relative">
@@ -288,39 +308,43 @@ export default function SignupPage() {
                                     </div>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium text-zinc-400 ml-1">학년 / 반</label>
-                                    <div className="relative">
-                                        <GraduationCap className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={20} />
-                                        <select
-                                            required
-                                            value={grade}
-                                            onChange={(e) => setGrade(e.target.value)}
-                                            className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none appearance-none"
-                                        >
-                                            <option value="">학년 선택</option>
-                                            {grades.map(g => <option key={g} value={g}>{g}학년</option>)}
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium text-zinc-400 ml-1">QT조</label>
-                                    <div className="relative">
-                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500">
-                                            <User size={20} />
+                                {role === "STUDENT" && (
+                                    <>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-zinc-400 ml-1">학년 / 반</label>
+                                            <div className="relative">
+                                                <GraduationCap className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={20} />
+                                                <select
+                                                    required={role === "STUDENT"}
+                                                    value={grade}
+                                                    onChange={(e) => setGrade(e.target.value)}
+                                                    className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none appearance-none"
+                                                >
+                                                    <option value="">학년 선택</option>
+                                                    {grades.map(g => <option key={g} value={g}>{g}학년</option>)}
+                                                </select>
+                                            </div>
                                         </div>
-                                        <select
-                                            required
-                                            value={qtGroup}
-                                            onChange={(e) => setQtGroup(e.target.value)}
-                                            className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none appearance-none"
-                                        >
-                                            <option value="">QT조 선택</option>
-                                            {qtGroups.map(group => <option key={group} value={group}>{group}조</option>)}
-                                        </select>
-                                    </div>
-                                </div>
+
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-zinc-400 ml-1">QT조</label>
+                                            <div className="relative">
+                                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500">
+                                                    <User size={20} />
+                                                </div>
+                                                <select
+                                                    required={role === "STUDENT"}
+                                                    value={qtGroup}
+                                                    onChange={(e) => setQtGroup(e.target.value)}
+                                                    className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none appearance-none"
+                                                >
+                                                    <option value="">QT조 선택</option>
+                                                    {qtGroups.map(group => <option key={group} value={group}>{group}조</option>)}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
 
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium text-zinc-400 ml-1">비밀번호</label>

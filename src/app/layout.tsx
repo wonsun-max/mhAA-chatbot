@@ -16,11 +16,26 @@ const outfit = Outfit({
 });
 
 // 1. Metadata setup
-
 export const metadata: Metadata = {
-  title: "WITHUS | 마닐라한국아카데미 MHA",
-  description: "WITHUS - 마닐라한국아카데미(MHA) 학생들의 학습 효율성과 성장을 위한 통합 스마트 허브 및 AI 어시스턴트 플랫폼입니다.",
-  keywords: ["MHA", "withus", "마닐라한국아카데미", "Manila Hankuk Academy", "위더스", "마한아", "필리핀 한국학교", "mha withus", "withus mha"],
+  metadataBase: new URL("https://mhawithus.shop"),
+  title: {
+    default: "WITHUS | 마닐라한국아카데미 MHA withus",
+    template: "%s | WITHUS",
+  },
+  description: "Manila Hankuk Academy (MHA) 학생들을 위한 스마트 학습 허브 WITHUS입니다. 지능형 AI 어시스턴트와 입시 정보를 제공합니다.",
+  keywords: [
+    "mhawithus.shop",
+    "MHA withus",
+    "mha",
+    "withus mha",
+    "Manila Hankuk Academy",
+    "마닐라한국아카데미",
+    "위더스",
+    "마한아",
+    "필리핀 한국학교",
+    "MHA 학습 허브",
+    "MHA 입시"
+  ],
   applicationName: "withus",
   appleWebApp: {
     title: "withus",
@@ -32,14 +47,19 @@ export const metadata: Metadata = {
     apple: "/images/site-favicon.png",
   },
   openGraph: {
-    title: "WITHUS | 마닐라한국아카데미 MHA",
-    description: "마닐라한국아카데미(MHA) 학생들을 위한 스마트 학습 플랫폼 WITHUS",
+    title: "WITHUS | 마닐라한국아카데미 MHA withus",
+    description: "마닐라한국아카데미(MHA) 학생들을 위한 혁신적 스마트 학습 플랫폼 WITHUS",
+    url: "https://mhawithus.shop",
     type: "website",
     siteName: "WITHUS",
     locale: "ko_KR",
   },
   verification: {
-    google: "DEKgJttmf7dYRdnjv9mswaqltxz445K-kZJuQ_JNtrM",
+    google: "UgMH0SGAU1AonBchOM9OurUhEyGX1S7nRT2NwYFa688",
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
@@ -63,6 +83,25 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "MHA withus | Manila Hankuk Academy",
+              "alternateName": "마닐라한국아카데미 위더스",
+              "url": "https://mhawithus.shop",
+              "logo": "https://mhawithus.shop/images/site-logo.png",
+              "description": "마닐라한국아카데미(MHA) 학생들을 위한 지능형 학습 지원 플랫폼",
+              "sameAs": [
+                "https://www.facebook.com/manilahankukacademy",
+              ]
+            }),
+          }}
+        />
+      </head>
       <body className={`${outfit.variable} min-h-screen bg-black text-white font-sans selection:bg-blue-500/30`}>
         <AuthProvider>
           {/* 3. Background Component */}

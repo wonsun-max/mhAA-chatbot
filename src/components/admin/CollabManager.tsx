@@ -26,8 +26,8 @@ export function CollabManager() {
                         key={tab}
                         onClick={() => setSubTab(tab)}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${subTab === tab
-                                ? "bg-white text-black shadow-md"
-                                : "text-zinc-400 hover:text-white hover:bg-white/5"
+                            ? "bg-white text-black shadow-md"
+                            : "text-zinc-400 hover:text-white hover:bg-white/5"
                             }`}
                     >
                         {tab === "meals" && <span className="flex items-center gap-2"><Utensils size={16} /> 급식</span>}
@@ -380,11 +380,10 @@ function CalendarAdmin() {
                                     <td className="px-6 py-4 font-mono text-zinc-400">{evt.startDate}</td>
                                     <td className="px-6 py-4 font-mono text-zinc-400">{evt.endDate}</td>
                                     <td className="px-6 py-4 text-center">
-                                        <span className={`px-2 py-1 rounded-md text-xs font-medium ${
-                                            evt.eventType === 'Holiday' ? 'bg-red-500/10 text-red-400' :
+                                        <span className={`px-2 py-1 rounded-md text-xs font-medium ${evt.eventType === 'Holiday' ? 'bg-red-500/10 text-red-400' :
                                             evt.eventType === 'Exam' ? 'bg-amber-500/10 text-amber-400' :
-                                            'bg-blue-500/10 text-blue-400'
-                                        }`}>
+                                                'bg-blue-500/10 text-blue-400'
+                                            }`}>
                                             {evt.eventType}
                                         </span>
                                     </td>
@@ -426,10 +425,10 @@ function TimetableAdmin() {
     const fetchTimetables = async () => {
         setLoading(true)
         try {
-            const url = filterGrade 
-                ? `/api/admin/collab/timetable?grade=${encodeURIComponent(filterGrade)}` 
+            const url = filterGrade
+                ? `/api/admin/collab/timetable?grade=${encodeURIComponent(filterGrade)}`
                 : "/api/admin/collab/timetable"
-            
+
             const res = await fetch(url)
             const data = await res.json()
             if (data.timetables) setTimetables(data.timetables)
@@ -473,7 +472,7 @@ function TimetableAdmin() {
         <div className="p-8 space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <h3 className="text-lg font-bold">시간표 관리</h3>
-                
+
                 <div className="flex items-center gap-4">
                     <input
                         type="text"

@@ -4,10 +4,16 @@ import bcrypt from "bcryptjs";
 
 export async function POST(request: Request) {
     try {
-        const { email, code, name, nickname, grade, password, qtGroup } = await request.json();
+        const { email, code, name, nickname, grade, password, qtGroup, role = "STUDENT" } = await request.json();
 
-        if (!email || !code || !name || !nickname || !grade || !password || !qtGroup) {
-            return NextResponse.json({ error: "모든 필드를 입력해야 합니다." }, { status: 400 });
+        // Basic validation for all roles
+        if (!email || !code || !name || !nickname || !password) {
+            return NextResponse.json({ error: "필수 정보를 모두 입력해야 합니다." }, { status: 400 });
+        }
+
+        // Additional validation for students
+        if (role === "STUDENT" && (!grade || !qtGroup)) {
+            return NextResponse.json({ error: "학생은 학년과 QT조를 입력해야 합니다." }, { status: 400 });
         }
 
         // Verify code
@@ -51,11 +57,11 @@ export async function POST(request: Request) {
                 email,
                 name,
                 nickname,
-                grade,
+                grade: role === "STUDENT" ? grade : null,
                 passwordHash,
-                qtGroup,
+                qtGroup: role === "STUDENT" ? qtGroup : null,
                 status: "PENDING", // Require admin approval
-                role: "STUDENT",   // Default role
+                role,              // Use selected role
             },
         });
 
