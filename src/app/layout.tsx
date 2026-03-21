@@ -8,6 +8,7 @@ import { Footer } from "@/components/layout/Footer";
 import { PromotionModal } from "@/components/modals/PromotionModal";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
     default: "WITHUS | 마닐라한국아카데미 MHA withus",
     template: "%s | WITHUS",
   },
-  description: "Manila Hankuk Academy (MHA) 학생들을 위한 스마트 학습 허브 WITHUS입니다. 지능형 AI 어시스턴트와 입시 정보를 제공합니다.",
+  description: "마닐라한국아카데미(MHA) 학생과 교사를 위한 통합 스마트 학습 플랫폼 WITHUS입니다. AI 어시스턴트, 공지사항, 상담 및 입시 정보를 제공합니다.",
   keywords: [
     "mhawithus.shop",
     "MHA withus",
@@ -34,6 +35,9 @@ export const metadata: Metadata = {
     "마한아",
     "필리핀 한국학교",
     "MHA 학습 허브",
+    "MHA 교사",
+    "MHA 선생님",
+    "MHA 학생 커뮤니티",
     "MHA 입시"
   ],
   applicationName: "withus",
@@ -94,7 +98,7 @@ export default function RootLayout({
               "alternateName": "마닐라한국아카데미 위더스",
               "url": "https://mhawithus.shop",
               "logo": "https://mhawithus.shop/images/site-logo.png",
-              "description": "마닐라한국아카데미(MHA) 학생들을 위한 지능형 학습 지원 플랫폼",
+              "description": "마닐라한국아카데미(MHA) 학생과 교사를 위한 통합 스마트 학습 플랫폼 WITHUS",
               "sameAs": [
                 "https://www.facebook.com/manilahankukacademy",
               ]
@@ -116,6 +120,7 @@ export default function RootLayout({
           <PromotionModal />
           <Analytics />
           <SpeedInsights />
+          <GoogleAnalytics gaId="G-NRSBWWTND4" />
         </AuthProvider>
       </body>
     </html>
