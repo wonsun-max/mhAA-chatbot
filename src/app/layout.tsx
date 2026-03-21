@@ -40,9 +40,9 @@ export const metadata: Metadata = {
     "MHA 학생 커뮤니티",
     "MHA 입시"
   ],
-  applicationName: "withus",
+  applicationName: "WITHUS",
   appleWebApp: {
-    title: "withus",
+    title: "WITHUS",
     statusBarStyle: "default",
     capable: true,
   },
@@ -91,18 +91,27 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              "name": "MHA withus | Manila Hankuk Academy",
-              "alternateName": "마닐라한국아카데미 위더스",
-              "url": "https://mhawithus.shop",
-              "logo": "https://mhawithus.shop/images/site-logo.png",
-              "description": "마닐라한국아카데미(MHA) 학생과 교사를 위한 통합 스마트 학습 플랫폼 WITHUS",
-              "sameAs": [
-                "https://www.facebook.com/manilahankukacademy",
-              ]
-            }),
+            __html: JSON.stringify([
+              {
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                "name": "WITHUS",
+                "url": "https://mhawithus.shop",
+                "alternateName": "마닐라한국아카데미 위더스",
+              },
+              {
+                "@context": "https://schema.org",
+                "@type": "Organization",
+                "name": "MHA withus | Manila Hankuk Academy",
+                "alternateName": "마닐라한국아카데미 위더스",
+                "url": "https://mhawithus.shop",
+                "logo": "https://mhawithus.shop/images/site-logo.png",
+                "description": "마닐라한국아카데미(MHA) 학생과 교사를 위한 통합 스마트 학습 플랫폼 WITHUS",
+                "sameAs": [
+                  "https://www.facebook.com/manilahankukacademy",
+                ]
+              }
+            ]),
           }}
         />
       </head>
