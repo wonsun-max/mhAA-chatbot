@@ -78,9 +78,11 @@ export const aiTools = {
             if (dayOfWeek) {
                 const dayMap: Record<string, string> = {
                     "월요일": "MON", "화요일": "TUE", "수요일": "WED", "목요일": "THU", "금요일": "FRI", "토요일": "SAT", "일요일": "SUN",
-                    "월": "MON", "화": "TUE", "수": "WED", "목": "THU", "금": "FRI", "토": "SAT", "일": "SUN"
+                    "월": "MON", "화": "TUE", "수": "WED", "목": "THU", "금": "FRI", "토": "SAT", "일": "SUN",
+                    "MONDAY": "MON", "TUESDAY": "TUE", "WEDNESDAY": "WED", "THURSDAY": "THU", "FRIDAY": "FRI", "SATURDAY": "SAT", "SUNDAY": "SUN"
                 };
-                const normalizedDay = dayMap[dayOfWeek] || dayOfWeek.toUpperCase();
+                const upperDay = dayOfWeek.toUpperCase();
+                const normalizedDay = dayMap[upperDay] || dayMap[dayOfWeek] || (upperDay.length > 3 ? upperDay.substring(0, 3) : upperDay);
                 where.dayOfWeek = normalizedDay;
             }
 
