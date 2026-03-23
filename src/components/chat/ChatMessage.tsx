@@ -94,6 +94,33 @@ export function ChatMessage({ role, content }: ChatMessageProps) {
                                         <blockquote className="border-l-4 border-zinc-800 pl-4 italic text-zinc-500 my-4">
                                             {children}
                                         </blockquote>
+                                    ),
+                                    table: ({ children }) => (
+                                        <div className="my-4 overflow-x-auto rounded-lg border border-zinc-800/50">
+                                            <table className="w-full border-collapse text-sm text-left">
+                                                {children}
+                                            </table>
+                                        </div>
+                                    ),
+                                    thead: ({ children }) => (
+                                        <thead className="bg-zinc-900/80 border-b border-zinc-800">
+                                            {children}
+                                        </thead>
+                                    ),
+                                    th: ({ children }) => (
+                                        <th className="px-4 py-2.5 font-semibold text-zinc-100 border-x border-zinc-800/30 first:border-l-0 last:border-r-0">
+                                            {children}
+                                        </th>
+                                    ),
+                                    td: ({ children }) => (
+                                        <td className="px-4 py-2 text-zinc-300 border-x border-zinc-800/30 first:border-l-0 last:border-r-0">
+                                            {children}
+                                        </td>
+                                    ),
+                                    tr: ({ children }) => (
+                                        <tr className="border-b border-zinc-800 last:border-0 even:bg-zinc-900/40 hover:bg-zinc-800/30 transition-colors">
+                                            {children}
+                                        </tr>
                                     )
                                 }}
                             >
