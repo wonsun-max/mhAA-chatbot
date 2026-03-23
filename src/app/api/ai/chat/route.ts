@@ -82,7 +82,7 @@ Today's English Word: ${word.word} (${word.meaning}) - Example: ${word.example}
         const { firstGroup, secondGroup } = getMealOrder(new Date()) || { firstGroup: "None", secondGroup: "None" };
         const mealOrderText = firstGroup === "None" 
             ? "No meal order today (Weekend/Holiday)" 
-            : `First: ${firstGroup}, Second: ${secondGroup}`;
+            : `3rd Period (3교시 식사): ${firstGroup}, 4th Period (4교시 식사): ${secondGroup}`;
 
         const systemPrompt = CHATBOT_SYSTEM_PROMPT
             .replace("{{currentTime}}", currentTime)
