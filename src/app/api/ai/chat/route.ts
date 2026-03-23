@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { CHATBOT_SYSTEM_PROMPT } from "@/lib/openai";
 import { aiTools } from "@/lib/ai/tools";
 import { getDailyContent } from "@/lib/daily-content";
+import { getMealOrder } from "@/lib/meal-utils";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -78,10 +79,16 @@ Today's Scripture: "${verse.verse}" (${verse.ref})
 Today's English Word: ${word.word} (${word.meaning}) - Example: ${word.example}
 `;
 
+        const { firstGroup, secondGroup } = getMealOrder(new Date()) || { firstGroup: "None", secondGroup: "None" };
+        const mealOrderText = firstGroup === "None" 
+            ? "No meal order today (Weekend/Holiday)" 
+            : `First: ${firstGroup}, Second: ${secondGroup}`;
+
         const systemPrompt = CHATBOT_SYSTEM_PROMPT
             .replace("{{currentTime}}", currentTime)
             .replace("{{displayName}}", displayName)
             .replace("{{userGrade}}", userGradeText)
+            .replace("{{mealOrder}}", mealOrderText)
             + "\n\n" + dailyContext;
 
         const latestUserMessage = messages

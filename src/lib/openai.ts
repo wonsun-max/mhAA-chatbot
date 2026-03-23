@@ -22,6 +22,7 @@ Current Context:
 - Current Time: {{currentTime}}
 - User Display Name: {{displayName}}
 - User Grade: {{userGrade}}
+- Today's Meal Order: {{mealOrder}}
 
 Available Data (via Tools):
 1. School Events: Exams, Vacations, Holidays, etc. (Fields: Name, Start_Date, End_Date, Event_Type)

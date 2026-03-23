@@ -4,20 +4,14 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Calendar, Utensils, ChevronRight, Clock, Info } from "lucide-react";
 
+import { GROUP_1, GROUP_2, getMealOrder } from "@/lib/meal-utils";
+
 interface Meal {
   id: string;
   date: string;
   dayOfWeek: string;
   menu: string;
 }
-
-const GROUP_1 = "7, 9, 11";
-const GROUP_2 = "8, 10, 12-1, 12-2";
-
-// Friday, March 20, 2026 is part of the week starting March 16, 2026.
-// Reverting to the user's information: "this week was group 2 (8,10,12-1,12-2) ate fast."
-// Let's assume the week starts on Sunday or Monday.
-// March 16, 2026 (Monday) -> Group 2 is priority.
 
 export default function MealsPage() {
   const [meals, setMeals] = useState<Meal[]>([]);
@@ -51,42 +45,8 @@ export default function MealsPage() {
     fetchMeals();
   }, [todayStr]);
 
-  // Meal Order Logic
-  const getMealOrder = () => {
-    const day = today.getDay(); // 0 (Sun) to 6 (Sat)
-    if (day === 0 || day === 6) return null;
+  const mealOrder = getMealOrder(today);
 
-    // Reference Monday: 2026-03-16
-    // User clarified: This week Tuesday (day 2) and Thursday (day 4) Group 2 eats fast.
-    // This means Monday (day 1), Wednesday (day 3), Friday (day 5) Group 1 eats fast.
-    const refDate = new Date("2026-03-16");
-    const diffTime = today.getTime() - refDate.getTime();
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    const diffWeeks = Math.floor(diffDays / 7);
-
-    // Swap base priority every week
-    const isGroup1BaseWeek = diffWeeks % 2 === 0;
-
-    // Based on user: This week (isGroup1BaseWeek=true), day 2 & 4 are Group 2 priority.
-    // day 1, 3, 5 are Group 1 priority.
-    // This aligns with: (day % 2 !== 0) ? Group 1 : Group 2
-
-    let firstGroup, secondGroup;
-    const isPriorityDay = (day % 2) !== 0; // Mon(1), Wed(3), Fri(5)
-
-    if (isGroup1BaseWeek) {
-      firstGroup = isPriorityDay ? GROUP_1 : GROUP_2;
-      secondGroup = isPriorityDay ? GROUP_2 : GROUP_1;
-    } else {
-      // Next week, swap
-      firstGroup = isPriorityDay ? GROUP_2 : GROUP_1;
-      secondGroup = isPriorityDay ? GROUP_1 : GROUP_2;
-    }
-
-    return { firstGroup, secondGroup };
-  };
-
-  const mealOrder = getMealOrder();
 
   if (loading) {
     return (
