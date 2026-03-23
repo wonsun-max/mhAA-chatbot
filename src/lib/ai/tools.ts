@@ -11,6 +11,14 @@ function normalizeDate(dateStr?: string): string | undefined {
 }
 
 /**
+ * Normalizes a subject name for fuzzy matching (lowercase, no special chars).
+ */
+function normalizeSubject(s?: string): string {
+    if (!s) return "";
+    return s.toLowerCase().replace(/[^a-zA-Z0-9가-힣]/g, "");
+}
+
+/**
  * Retrieval tools for the WITHUS AI Assistant.
  * Migrated from Airtable to Prisma/Neon for better performance and consistency.
  */
@@ -28,7 +36,6 @@ export const aiTools = {
             
             const where: any = {};
             if (start && end) {
-                // (startDate <= queryEnd) AND (endDate >= queryStart)
                 where.OR = [
                     {
                         AND: [
@@ -94,7 +101,8 @@ export const aiTools = {
                 const dayMap: Record<string, string> = {
                     "월요일": "MON", "화요일": "TUE", "수요일": "WED", "목요일": "THU", "금요일": "FRI", "토요일": "SAT", "일요일": "SUN",
                     "월": "MON", "화": "TUE", "수": "WED", "목": "THU", "금": "FRI", "토": "SAT", "일": "SUN",
-                    "MONDAY": "MON", "TUESDAY": "TUE", "WEDNESDAY": "WED", "THURSDAY": "THU", "FRIDAY": "FRI", "SATURDAY": "SAT", "SUNDAY": "SUN"
+                    "MONDAY": "MON", "TUESDAY": "TUE", "WEDNESDAY": "WED", "THURSDAY": "THU", "FRIDAY": "FRI", "SATURDAY": "SAT", "SUNDAY": "SUN",
+                    "MON": "MON", "TUE": "TUE", "WED": "WED", "THU": "THU", "FRI": "FRI", "SAT": "SAT", "SUN": "SUN"
                 };
                 const upperDay = dayOfWeek.toUpperCase();
                 const normalizedDay = dayMap[upperDay] || dayMap[dayOfWeek] || (upperDay.length > 3 ? upperDay.substring(0, 3) : upperDay);
@@ -102,14 +110,26 @@ export const aiTools = {
             }
 
             if (teacher) where.teacher = { contains: teacher, mode: 'insensitive' };
-            if (subject) where.subject = { contains: subject, mode: 'insensitive' };
-
-            return await prisma.timetable.findMany({
+            
+            // Fetch records for base filtering
+            let records = await prisma.timetable.findMany({
                 where,
                 orderBy: [
                     { period: 'asc' }
                 ]
             });
+
+            // If subject is provided, perform fuzzy matching
+            if (subject) {
+                const querySub = normalizeSubject(subject);
+                records = records.filter(r => {
+                    const dbSub = normalizeSubject(r.subject);
+                    // Match if query is inside db name or vice versa (fuzzy)
+                    return dbSub.includes(querySub) || querySub.includes(dbSub);
+                });
+            }
+
+            return records;
         },
     }),
 };
