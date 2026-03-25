@@ -46,10 +46,7 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
     capable: true,
   },
-  icons: {
-    icon: "/images/site-favicon.png",
-    apple: "/images/site-favicon.png",
-  },
+
   openGraph: {
     title: "WITHUS | 마닐라한국아카데미 MHA withus",
     description: "마닐라한국아카데미(MHA) 학생들을 위한 혁신적 스마트 학습 플랫폼 WITHUS",
