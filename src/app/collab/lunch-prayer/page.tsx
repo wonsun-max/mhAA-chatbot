@@ -155,7 +155,7 @@ export default function LunchPrayerPage() {
 
                 <div className="lg:w-48 p-8 bg-white/5 rounded-[2.5rem] border border-white/5 flex flex-col items-center justify-center gap-2">
                    <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Time</span>
-                   <div className="text-2xl font-black text-white">
+                   <div className="text-xl font-black text-white whitespace-nowrap">
                       {todayPrayer.type === 'prayer_meeting' ? '12:25 — 12:45' : '12:20 — 12:45'}
                    </div>
                 </div>
