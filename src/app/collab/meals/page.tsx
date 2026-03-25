@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Calendar, Utensils, ChevronRight, Clock, Info } from "lucide-react";
+import { Calendar, Utensils, ChevronRight, Clock, Info, Sparkles } from "lucide-react";
 
 import { GROUP_1, GROUP_2, getMealOrder } from "@/lib/meal-utils";
 
@@ -18,7 +18,6 @@ export default function MealsPage() {
   const [loading, setLoading] = useState(true);
   const [todayMeal, setTodayMeal] = useState<Meal | null>(null);
 
-  // Get today's date in YYYY-MM-DD format (Local Time)
   const today = new Date();
   const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   const isWeekend = today.getDay() === 0 || today.getDay() === 6;
@@ -32,7 +31,6 @@ export default function MealsPage() {
           const sortedMeals = data.meals.sort((a: Meal, b: Meal) => a.date.localeCompare(b.date));
           setMeals(sortedMeals);
 
-          // Find if there's a meal for today
           const foundToday = sortedMeals.find((m: Meal) => m.date === todayStr);
           setTodayMeal(foundToday || null);
         }
@@ -47,154 +45,158 @@ export default function MealsPage() {
 
   const mealOrder = getMealOrder(today);
 
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black">
-        <div className="w-8 h-8 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-white/10 border-t-white rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+    <div className="min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
       {/* Header Section */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-12 text-center"
+        className="mb-16 text-center"
       >
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold mb-4">
-          <Utensils size={14} />
-          SCHOOL MEALS
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/50 text-[10px] font-black uppercase tracking-[0.2em] mb-6">
+          <Utensils size={12} />
+          School Meals
         </div>
-        <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tight mb-4">
-          오늘의 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-500">맛있는 식사</span>
+        <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight mb-6">
+          오늘의 <span className="text-zinc-500">메뉴</span>
         </h1>
-        <p className="text-gray-400 max-w-2xl mx-auto">
-          학교급식법 시행규칙에 따른 영양성분 및 알레르기 유발 식품 정보를 포함한 식단입니다.
+        <p className="text-zinc-500 max-w-xl mx-auto font-medium">
+          균형 잡힌 영양과 맛을 담은<br />
+          우리 학교의 건강한 식단을 확인하세요.
         </p>
       </motion.div>
 
-      {/* Today's Section: Menu & Meal Order */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16 items-start">
+      {/* Today's Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-20">
         {/* Today's Highlight Card */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="relative lg:col-span-2"
+          className="lg:col-span-8 group"
         >
-          <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-[2.5rem] blur-xl opacity-50" />
-          <div className="relative bg-zinc-900/40 backdrop-blur-2xl border border-white/10 rounded-[2rem] overflow-hidden p-8 sm:p-10 h-full">
-            <div className="flex flex-col sm:flex-row gap-8 items-start">
-              <div className="flex-1 w-full">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="bg-emerald-500/20 p-3 rounded-2xl text-emerald-400">
-                    <Calendar size={24} />
+          <div className="h-full bg-zinc-900/30 backdrop-blur-xl border border-white/5 rounded-[3rem] p-8 sm:p-12 relative overflow-hidden transition-all duration-500 hover:border-white/10">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 blur-[100px] rounded-full group-hover:bg-emerald-500/10 transition-colors" />
+            
+            <div className="relative z-10">
+              <div className="flex items-center gap-4 mb-10">
+                <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center text-emerald-400">
+                  <Calendar size={20} />
+                </div>
+                <div>
+                  <h2 className="text-white font-bold text-xl">오늘의 식단</h2>
+                  <p className="text-zinc-500 text-xs font-mono uppercase tracking-widest">{todayStr} • {new Date().toLocaleDateString('ko-KR', { weekday: 'long' })}</p>
+                </div>
+              </div>
+
+              {todayMeal && !isWeekend ? (
+                <div className="space-y-8">
+                  <div className="flex flex-wrap gap-x-6 gap-y-4">
+                    {todayMeal.menu.split(',').map((item, idx) => (
+                      <span key={idx} className="text-2xl sm:text-3xl text-white font-bold tracking-tight group-hover:text-emerald-400 transition-colors">
+                        {item.trim()}
+                      </span>
+                    ))}
                   </div>
-                  <div>
-                    <h2 className="text-white font-bold text-xl">오늘의 메뉴</h2>
-                    <p className="text-gray-500 text-sm font-mono">{todayStr} ({new Date().toLocaleDateString('ko-KR', { weekday: 'long' })})</p>
+                  <div className="flex gap-2 pt-4">
+                    <span className="px-4 py-2 bg-white/5 border border-white/5 rounded-xl text-[10px] font-black text-zinc-500 uppercase tracking-widest">Balanced</span>
+                    <span className="px-4 py-2 bg-white/5 border border-white/5 rounded-xl text-[10px] font-black text-zinc-500 uppercase tracking-widest">Nutritious</span>
                   </div>
                 </div>
-
-                {todayMeal && !isWeekend ? (
-                  <div className="space-y-6">
-                    <p className="text-2xl sm:text-3xl text-gray-100 font-medium leading-relaxed">
-                      {todayMeal.menu.split(',').map((item, idx) => (
-                        <span key={idx} className="inline-block mr-3">
-                          {item.trim()}{idx < todayMeal.menu.split(',').length - 1 && ","}
-                        </span>
-                      ))}
-                    </p>
-                    <div className="flex flex-wrap gap-2 pt-4">
-                      <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-xs text-gray-400">#맛있게드세요</span>
-                      <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-xs text-gray-400">#균형잡힌식단</span>
+              ) : (
+                <div className="py-12 text-center sm:text-left">
+                  {isWeekend ? (
+                    <div className="space-y-3">
+                      <p className="text-2xl text-emerald-400 font-black tracking-tight">즐거운 주말 보충!</p>
+                      <p className="text-zinc-500 font-medium">월요일에 더 맛있는 식단으로 만나요.</p>
                     </div>
-                  </div>
-                ) : (
-                  <div className="py-8">
-                    {isWeekend ? (
-                      <div className="space-y-2">
-                        <p className="text-xl text-emerald-400 font-bold italic">즐거운 주말 보충!</p>
-                        <p className="text-gray-500 text-sm">월요일에 다시 만나요.</p>
-                      </div>
-                    ) : (
-                      <p className="text-xl text-gray-500 italic font-medium">등록된 정보가 없습니다.</p>
-                    )}
-                  </div>
-                )}
-              </div>
+                  ) : (
+                    <p className="text-xl text-zinc-600 font-bold italic">등록된 정보가 없습니다.</p>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </motion.div>
 
         {/* Meal Order Card */}
         <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="relative lg:col-span-1 h-full"
+          className="lg:col-span-4 group"
         >
-          <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 rounded-[2.5rem] blur-xl opacity-30" />
-          <div className="relative bg-zinc-900/40 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-8 h-full flex flex-col justify-between">
-            <div>
-              <div className="flex items-center gap-3 mb-8">
-                <div className="bg-blue-500/20 p-3 rounded-2xl text-blue-400">
-                  <Clock size={24} />
+          <div className="h-full bg-zinc-900/30 backdrop-blur-xl border border-white/5 rounded-[3rem] p-8 sm:p-10 relative overflow-hidden flex flex-col justify-between transition-all duration-500 hover:border-white/10">
+            <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-blue-500/5 blur-[80px] rounded-full group-hover:bg-blue-500/10 transition-colors" />
+            
+            <div className="relative z-10">
+              <div className="flex items-center gap-4 mb-10">
+                <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center text-blue-400">
+                  <Clock size={20} />
                 </div>
                 <div>
                   <h2 className="text-white font-bold text-xl">식사 순서</h2>
-                  <p className="text-gray-500 text-xs uppercase tracking-widest">Entry Priority</p>
+                  <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.2em]">Priority</p>
                 </div>
               </div>
 
               {mealOrder && !isWeekend ? (
                 <div className="space-y-8">
-                  <div className="relative pl-6 border-l-2 border-emerald-500/30">
-                    <div className="absolute -left-[5px] top-0 w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                    <p className="text-emerald-400 text-xs font-bold uppercase tracking-tighter mb-1">12:00  식사</p>
-                    <p className="text-white text-lg font-medium tracking-tight leading-tight">
-                      {mealOrder.firstGroup} <span className="text-white/40 font-light text-sm">학년</span>
+                  <div className="relative pl-6 border-l border-emerald-500/30">
+                    <div className="absolute -left-[3.5px] top-0 w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+                    <p className="text-emerald-500 text-[10px] font-black uppercase tracking-widest mb-1">12:00 Entry</p>
+                    <p className="text-white text-xl font-bold tracking-tight">
+                      {mealOrder.firstGroup} <span className="text-zinc-600 font-medium text-sm">학년</span>
                     </p>
                   </div>
 
-                  <div className="relative pl-6 border-l-2 border-white/10">
-                    <div className="absolute -left-[5px] top-0 w-2 h-2 rounded-full bg-gray-600" />
-                    <p className="text-gray-500 text-xs font-bold uppercase tracking-tighter mb-1">12:10 늦게 식사</p>
-                    <p className="text-white/70 text-lg font-medium tracking-tight leading-tight">
-                      {mealOrder.secondGroup} <span className="text-white/30 font-light text-sm">학년</span>
+                  <div className="relative pl-6 border-l border-white/5">
+                    <div className="absolute -left-[3.5px] top-0 w-1.5 h-1.5 rounded-full bg-zinc-700" />
+                    <p className="text-zinc-600 text-[10px] font-black uppercase tracking-widest mb-1">12:10 Entry</p>
+                    <p className="text-zinc-400 text-xl font-bold tracking-tight">
+                      {mealOrder.secondGroup} <span className="text-zinc-700 font-medium text-sm">학년</span>
                     </p>
                   </div>
                 </div>
               ) : (
-                <div className="py-6 text-center">
-                  <p className="text-gray-500 italic text-sm">주말에는 식사 순서가 없습니다.</p>
+                <div className="py-6 italic text-zinc-600 text-sm font-medium">
+                  순서 정보가 없습니다.
                 </div>
               )}
             </div>
 
-            <div className="mt-8 p-4 bg-white/5 rounded-2xl border border-white/5">
-              <p className="text-[10px] text-gray-500 leading-relaxed">
-                <span className="text-blue-400 font-bold">INFO:</span> 매주 순서가 교차되며, 해당 주 내에서도 매일 순환됩니다.
-              </p>
+            <div className="mt-12 relative z-10 p-5 bg-white/5 rounded-[2rem] border border-white/5">
+              <div className="flex items-start gap-3">
+                <Info size={14} className="text-blue-400 mt-0.5" />
+                <p className="text-[10px] text-zinc-500 font-medium leading-relaxed">
+                  학년별 식사 순서는 매주 교차되며,<br />
+                  질서 있는 식사 문화를 위해 협조 바랍니다.
+                </p>
+              </div>
             </div>
           </div>
         </motion.div>
       </div>
 
-      {/* Weekly View */}
-      <div className="space-y-6">
-        <div className="flex items-center justify-between px-2">
-          <h3 className="text-white font-bold flex items-center gap-2">
-            <Clock size={18} className="text-emerald-400" />
-            다가오는 식단표
-          </h3>
-          <span className="text-xs text-gray-500 uppercase tracking-widest">Upcoming Menu</span>
+      {/* Weekly Preview */}
+      <div className="space-y-8">
+        <div className="flex items-center justify-between px-4">
+          <div className="flex items-center gap-3">
+            <Sparkles size={18} className="text-emerald-400" />
+            <h3 className="text-white font-bold text-lg">이번 주 식단표</h3>
+          </div>
+          <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em]">Weekly Preview</span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {(() => {
             const filteredUpcoming = meals.filter(m => {
               const d = new Date(m.date);
@@ -203,62 +205,54 @@ export default function MealsPage() {
             });
 
             if (filteredUpcoming.length === 0) return (
-              <div className="col-span-full py-12 text-center bg-white/5 border border-dashed border-white/10 rounded-2xl text-gray-500">
-                추후 일정이 아직 등록되지 않았습니다.
+              <div className="col-span-full py-20 text-center bg-zinc-900/20 border border-dashed border-white/10 rounded-[3rem] text-zinc-600 font-bold">
+                다음 주 일정이 아직 등록되지 않았습니다.
               </div>
             );
 
-            // Logic to limit view to Monday-Friday of the first upcoming week
-            const firstDate = new Date(filteredUpcoming[0].date);
-            const firstDay = firstDate.getDay(); // 1 (Mon) to 5 (Fri)
-            const diffToFriday = 5 - firstDay;
-            const fridayDate = new Date(firstDate);
-            fridayDate.setDate(firstDate.getDate() + diffToFriday);
-            const fridayStr = `${fridayDate.getFullYear()}-${String(fridayDate.getMonth() + 1).padStart(2, '0')}-${String(fridayDate.getDate()).padStart(2, '0')}`;
-
-            return filteredUpcoming
-              .filter(m => m.date <= fridayStr)
-              .slice(0, 5)
-              .map((meal, index) => (
-                <motion.div
-                  key={meal.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 + 0.3 }}
-                  className="group bg-white/5 hover:bg-white/10 border border-white/5 hover:border-emerald-500/30 rounded-2xl p-6 transition-all duration-300"
-                >
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <span className="text-xs font-mono text-emerald-400/70">{meal.date}</span>
-                      <h4 className="text-white font-bold">{meal.dayOfWeek}</h4>
-                    </div>
-                    <div className="p-2 bg-white/5 rounded-lg text-gray-500 group-hover:text-emerald-400 transition-colors">
-                      <ChevronRight size={16} />
-                    </div>
+            return filteredUpcoming.slice(0, 4).map((meal, index) => (
+              <motion.div
+                key={meal.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 + 0.3 }}
+                className="group bg-zinc-900/30 backdrop-blur-sm border border-white/5 hover:border-white/20 rounded-[2.5rem] p-8 transition-all duration-500"
+              >
+                <div className="flex justify-between items-start mb-6">
+                  <div>
+                    <span className="text-[10px] font-black font-mono text-zinc-600 tracking-wider mb-1 block uppercase">{meal.date}</span>
+                    <h4 className="text-white font-bold text-lg">{meal.dayOfWeek}</h4>
                   </div>
-                  <p className="text-gray-400 text-sm leading-relaxed line-clamp-3 group-hover:text-gray-200 transition-colors">
-                    {meal.menu}
-                  </p>
-                </motion.div>
-              ));
+                  <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-zinc-700 group-hover:text-white group-hover:border-white/20 transition-all">
+                    <ChevronRight size={16} />
+                  </div>
+                </div>
+                <p className="text-zinc-500 text-sm font-medium leading-relaxed line-clamp-4 group-hover:text-zinc-300 transition-colors">
+                  {meal.menu}
+                </p>
+              </motion.div>
+            ));
           })()}
         </div>
       </div>
 
-      {/* Footer Info */}
+      {/* Footer Disclaimer */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="mt-16 flex items-start gap-3 p-6 bg-zinc-900/30 border border-white/5 rounded-2xl"
+        className="mt-20 p-8 bg-zinc-900/30 border border-white/5 rounded-[2.5rem] flex flex-col md:flex-row items-center gap-8 group"
       >
-        <div className="bg-blue-500/10 p-2 rounded-lg text-blue-400 shrink-0">
-          <Info size={16} />
+        <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center text-zinc-600 shrink-0 group-hover:scale-110 transition-transform duration-500">
+          <Info size={28} />
         </div>
-        <p className="text-xs text-gray-500 leading-relaxed">
-          식단은 시장 및 학교 상황에 따라 변경될 수 있습니다.
-          알레르기 유발 식품(난류, 우유, 메밀, 땅콩, 대두, 밀, 고등어, 게, 새우, 돼지고기, 복숭아, 토마토, 아황산염, 호두, 닭고기, 쇠고기, 오징어, 조개류 등)이 포함되어 있을 수 있으니 주의하시기 바랍니다.
-        </p>
+        <div className="flex-1 text-center md:text-left">
+          <h4 className="text-white font-bold mb-1">식단 안내 및 주의사항</h4>
+          <p className="text-xs text-zinc-500 leading-relaxed font-medium">
+            식단은 시장 및 학교 상황에 따라 변경될 수 있습니다. 
+            알레르기 유발 식품(난류, 우유, 메밀, 땅콩, 대두, 밀, 고등어, 게, 새우, 돼지고기, 복숭아, 토마토, 아황산염, 호두, 닭고기, 쇠고기, 오징어, 조개류 등)이 포함되어 있을 수 있으니 식품 알레르기가 있는 학생은 급식 시 각별히 주의하시기 바랍니다.
+          </p>
+        </div>
       </motion.div>
     </div>
   );

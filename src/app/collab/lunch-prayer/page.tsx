@@ -1,9 +1,9 @@
-import { lunchPrayerSchedule, getLunchPrayerByDate } from "@/lib/lunch-prayer";
-import { BookOpen, Calendar, Users, Info, Star } from "lucide-react";
+"use client";
 
-export const metadata = {
-  title: "점심기도실 일정 - 학교 콜라보",
-};
+import React from "react";
+import { motion } from "framer-motion";
+import { BookOpen, Calendar, Users, Info, Star, ChevronRight, Sparkles, Clock, MapPin } from "lucide-react";
+import { lunchPrayerSchedule, getLunchPrayerByDate } from "@/lib/lunch-prayer";
 
 export default function LunchPrayerPage() {
   const currentDate = new Date();
@@ -13,179 +13,228 @@ export default function LunchPrayerPage() {
   const todayStr = `${yyyy}-${mm}-${dd}`;
 
   const todayPrayer = getLunchPrayerByDate(currentDate);
-
-  // Filter out past schedules (keep only today and future)
   const upcomingSchedules = lunchPrayerSchedule.filter(item => item.date >= todayStr);
 
   return (
-    <div className="min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
-      <div className="mb-12">
-        <div className="flex items-center gap-4 mb-4">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-400/20 to-fuchsia-400/20 flex items-center justify-center border border-purple-500/30">
-            <BookOpen className="w-6 h-6 text-purple-400" />
-          </div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">마한아 점심기도실 운영안내</h1>
+    <div className="min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+      {/* Header Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mb-16 text-center"
+      >
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/50 text-[10px] font-black uppercase tracking-[0.2em] mb-6">
+          <BookOpen size={12} />
+          Spiritual Life
         </div>
-        
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 md:p-8 space-y-6 backdrop-blur-md">
-          <div className="bg-purple-500/10 border border-purple-500/20 rounded-xl p-4 flex gap-3 text-purple-200">
-            <Info className="w-5 h-5 flex-shrink-0 mt-0.5 text-purple-400" />
-            <div>
-              <p className="font-semibold text-purple-100 mb-1">매일 점심시간 기도실이 운영될 예정입니다. 언제든 오셔서 기도하세요.</p>
-              <p className="text-sm">장소: 학교 2층 도서관 방향 기도실</p>
-            </div>
-          </div>
+        <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight mb-6">
+          점심기도실 <span className="text-zinc-500">안내</span>
+        </h1>
+        <p className="text-zinc-500 max-w-xl mx-auto font-medium">
+          매일 정오, 도서관 방향 기도실에서 열리는<br />
+          따뜻한 기도의 자리에 여러분을 초대합니다.
+        </p>
+      </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-white/5 rounded-xl p-6 border border-white/5 hover:border-purple-500/30 transition-colors">
-              <h3 className="text-lg font-bold text-white mb-3 pb-2 border-b border-white/10">화, 목 기도회</h3>
-              <ul className="space-y-3 text-gray-300 text-sm">
-                <li className="flex gap-2"><span className="text-purple-400">•</span> 모임시간: 12:25 ~ 12:45</li>
-                <li className="flex gap-2"><span className="text-purple-400">•</span> 당번 구역: 지정된 QT조 및 신앙부 2명 의무 참석</li>
-                <li className="flex gap-2"><span className="text-purple-400">•</span> 예외: 콘서트 콰이어에 참여하는 학생은 필참이 아닙니다</li>
-              </ul>
+      {/* Operation Info Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-20">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="group bg-zinc-900/30 backdrop-blur-xl border border-white/5 rounded-[2.5rem] p-8 transition-all duration-500 hover:border-purple-500/20"
+        >
+          <div className="flex items-center justify-between mb-8">
+            <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center text-purple-400">
+              <Sparkles size={20} />
             </div>
-            <div className="bg-white/5 rounded-xl p-6 border border-white/5 hover:border-purple-500/30 transition-colors">
-              <h3 className="text-lg font-bold text-white mb-3 pb-2 border-b border-white/10">월, 수, 금 기도</h3>
-              <ul className="space-y-3 text-gray-300 text-sm">
-                <li className="flex gap-2"><span className="text-purple-400">•</span> 모임시간: 12:20 ~ 12:45</li>
-                <li className="flex gap-2"><span className="text-purple-400">•</span> 참여대상: 교사, 학생 모두 자율적 참여 가능</li>
-                <li className="flex gap-2"><span className="text-purple-400">•</span> 특징: 별도의 지정된 큐티조 당번 없음</li>
-              </ul>
-            </div>
+            <span className="text-[10px] font-black text-purple-500 uppercase tracking-widest">Regular Meeting</span>
           </div>
-        </div>
+          <h3 className="text-xl font-bold text-white mb-4">화 · 목 기도회</h3>
+          <ul className="space-y-4 text-sm font-medium text-zinc-500">
+            <li className="flex items-center gap-3">
+              <Clock size={16} className="text-purple-400/50" />
+              12:25 — 12:45
+            </li>
+            <li className="flex items-center gap-3">
+              <Users size={16} className="text-purple-400/50" />
+              지정된 QT조 및 신앙부 의무 참석
+            </li>
+            <li className="flex items-start gap-3">
+              <Info size={16} className="text-purple-400/50 mt-0.5" />
+              <span>콘서트 콰이어 참여 학생은 자율 선택</span>
+            </li>
+          </ul>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="group bg-zinc-900/30 backdrop-blur-xl border border-white/5 rounded-[2.5rem] p-8 transition-all duration-500 hover:border-blue-500/20"
+        >
+          <div className="flex items-center justify-between mb-8">
+            <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center text-blue-400">
+              <Users size={20} />
+            </div>
+            <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest">Open Prayer</span>
+          </div>
+          <h3 className="text-xl font-bold text-white mb-4">월 · 수 · 금 기도</h3>
+          <ul className="space-y-4 text-sm font-medium text-zinc-500">
+            <li className="flex items-center gap-3">
+              <Clock size={16} className="text-blue-400/50" />
+              12:20 — 12:45
+            </li>
+            <li className="flex items-center gap-3">
+              <Sparkles size={16} className="text-blue-400/50" />
+              교사, 학생 누구나 자율 참여
+            </li>
+            <li className="flex items-start gap-3">
+              <Info size={16} className="text-blue-400/50 mt-0.5" />
+              <span>지정된 당번 없이 자유롭게 기도</span>
+            </li>
+          </ul>
+        </motion.div>
       </div>
 
-      {/* 오늘의 일정 강조 섹션 */}
-      <div className="mb-12">
-        <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-          <Star className="w-7 h-7 text-yellow-400 fill-yellow-400/20" />
-          오늘의 점심기도 안내 ({todayStr})
-        </h2>
+      {/* Today's Highlight */}
+      <div className="mb-20">
+        <div className="flex items-center justify-between px-4 mb-8">
+          <div className="flex items-center gap-3">
+            <Star size={20} className="text-amber-400 fill-amber-400/20" />
+            <h2 className="text-white font-bold text-xl">오늘의 기도실 안내</h2>
+          </div>
+          <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em]">{todayStr}</span>
+        </div>
         
-        <div className="bg-gradient-to-r from-purple-900/40 to-fuchsia-900/40 border border-purple-500/30 rounded-2xl p-8 backdrop-blur-md shadow-2xl shadow-purple-500/10 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 blur-[80px] rounded-full mix-blend-screen" />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-zinc-900/30 backdrop-blur-xl border border-white/5 rounded-[3rem] p-10 sm:p-14 relative overflow-hidden group"
+        >
+          <div className="absolute top-0 right-0 w-80 h-80 bg-purple-500/5 blur-[100px] rounded-full group-hover:bg-purple-500/10 transition-colors duration-500" />
           
           <div className="relative z-10">
             {todayPrayer ? (
-              todayPrayer.type === 'prayer_meeting' && 'qtGroup' in todayPrayer ? (
-                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                  <div>
-                    <span className="inline-block px-3 py-1 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-full text-sm font-bold mb-3">
-                      화/목 정규 기도회
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-12">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-6">
+                    <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border ${
+                      todayPrayer.type === 'prayer_meeting' 
+                        ? 'bg-purple-500/10 border-purple-500/20 text-purple-400' 
+                        : 'bg-blue-500/10 border-blue-500/20 text-blue-400'
+                    }`}>
+                      {todayPrayer.type === 'prayer_meeting' ? 'Regular Meeting' : 'Open Prayer'}
                     </span>
-                    <h3 className="text-4xl sm:text-5xl font-extrabold text-white mb-2">
-                       {todayPrayer.qtGroup}조 담당
-                    </h3>
-                    <div className="flex items-center gap-2 text-purple-200 mt-4">
-                      <Users className="w-5 h-5 text-purple-400" />
-                      <span className="text-lg font-medium">신앙부: {todayPrayer.faithMembers?.join(', ')}</span>
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  </div>
+
+                  {todayPrayer.type === 'prayer_meeting' && 'qtGroup' in todayPrayer ? (
+                    <div className="space-y-6">
+                      <h3 className="text-4xl sm:text-6xl font-black text-white tracking-tight">
+                        {todayPrayer.qtGroup}조 담당
+                      </h3>
+                      <div className="flex flex-wrap items-center gap-6 text-zinc-400 font-medium">
+                         <div className="flex items-center gap-2">
+                           <Users size={18} className="text-purple-400" />
+                           <span className="text-lg">신앙부: {todayPrayer.faithMembers?.join(', ')}</span>
+                         </div>
+                         <div className="flex items-center gap-2">
+                           <MapPin size={18} className="text-zinc-600" />
+                           <span className="text-lg">2층 기도실</span>
+                         </div>
+                      </div>
                     </div>
-                  </div>
-                  <div className="text-left md:text-right bg-black/20 p-4 rounded-xl border border-white/5">
-                    <p className="text-gray-400 text-sm mb-1">모임 시간</p>
-                    <p className="text-2xl font-bold text-white">12:25 - 12:45</p>
-                  </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <h3 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+                        {todayPrayer.label}
+                      </h3>
+                      <p className="text-lg text-zinc-500 font-medium">누구나 자유롭게 참여하여 기도할 수 있습니다.</p>
+                    </div>
+                  )}
                 </div>
-              ) : todayPrayer.type === 'open_prayer' ? (
-                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                  <div>
-                    <span className="inline-block px-3 py-1 bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded-full text-sm font-bold mb-3">
-                      월/수/금 자유 기도
-                    </span>
-                    <h3 className="text-3xl sm:text-4xl font-bold text-white mb-2">
-                       {todayPrayer.label}
-                    </h3>
-                    <p className="text-purple-200 mt-2">지정된 큐티조 당번 없이 누구나 자유롭게 참여할 수 있습니다.</p>
-                  </div>
-                  <div className="text-left md:text-right bg-black/20 p-4 rounded-xl border border-white/5">
-                    <p className="text-gray-400 text-sm mb-1">모임 시간</p>
-                    <p className="text-2xl font-bold text-white">12:20 - 12:45</p>
-                  </div>
+
+                <div className="lg:w-48 p-8 bg-white/5 rounded-[2.5rem] border border-white/5 flex flex-col items-center justify-center gap-2">
+                   <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Time</span>
+                   <div className="text-2xl font-black text-white">
+                      {todayPrayer.type === 'prayer_meeting' ? '12:25 — 12:45' : '12:20 — 12:45'}
+                   </div>
                 </div>
-              ) : (
-                <div className="text-center py-6">
-                  <span className="inline-block px-4 py-2 bg-gray-500/20 text-gray-300 border border-gray-500/30 rounded-full text-sm font-bold mb-4">
-                    {('label' in todayPrayer) ? todayPrayer.label : ''}
-                  </span>
-                  <h3 className="text-2xl font-bold text-white">오늘은 공식 점심기도 모임이 없습니다.</h3>
-                </div>
-              )
+              </div>
             ) : (
-              <div className="text-center py-6">
-                 <h3 className="text-2xl font-bold text-gray-300">주말이거나 예정된 공식 일정이 없습니다.</h3>
+              <div className="py-10 text-center">
+                 <h3 className="text-2xl font-bold text-zinc-600 italic">공식 일정이 없습니다.</h3>
               </div>
             )}
           </div>
-        </div>
+        </motion.div>
       </div>
 
-      {/* 향후 일정표 */}
+      {/* Upcoming Schedule */}
       {upcomingSchedules.length > 0 && (
-        <div>
-          <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-            <Calendar className="w-7 h-7 text-gray-400/80" />
-            다음에 예정된 당번 일정 (화/목)
-          </h2>
+        <div className="space-y-8">
+          <div className="flex items-center justify-between px-4">
+            <div className="flex items-center gap-3">
+              <Calendar size={20} className="text-zinc-500" />
+              <h2 className="text-white font-bold text-xl">향후 당번 일정</h2>
+            </div>
+            <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em]">Next Sessions</span>
+          </div>
           
-          <div className="overflow-x-auto bg-white/5 border border-white/10 rounded-2xl backdrop-blur-md">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-white/10 text-gray-400 text-sm uppercase tracking-wider bg-white/5">
-                  <th className="py-4 px-6 font-medium">날짜</th>
-                  <th className="py-4 px-6 font-medium">운영 상태</th>
-                  <th className="py-4 px-6 font-medium">QT 당번조</th>
-                  <th className="py-4 px-6 font-medium">신앙부 담당</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/5">
-                {upcomingSchedules.map((item, idx) => {
-                  const isToday = item.date === todayStr;
-                  
-                  return (
-                    <tr 
-                      key={idx} 
-                      className={`
-                        transition-colors hover:bg-white/10
-                        ${isToday ? 'bg-purple-500/10 border-l-4 border-l-purple-500' : 'border-l-4 border-l-transparent'}
-                      `}
-                    >
-                      <td className="py-4 px-6 whitespace-nowrap">
-                        <div className="flex items-center gap-3">
-                          <span className={`font-medium ${isToday ? 'text-purple-300' : 'text-gray-300'}`}>
-                            {item.date}
-                          </span>
-                          {isToday && <span className="px-2.5 py-0.5 rounded-md text-xs bg-purple-500/20 text-purple-300 font-bold border border-purple-500/30">오늘</span>}
-                        </div>
-                      </td>
-                      <td className="py-4 px-6">
-                        {item.type === 'prayer_meeting' ? (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.1)]">
-                            정상 운영
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-gray-500/10 text-gray-400 border border-gray-500/20">
-                            {item.label}
-                          </span>
-                        )}
-                      </td>
-                      <td className="py-4 px-6 text-gray-300 font-medium">
-                        {item.qtGroup ? `${item.qtGroup}조` : '-'}
-                      </td>
-                      <td className="py-4 px-6 text-gray-400">
-                        {item.faithMembers ? (
-                          <div className="flex items-center gap-2">
-                            <Users className="w-4 h-4 text-purple-400/60" />
-                            <span className="font-medium text-purple-100/80">{item.faithMembers.join(', ')}</span>
+          <div className="grid gap-3">
+            {upcomingSchedules.map((item, idx) => {
+              const isToday = item.date === todayStr;
+              return (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.03 }}
+                  className={`group bg-zinc-900/30 backdrop-blur-xl border rounded-[2rem] p-6 transition-all duration-500 flex flex-col sm:flex-row sm:items-center justify-between gap-6 ${
+                    isToday ? "border-purple-500/30 bg-purple-500/5 ring-1 ring-purple-500/20" : "border-white/5 hover:border-white/10"
+                  }`}
+                >
+                  <div className="flex items-center gap-8">
+                    <div className="text-left min-w-[100px]">
+                      <span className="text-[10px] font-black font-mono text-zinc-600 uppercase tracking-widest mb-1 block">{item.date}</span>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-sm font-bold ${isToday ? "text-purple-400" : "text-white"}`}>
+                          {isToday ? "Today" : new Date(item.date).toLocaleDateString('ko-KR', { weekday: 'long' })}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="h-8 w-px bg-white/5 hidden sm:block" />
+                    
+                    <div>
+                      {item.type === 'prayer_meeting' ? (
+                        <div className="flex items-center gap-4">
+                          <span className="text-lg font-bold text-white tracking-tight">{item.qtGroup}조</span>
+                          <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-xl text-xs font-medium text-zinc-500">
+                             <Users size={14} className="opacity-30" />
+                             {item.faithMembers?.join(', ')}
                           </div>
-                        ) : '-'}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                        </div>
+                      ) : (
+                        <span className="text-zinc-500 font-medium">{item.label}</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between sm:justify-end gap-6">
+                    <span className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border ${
+                      item.type === 'prayer_meeting' 
+                        ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' 
+                        : 'bg-zinc-900 border-white/5 text-zinc-600'
+                    }`}>
+                      {item.type === 'prayer_meeting' ? 'Active' : 'Closed'}
+                    </span>
+                    <div className="w-10 h-10 rounded-full border border-white/5 flex items-center justify-center text-zinc-800 group-hover:text-white group-hover:border-white/20 transition-all">
+                      <ChevronRight size={18} />
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       )}
