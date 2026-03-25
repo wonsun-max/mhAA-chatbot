@@ -1,7 +1,17 @@
 import Link from "next/link";
-import { Utensils, CalendarDays, Clock, Lightbulb } from "lucide-react";
+import { Utensils, CalendarDays, Clock, Lightbulb, BookOpen, AlertCircle } from "lucide-react";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { getLunchPrayerByDate } from "@/lib/lunch-prayer";
 
-export default function CollabPage() {
+export default async function CollabPage() {
+  const session = await getServerSession(authOptions);
+  const qtGroup = session?.user?.qtGroup;
+  
+  // Use current local time for today
+  const today = new Date();
+  const todayPrayer = getLunchPrayerByDate(today);
+
   return (
     <div className="min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       <div className="text-center mb-16">
@@ -15,7 +25,22 @@ export default function CollabPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 mt-12">
+      {session?.user && !qtGroup && (
+        <div className="mb-12">
+          <div className="bg-red-500/10 border border-red-500/50 rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4 text-red-200">
+            <AlertCircle className="w-8 h-8 flex-shrink-0 text-red-400" />
+            <div className="flex-grow">
+              <p className="font-semibold text-red-100 text-lg">QT 조가 설정되지 않았습니다.</p>
+              <p className="text-sm text-red-200/80 mt-1">점심기도 당번 일정을 정확히 확인하기 위해 프로필에서 본인의 QT 조를 설정해주세요.</p>
+            </div>
+            <Link href="/profile" className="px-6 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl font-medium text-sm transition-colors whitespace-nowrap shadow-lg shadow-red-500/20">
+              설정 하러가기
+            </Link>
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 mt-4">
         <Link href="/collab/meals" className="group">
           <div className="h-full bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-emerald-400/50 hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-2">
             <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-teal-400/20 to-emerald-400/20 flex items-center justify-center mb-6 border border-emerald-400/20 group-hover:scale-110 transition-transform duration-300">
@@ -50,6 +75,45 @@ export default function CollabPage() {
             <p className="text-gray-400 leading-relaxed">
               나의 반에 맞는 이번 주 수업 시간표, 선생님, 과목 등을 한눈에 확인하세요.
             </p>
+          </div>
+        </Link>
+        
+        <Link href="/collab/lunch-prayer" className="group">
+          <div className="h-full flex flex-col bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-purple-400/50 hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-2 relative overflow-hidden">
+            <div className="relative z-10">
+              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-purple-400/20 to-fuchsia-400/20 flex items-center justify-center mb-6 border border-purple-400/20 group-hover:scale-110 transition-transform duration-300">
+                <BookOpen className="w-8 h-8 text-purple-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-3">점심기도실 일정</h3>
+              <p className="text-gray-400 leading-relaxed mb-6">
+                점심시간 도서관 방향 기도실에서 진행되는 기도회 당번표를 확인하세요.
+              </p>
+            </div>
+            
+            <div className="mt-auto relative z-10">
+              {todayPrayer ? (
+                <div className="bg-gradient-to-br from-purple-500/20 to-fuchsia-500/20 border border-purple-500/30 rounded-xl p-4 shadow-lg shadow-purple-500/10">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse"></span>
+                    <p className="text-sm font-semibold text-purple-300">오늘의 점심기도 안내</p>
+                  </div>
+                  {todayPrayer.type === 'prayer_meeting' ? (
+                    <div>
+                      <p className="text-white font-bold text-lg mb-1">{todayPrayer.qtGroup}조 담당</p>
+                      <p className="text-purple-200 text-sm">신앙부: {todayPrayer.faithMembers?.join(', ')}</p>
+                    </div>
+                  ) : todayPrayer.type === 'open_prayer' ? (
+                    <p className="text-white font-bold text-base leading-tight">{todayPrayer.label}</p>
+                  ) : (
+                    <p className="text-white font-medium">{todayPrayer.label || '일정 없음'}</p>
+                  )}
+                </div>
+              ) : (
+                <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                  <p className="text-gray-400 text-sm">오늘은 예정된 공식 점심기도 일정이 없습니다.</p>
+                </div>
+              )}
+            </div>
           </div>
         </Link>
       </div>

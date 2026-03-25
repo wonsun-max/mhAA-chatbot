@@ -7,6 +7,7 @@ import { CHATBOT_SYSTEM_PROMPT } from "@/lib/openai";
 import { aiTools } from "@/lib/ai/tools";
 import { getDailyContent } from "@/lib/daily-content";
 import { getMealOrder } from "@/lib/meal-utils";
+import { lunchPrayerSchedule } from "@/lib/lunch-prayer";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -84,12 +85,25 @@ Today's English Word: ${word.word} (${word.meaning}) - Example: ${word.example}
             ? "No meal order today (Weekend/Holiday)" 
             : `First to eat (먼저 먹는 학년): ${firstGroup}, Second to eat (나중에/늦게 먹는 학년): ${secondGroup}`;
 
+        const lunchPrayerContext = `
+[점심기도 안내 및 당번표 (Lunchtime Prayer)]
+- 장소: 학교 2층 도서관 방향 기도실
+- 월/수/금: 12:20~12:45 자유 기도회 (지정 당번 없음, 누구나 참여 가능)
+- 화/목: 12:25~12:45 지정 당번 필수 참여 (해당 날짜 큐티조 및 신앙부 2명). 단, 콘서트 콰이어(합창단) 참여 학생은 예외.
+- 학기 일정:
+${lunchPrayerSchedule.map(s => {
+    if (s.type === 'prayer_meeting') return `  * ${s.date}: 운영 (당번: ${s.qtGroup}조, 신앙부: ${s.faithMembers?.join(', ')})`;
+    return `  * ${s.date}: ${s.label} (운영 안함)`;
+}).join('\n')}
+`;
+
         const systemPrompt = CHATBOT_SYSTEM_PROMPT
             .replace("{{currentTime}}", currentTime)
             .replace("{{displayName}}", displayName)
             .replace("{{userGrade}}", userGradeText)
             .replace("{{mealOrder}}", mealOrderText)
-            + "\n\n" + dailyContext;
+            + "\n\n" + dailyContext
+            + "\n\n" + lunchPrayerContext;
 
         const latestUserMessage = messages
             .filter(m => m.role === 'user')
