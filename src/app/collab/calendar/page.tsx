@@ -67,22 +67,27 @@ export default function CalendarPage() {
   const nearestEvent = upcomingEvents[0];
 
   const filteredEvents = useMemo(() => {
-    let result = events;
-    
-    if (activeMonth === "upcoming") {
-      result = upcomingEvents;
-    } else {
-      result = events.filter(evt => {
-        const m = parseInt(evt.startDate.split("-")[1]).toString();
-        return m === activeMonth;
-      });
+    // When a specific category is selected, show ALL events of that type
+    // (ignoring the upcoming filter) so users can always see their chosen category.
+    if (activeCategory !== "all") {
+      const categoryFiltered = events.filter(evt => evt.eventType === activeCategory);
+      if (activeMonth !== "upcoming") {
+        return categoryFiltered.filter(evt => {
+          const m = parseInt(evt.startDate.split("-")[1]).toString();
+          return m === activeMonth;
+        });
+      }
+      return categoryFiltered;
     }
 
-    if (activeCategory !== "all") {
-      result = result.filter(evt => evt.eventType === activeCategory);
+    if (activeMonth === "upcoming") {
+      return upcomingEvents;
     }
-    
-    return result;
+
+    return events.filter(evt => {
+      const m = parseInt(evt.startDate.split("-")[1]).toString();
+      return m === activeMonth;
+    });
   }, [events, upcomingEvents, activeMonth, activeCategory]);
 
   const getDDay = (dateStr: string) => {
@@ -171,7 +176,7 @@ export default function CalendarPage() {
 
       {/* Month Selector */}
       <div className="mb-12">
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-4">
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-4">
            <button
              onClick={() => setActiveMonth("upcoming")}
              className={`px-6 py-3 rounded-2xl text-xs font-black transition-all border whitespace-nowrap ${
