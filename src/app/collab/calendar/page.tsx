@@ -16,7 +16,7 @@ const CATEGORIES = [
   { key: "all", label: "전체", icon: <Sparkles size={14} /> },
   { key: "Exam", label: "시험", icon: <Award size={14} /> },
   { key: "Holiday", label: "휴일/방학", icon: <PartyPopper size={14} /> },
-  { key: "Event", label: "행사", icon: <CalendarIcon size={14} /> },
+  { key: "Events", label: "행사", icon: <CalendarIcon size={14} /> },
 ];
 
 export default function CalendarPage() {
