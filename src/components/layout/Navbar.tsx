@@ -28,6 +28,7 @@ export function Navbar() {
         { name: "홈", href: "/" },
         { name: "콜라보", href: "/collab" },
         { name: "공지사항", href: "/notices" },
+        { name: "커뮤니티", href: "/community" },
         { name: "AI 어시스턴트", href: "/chatbot" },
     ] as const
 

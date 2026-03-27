@@ -47,13 +47,36 @@ School Information (MHA):
 - Principal: Kwak In-hwan (곽인환).
 - Motto: "힘써 여호와를 알자" (Let us strive to know the Lord).
 - Mission & Vision: To educate missionary children with faith, learning, and character to become healthy citizens of God's kingdom and global leaders who serve the world.
-- Educational Goals: To raise students as "Proud Koreans", "God-loving Christians", and "World-serving International people".
-- Core Virtues: Obedience, Respect, Consideration, Responsibility, Honesty.
-- Curriculum: Hybrid of International (SAT, O-level) and Korean curriculum (2015 Revised). Secondary education emphasizes spiritual growth (Ephesians study) and academic excellence. Includes Tagalog and Chinese (HSK).
+- Educational Goals: To raise students as "Proud Koreans" (자랑스런 대한민국인), "God-loving Christians" (예수님과 사람에게 사랑받는 기독인), and "World-serving International people" (세계를 섬길 준비를 하는 국제인).
+- Core Virtues: Obedience (순종), Respect (존중), Consideration (배려), Responsibility (책임), Honesty (정직).
+- Curriculum: Hybrid of International (SAT, O-level) and Korean curriculum (2015 Revised). Secondary education emphasizes spiritual growth (Ephesians study) and academic excellence. Includes Tagalog and Chinese (HSK). English:Korean ratio is approximately 60:40.
 - Special Activities: Weekly Worship, daily QT, English Week, Bible memorization, Book Talk, Speech Contest, and "Outdoor" field trips.
+- Extracurricular / Non-academic Activities: Every Friday 7th period (15:10–15:55). Field Trip (1박 2일 Outdoor for all elementary), Mission Trip (9학년, 2학기), Vision Trip (10학년, 2학기), Graduation Trip (12학년), First-Aid (1학기), Taekwondo, Sports Day (학기별 1회), Acalitmus Festival (Academic, Literature, Music — 1학기, 매년 1회, 전교생 대상).
+- Annual Events: 개교기념일, 스승의날, 현충일, 한국전쟁 상기일, 한글날, 추석, 신앙수련회, 수학경시대회, 중국어 말하기 대회, 성경암송대회, 교내합창대회, 직업특강, 가든파티, 한아의 밤, 졸업식.
 - Facilities: Campus includes Old and New buildings, Auditorium, Cafeteria, Library, Futsal field, and Soccer field.
 - University Placements: Graduates have entered top universities worldwide, including Harvard, Oxford, UC Berkeley, Seoul National University, Yonsei, Korea University, etc.
 - Location: B3&4 Lot 1 C. Lawis St. Brgy San Luis, Antipolo City, 1870, Philippines.
 - Contact: Email (hankukac@hanmail.net), Kakaotalk ID (hankukac), Office Phone (070-8638-3355, 0917-546-9151).
 - Office Hours: Weekdays 08:00 - 16:00 (Lunch 11:00 - 12:00). Closed on weekends and Philippine holidays.
+
+Admission Information (입학안내):
+- Grade Range: Elementary (초등학교) 1–6학년, Middle/High (중·고등학교) 7–12학년.
+- Academic Calendar: Follows Korean school year. 1학기 starts in March, 2학기 starts in August. Transfer during semester is possible if attendance does not exceed 1/3 of school days.
+- Admission Types:
+  1. 선교사 자녀 전형: Children of overseas missionaries officially sent by a denomination recognized by MHA.
+  2. 목회자 자녀 전형: Children of pastors currently serving in a church recognized by MHA.
+  3. 일반 전형 (Middle/High only): 교포 자녀 (permanent residents abroad), 재외국민 자녀 (legal residents in Philippines), 기타 한인 자녀 (parents in Korea with high mission involvement).
+- Elementary Admission Requirement: Student must reside in Philippines with parents or a recognized guardian (조부모/제3자 only if they fully manage the student's daily life; study-purpose guardianship is NOT accepted).
+- Selection Method: Document review 50% + Interview 50% = 100 points. Math ability test may be added if needed.
+- Selection Criteria: Faith background, character, community life attitude, motivation, academic achievement.
+- Common Procedure: 1. Application submission (email, mail, or visit) → 2. Document review → 3. Interview & written test (if applicable) → 4. Final acceptance notice (email/phone) → 5. Registration.
+- Regular Admissions (정시 전형): January–February (for March 1학기), July (for August 2학기).
+- Rolling Admissions (수시 전형): Available for missionary children who must relocate due to mission field changes, by prior arrangement with the school.
+- Tuition: Notified per semester; subject to change. Installment payment (분납) available up to 3 times within the semester.
+- Application Forms: Available for download on the school website (초등 and 중/고 separate forms in HWP and DOCX formats).
+- Visa: Tourists visa required. Approximately ₱35,000/year (including SSP) or ₱28,000 for 2nd semester. Student visas only apply to university level in Philippines. SSP (Student Study Permit) is handled collectively by the school after admission.
+- Airport Pickup: Free one-time pickup for new students. Group pickup/drop-off on semester start/end days.
+- English Proficiency: Students with limited English can still enroll; after-school individual tutoring (튜터) is available during the adjustment period.
+- FAQ — Transfer from overseas school: MHA follows Korean academic year. Up to 6 months (one semester) may be skipped during a school system transition, but Korean universities may not recognize the skipped period. Repeating the grade is recommended if aiming for Korean universities.
 `
+
