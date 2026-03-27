@@ -141,7 +141,7 @@ export default function PostDetailPage() {
 
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-white/50">
               <span className="font-medium text-white/80">{post.authorNickname}</span>
-              <span>{new Date(post.createdAt).toLocaleDateString()} {new Date(post.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+              <span>{new Date(post.createdAt).toLocaleDateString("ko-KR", { year: "numeric", month: "2-digit", day: "2-digit" })}</span>
               <div className="flex items-center gap-4 ml-auto lg:ml-0">
                 <span className="flex items-center gap-1"><Eye size={14} /> {post.viewCount}</span>
               </div>

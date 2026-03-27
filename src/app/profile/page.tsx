@@ -6,7 +6,8 @@ import {
     User, Mail, GraduationCap, Shield,
     ChevronLeft, LogOut, MessageSquare,
     Calendar, CheckCircle2, AlertCircle,
-    Activity, ArrowRight, Edit3, X
+    Activity, ArrowRight, Edit3, X,
+    Settings, UserCircle, Hash
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -14,10 +15,8 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
 interface UserStats {
-    totalChats: number
     memberSince: string
     status: string
-    grade: string
 }
 
 export default function ProfilePage() {
@@ -31,12 +30,16 @@ export default function ProfilePage() {
     const [newNickname, setNewNickname] = useState("")
     const [isEditingQtGroup, setIsEditingQtGroup] = useState(false)
     const [newQtGroup, setNewQtGroup] = useState("")
+    const [isEditingGrade, setIsEditingGrade] = useState(false)
+    const [newGrade, setNewGrade] = useState("")
+    
     const [isSaving, setIsSaving] = useState(false)
     const [updateError, setUpdateError] = useState<string | null>(null)
 
     const qtGroups = ["1", "2", "3", "4", "5", "6", "7", "8"];
+    const grades = ["7", "8", "9", "10", "11", "12-1", "12-2"];
 
-    const handleUpdate = async (fields: { nickname?: string, qtGroup?: string }) => {
+    const handleUpdate = async (fields: { nickname?: string, qtGroup?: string, grade?: string }) => {
         setIsSaving(true)
         setUpdateError(null)
 
@@ -56,6 +59,7 @@ export default function ProfilePage() {
             
             if (fields.nickname) setIsEditingNickname(false)
             if (fields.qtGroup) setIsEditingQtGroup(false)
+            if (fields.grade) setIsEditingGrade(false)
             
             setUpdateError(null)
         } catch (err: any) {
@@ -120,7 +124,7 @@ export default function ProfilePage() {
                 <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/10 blur-[120px] rounded-full" />
             </div>
 
-            <div className="max-w-5xl mx-auto px-6 pt-32 pb-24 relative z-10">
+            <div className="max-w-4xl mx-auto px-6 pt-32 pb-24 relative z-10">
                 <motion.div
                     variants={containerVariants}
                     initial="hidden"
@@ -143,235 +147,292 @@ export default function ProfilePage() {
                                 variants={itemVariants}
                                 className="text-5xl md:text-6xl font-black tracking-tight"
                             >
-                                Student<span className="text-blue-500">.</span>
+                                Profile<span className="text-blue-500">.</span>
                             </motion.h1>
-                            <motion.p variants={itemVariants} className="text-zinc-400 text-lg max-w-md">
-                                플랫폼 개인 식별 및 활동 관리
+                            <motion.p variants={itemVariants} className="text-zinc-400 text-lg">
+                                나의 정보와 계정 설정을 관리합니다
                             </motion.p>
                         </div>
 
                         <motion.button
                             variants={itemVariants}
                             onClick={() => signOut({ callbackUrl: "/" })}
-                            className="bg-zinc-900 border border-white/5 hover:bg-zinc-800 text-white px-6 py-3 rounded-2xl flex items-center space-x-2 transition-all group active:scale-95"
+                            className="bg-white/5 border border-white/10 hover:bg-white/10 text-white px-6 py-3 rounded-2xl flex items-center space-x-2 transition-all group active:scale-95 backdrop-blur-md"
                         >
                             <LogOut size={18} className="text-zinc-400 group-hover:text-red-400 transition-colors" />
-                            <span className="font-medium">로그아웃</span>
+                            <span className="font-medium text-sm">로그아웃</span>
                         </motion.button>
                     </div>
 
-                    {/* Dashboard Grid */}
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        {/* Stats Section */}
-                        <motion.div
-                            variants={itemVariants}
-                            className="lg:col-span-2 space-y-8"
-                        >
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <StatCard
-                                    label="총 채팅 미션"
-                                    value={loadingStats ? "..." : stats?.totalChats || 0}
-                                    icon={MessageSquare}
-                                    color="blue"
-                                />
-                                <StatCard
-                                    label="현재 학년"
-                                    value={(session.user as any)?.grade ? `${(session.user as any).grade}학년` : "미지정"}
-                                    icon={GraduationCap}
-                                    color="indigo"
-                                />
-                                <StatCard
-                                    label="회원 상태"
-                                    value={stats?.status === "APPROVED" ? "승인됨" : "대기 중"}
-                                    icon={Shield}
-                                    color={stats?.status === "APPROVED" ? "green" : "orange"}
-                                />
-                                <StatCard
-                                    label="가입 일자"
-                                    value={stats?.memberSince ? new Date(stats.memberSince).toLocaleDateString() : "---"}
-                                    icon={Calendar}
-                                    color="zinc"
-                                />
-                            </div>
-
-                            {/* Activity Section Placeholder or Alternative Content */}
-                            <div className="glass-panel p-8 rounded-[2rem] border border-white/5 bg-zinc-950/20">
-                                <div className="space-y-4 text-center py-6">
-                                    <CheckCircle2 size={32} className="mx-auto text-blue-500/50 mb-4" />
-                                    <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-widest">학습 활동 정보</h3>
-                                    <p className="text-xs text-zinc-500">미션 수행 기록과 활동 로그가 이곳에 표시됩니다.</p>
-                                </div>
-                            </div>
-                        </motion.div>
-
-                        {/* Profile Info Section */}
-                        <motion.div variants={itemVariants} className="space-y-8">
-                            <div className="glass-panel p-8 rounded-[2rem] border border-white/5 bg-zinc-950/30 flex flex-col items-center text-center">
-                                <div className="w-24 h-24 rounded-full overflow-hidden mb-6 shadow-2xl shadow-blue-500/20 border border-white/10 p-2 bg-gradient-to-br from-white/5 to-white/10">
-                                    <div className="relative w-full h-full">
-                                        <Image
-                                            src="/images/site-logo.png"
-                                            alt="Student Profile"
-                                            fill
-                                            className="object-contain"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="space-y-1 mb-8">
-                                    <h2 className="text-2xl font-bold">{session.user?.name}</h2>
-                                    <div className="flex flex-col items-center space-y-2">
-                                        {isEditingNickname ? (
-                                            <div className="flex items-center space-x-2">
-                                                <input
-                                                    type="text"
-                                                    value={newNickname}
-                                                    onChange={(e) => setNewNickname(e.target.value)}
-                                                    className="bg-black/50 border border-white/20 rounded-lg px-3 py-1 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
-                                                    placeholder="새 닉네임"
-                                                    autoFocus
+                    <div className="grid grid-cols-1 gap-8">
+                        {/* Main Account Section */}
+                        <motion.div variants={itemVariants} className="space-y-6">
+                            <div className="glass-panel p-8 md:p-10 rounded-[2.5rem] border border-white/5 bg-zinc-950/30 backdrop-blur-2xl">
+                                <div className="flex flex-col md:flex-row items-center md:items-start gap-10">
+                                    {/* Avatar Column */}
+                                    <div className="flex flex-col items-center space-y-4">
+                                        <div className="w-32 h-32 rounded-full overflow-hidden shadow-2xl shadow-blue-500/10 border-2 border-white/10 p-3 bg-gradient-to-br from-white/5 to-white/10 relative group">
+                                            <div className="absolute inset-0 bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                            <div className="relative w-full h-full">
+                                                <Image
+                                                    src="/images/site-logo.png"
+                                                    alt="Student Profile"
+                                                    fill
+                                                    className="object-contain p-1"
                                                 />
-                                                <button
-                                                    onClick={() => handleUpdate({ nickname: newNickname.trim() })}
-                                                    disabled={isSaving}
-                                                    className="p-1.5 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors disabled:opacity-50"
-                                                >
-                                                    {isSaving ? <Activity size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
-                                                </button>
-                                                <button
-                                                    onClick={() => setIsEditingNickname(false)}
-                                                    className="p-1.5 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors"
-                                                >
-                                                    <X size={14} />
-                                                </button>
                                             </div>
-                                        ) : (
-                                            <div className="flex items-center space-x-2 group">
-                                                <p className="text-blue-400 text-sm font-semibold">
-                                                    {(session.user as any)?.nickname}
-                                                </p>
-                                                <button
-                                                    onClick={() => {
-                                                        setNewNickname((session.user as any)?.nickname || "")
-                                                        setIsEditingNickname(true)
-                                                    }}
-                                                    className="opacity-0 group-hover:opacity-100 p-1 hover:bg-white/10 rounded-md transition-all text-zinc-500 hover:text-white"
-                                                >
-                                                    <Edit3 size={14} />
-                                                </button>
+                                        </div>
+                                        <div className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-[10px] font-bold text-blue-400 uppercase tracking-widest">
+                                            {(session.user as any)?.role || "STUDENT"}
+                                        </div>
+                                    </div>
+
+                                    {/* Info Grid */}
+                                    <div className="flex-1 w-full space-y-8">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+                                            
+                                            {/* Nickname Field */}
+                                            <div className="space-y-3">
+                                                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                                                    <UserCircle size={12} /> 닉네임
+                                                </label>
+                                                <AnimatePresence mode="wait">
+                                                    {isEditingNickname ? (
+                                                        <motion.div 
+                                                            initial={{ opacity: 0, y: 5 }}
+                                                            animate={{ opacity: 1, y: 0 }}
+                                                            exit={{ opacity: 0, y: -5 }}
+                                                            className="flex items-center gap-2"
+                                                        >
+                                                            <input
+                                                                type="text"
+                                                                value={newNickname}
+                                                                onChange={(e) => setNewNickname(e.target.value)}
+                                                                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-blue-500 transition-all"
+                                                                autoFocus
+                                                            />
+                                                            <button 
+                                                                onClick={() => handleUpdate({ nickname: newNickname })}
+                                                                className="p-2 bg-blue-500 rounded-xl hover:bg-blue-600 transition-colors"
+                                                            >
+                                                                <CheckCircle2 size={16} />
+                                                            </button>
+                                                            <button 
+                                                                onClick={() => setIsEditingNickname(false)}
+                                                                className="p-2 bg-zinc-800 rounded-xl hover:bg-zinc-700 transition-colors"
+                                                            >
+                                                                <X size={16} />
+                                                            </button>
+                                                        </motion.div>
+                                                    ) : (
+                                                        <motion.div 
+                                                            initial={{ opacity: 0 }}
+                                                            animate={{ opacity: 1 }}
+                                                            className="flex items-center justify-between group h-[38px]"
+                                                        >
+                                                            <span className="text-xl font-bold tracking-tight">
+                                                                {(session.user as any)?.nickname || "미지정"}
+                                                            </span>
+                                                            <button 
+                                                                onClick={() => {
+                                                                    setNewNickname((session.user as any)?.nickname || "")
+                                                                    setIsEditingNickname(true)
+                                                                }}
+                                                                className="p-2 opacity-0 group-hover:opacity-100 bg-white/5 hover:bg-white/10 rounded-lg transition-all text-zinc-400 hover:text-white"
+                                                            >
+                                                                <Edit3 size={14} />
+                                                            </button>
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
                                             </div>
-                                        )}
+
+                                            {/* Grade Field */}
+                                            <div className="space-y-3">
+                                                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                                                    <GraduationCap size={12} /> 학년/반
+                                                </label>
+                                                <AnimatePresence mode="wait">
+                                                    {isEditingGrade ? (
+                                                        <motion.div 
+                                                            initial={{ opacity: 0, y: 5 }}
+                                                            animate={{ opacity: 1, y: 0 }}
+                                                            exit={{ opacity: 0, y: -5 }}
+                                                            className="flex items-center gap-2"
+                                                        >
+                                                            <select
+                                                                value={newGrade}
+                                                                onChange={(e) => setNewGrade(e.target.value)}
+                                                                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-blue-500 appearance-none transition-all"
+                                                            >
+                                                                <option value="" className="bg-zinc-900">학년 선택</option>
+                                                                {grades.map(g => (
+                                                                    <option key={g} value={g} className="bg-zinc-900">{g}학년</option>
+                                                                ))}
+                                                            </select>
+                                                            <button 
+                                                                onClick={() => handleUpdate({ grade: newGrade })}
+                                                                className="p-2 bg-blue-500 rounded-xl hover:bg-blue-600 transition-colors"
+                                                            >
+                                                                <CheckCircle2 size={16} />
+                                                            </button>
+                                                            <button 
+                                                                onClick={() => setIsEditingGrade(false)}
+                                                                className="p-2 bg-zinc-800 rounded-xl hover:bg-zinc-700 transition-colors"
+                                                            >
+                                                                <X size={16} />
+                                                            </button>
+                                                        </motion.div>
+                                                    ) : (
+                                                        <motion.div 
+                                                            initial={{ opacity: 0 }}
+                                                            animate={{ opacity: 1 }}
+                                                            className="flex items-center justify-between group h-[38px]"
+                                                        >
+                                                            <span className="text-xl font-bold tracking-tight">
+                                                                {(session.user as any)?.grade ? `${(session.user as any).grade}학년` : "미지정"}
+                                                            </span>
+                                                            <button 
+                                                                onClick={() => {
+                                                                    setNewGrade((session.user as any)?.grade || "")
+                                                                    setIsEditingGrade(true)
+                                                                }}
+                                                                className="p-2 opacity-0 group-hover:opacity-100 bg-white/5 hover:bg-white/10 rounded-lg transition-all text-zinc-400 hover:text-white"
+                                                            >
+                                                                <Edit3 size={14} />
+                                                            </button>
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
+                                            </div>
+
+                                            {/* QT Group Field */}
+                                            <div className="space-y-3">
+                                                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                                                    <Hash size={12} /> QT조
+                                                </label>
+                                                <AnimatePresence mode="wait">
+                                                    {isEditingQtGroup ? (
+                                                        <motion.div 
+                                                            initial={{ opacity: 0, y: 5 }}
+                                                            animate={{ opacity: 1, y: 0 }}
+                                                            exit={{ opacity: 0, y: -5 }}
+                                                            className="flex items-center gap-2"
+                                                        >
+                                                            <select
+                                                                value={newQtGroup}
+                                                                onChange={(e) => setNewQtGroup(e.target.value)}
+                                                                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-blue-500 appearance-none transition-all"
+                                                            >
+                                                                <option value="" className="bg-zinc-900">조 선택</option>
+                                                                {qtGroups.map(g => (
+                                                                    <option key={g} value={g} className="bg-zinc-900">{g}조</option>
+                                                                ))}
+                                                            </select>
+                                                            <button 
+                                                                onClick={() => handleUpdate({ qtGroup: newQtGroup })}
+                                                                className="p-2 bg-blue-500 rounded-xl hover:bg-blue-600 transition-colors"
+                                                            >
+                                                                <CheckCircle2 size={16} />
+                                                            </button>
+                                                            <button 
+                                                                onClick={() => setIsEditingQtGroup(false)}
+                                                                className="p-2 bg-zinc-800 rounded-xl hover:bg-zinc-700 transition-colors"
+                                                            >
+                                                                <X size={16} />
+                                                            </button>
+                                                        </motion.div>
+                                                    ) : (
+                                                        <motion.div 
+                                                            initial={{ opacity: 0 }}
+                                                            animate={{ opacity: 1 }}
+                                                            className="flex items-center justify-between group h-[38px]"
+                                                        >
+                                                            <span className="text-xl font-bold tracking-tight">
+                                                                {(session.user as any)?.qtGroup ? `${(session.user as any).qtGroup}조` : "미지정"}
+                                                            </span>
+                                                            <button 
+                                                                onClick={() => {
+                                                                    setNewQtGroup((session.user as any)?.qtGroup || "")
+                                                                    setIsEditingQtGroup(true)
+                                                                }}
+                                                                className="p-2 opacity-0 group-hover:opacity-100 bg-white/5 hover:bg-white/10 rounded-lg transition-all text-zinc-400 hover:text-white"
+                                                            >
+                                                                <Edit3 size={14} />
+                                                            </button>
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
+                                            </div>
+
+                                            {/* Static Info: Email */}
+                                            <div className="space-y-3">
+                                                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                                                    <Mail size={12} /> 이메일 주소
+                                                </label>
+                                                <div className="h-[38px] flex items-center">
+                                                    <span className="text-sm font-medium text-zinc-300">
+                                                        {session.user?.email}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
                                         {updateError && (
-                                            <p className="text-[10px] text-red-500 font-bold">{updateError}</p>
+                                            <motion.div 
+                                                initial={{ opacity: 0, height: 0 }}
+                                                animate={{ opacity: 1, height: "auto" }}
+                                                className="flex items-center gap-2 text-red-400 text-xs font-semibold bg-red-400/5 p-3 rounded-xl border border-red-400/10"
+                                            >
+                                                <AlertCircle size={14} />
+                                                {updateError}
+                                            </motion.div>
                                         )}
                                     </div>
                                 </div>
-
-                                <div className="w-full space-y-4 pt-8 border-t border-white/5">
-                                    <div className="w-full">
-                                        {isEditingQtGroup ? (
-                                            <div className="flex items-center space-x-2 w-full">
-                                                <div className="text-zinc-600">
-                                                    <User size={16} />
-                                                </div>
-                                                <div className="flex-1">
-                                                    <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-600 leading-tight">QT조</p>
-                                                    <select
-                                                        value={newQtGroup}
-                                                        onChange={(e) => setNewQtGroup(e.target.value)}
-                                                        className="w-full bg-black/50 border border-white/20 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-blue-500 transition-colors mt-1"
-                                                    >
-                                                        <option value="">QT조 선택</option>
-                                                        {qtGroups.map(group => <option key={group} value={group}>{group}조</option>)}
-                                                    </select>
-                                                </div>
-                                                <button
-                                                    onClick={() => handleUpdate({ qtGroup: newQtGroup })}
-                                                    disabled={isSaving}
-                                                    className="p-1.5 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors disabled:opacity-50"
-                                                >
-                                                    {isSaving ? <Activity size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
-                                                </button>
-                                                <button
-                                                    onClick={() => setIsEditingQtGroup(false)}
-                                                    className="p-1.5 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors"
-                                                >
-                                                    <X size={14} />
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <div className="flex items-center justify-between group">
-                                                <InfoRow icon={User} label="QT조" value={(session.user as any)?.qtGroup ? `${(session.user as any).qtGroup}조` : "미지정"} />
-                                                <button
-                                                    onClick={() => {
-                                                        setNewQtGroup((session.user as any)?.qtGroup || "")
-                                                        setIsEditingQtGroup(true)
-                                                    }}
-                                                    className="opacity-0 group-hover:opacity-100 p-1 hover:bg-white/10 rounded-md transition-all text-zinc-500 hover:text-white"
-                                                >
-                                                    <Edit3 size={14} />
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                    <InfoRow icon={Mail} label="이메일" value={session.user?.email || "이메일 없음"} />
-                                    <InfoRow icon={Shield} label="계정 등급" value={(session.user as any)?.role || "사용자"} />
-                                </div>
-
-                                <Link
-                                    href="/chatbot"
-                                    className="w-full mt-10 bg-white text-black py-4 rounded-xl font-bold flex items-center justify-center group transition-all hover:bg-zinc-200"
-                                >
-                                    챗봇 입장하기
-                                    <ArrowRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
-                                </Link>
                             </div>
 
-                            <div className="px-4 text-center">
-                                <p className="text-[10px] text-zinc-600 uppercase tracking-[0.3em] font-bold">
-                                    위더스 교육 보안 플랫폼
-                                </p>
+                            {/* Secondary Actions / Status */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="glass-panel p-6 rounded-3xl border border-white/5 bg-zinc-950/20 flex items-center gap-6">
+                                    <div className="w-12 h-12 rounded-2xl bg-zinc-900 flex items-center justify-center text-zinc-500 border border-white/5">
+                                        <Calendar size={20} />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">가입 일자</p>
+                                        <p className="text-sm font-bold text-zinc-300">
+                                            {stats?.memberSince ? new Date(stats.memberSince).toLocaleDateString("ko-KR", { year: 'numeric', month: 'long', day: 'numeric' }) : "---"}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="glass-panel p-6 rounded-3xl border border-white/5 bg-zinc-950/20 flex items-center gap-6">
+                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border border-white/5 ${stats?.status === "APPROVED" ? "bg-emerald-500/10 text-emerald-500" : "bg-orange-500/10 text-orange-500"}`}>
+                                        <Shield size={20} />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">계정 상태</p>
+                                        <p className="text-sm font-bold text-zinc-300">
+                                            {stats?.status === "APPROVED" ? "활동 가능" : "승인 대기 중"}
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </motion.div>
                     </div>
+
+                    {/* Quick Access Footer */}
+                    <motion.div variants={itemVariants} className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+                        <p className="text-[10px] text-zinc-600 uppercase tracking-[0.3em] font-black">
+                            WITHUS Education Platform
+                        </p>
+                        <div className="flex gap-4">
+                            <Link href="/community" className="text-xs text-zinc-500 hover:text-white transition-colors">커뮤니티</Link>
+                            <Link href="/collab" className="text-xs text-zinc-500 hover:text-white transition-colors">콜라보</Link>
+                            <Link href="/chatbot" className="text-xs text-zinc-500 hover:text-white transition-colors">챗봇</Link>
+                        </div>
+                    </motion.div>
                 </motion.div>
-            </div>
-        </div>
-    )
-}
-
-function StatCard({ label, value, icon: Icon, color }: { label: string, value: any, icon: any, color: string }) {
-    const colors: Record<string, string> = {
-        blue: "text-blue-500 bg-blue-500/10 border-blue-500/20",
-        indigo: "text-indigo-500 bg-indigo-500/10 border-indigo-500/20",
-        green: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20",
-        orange: "text-orange-500 bg-orange-500/10 border-orange-500/20",
-        zinc: "text-zinc-400 bg-zinc-400/10 border-zinc-400/20",
-    }
-
-    return (
-        <div className="glass-panel p-6 rounded-3xl border border-white/5 bg-zinc-950/20 flex flex-col justify-between group hover:border-white/10 transition-colors text-white">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 border ${colors[color]}`}>
-                <Icon size={20} />
-            </div>
-            <div className="space-y-1">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 group-hover:text-zinc-400 transition-colors">
-                    {label}
-                </p>
-                <h4 className="text-xl font-bold tracking-tight">{value}</h4>
-            </div>
-        </div>
-    )
-}
-
-function InfoRow({ icon: Icon, label, value }: { icon: any, label: string, value: string }) {
-    return (
-        <div className="flex items-center space-x-3 w-full text-left">
-            <div className="text-zinc-600">
-                <Icon size={16} />
-            </div>
-            <div className="flex-1 overflow-hidden">
-                <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-600 leading-tight">{label}</p>
-                <p className="text-xs font-medium text-zinc-300 truncate">{value}</p>
             </div>
         </div>
     )

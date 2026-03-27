@@ -12,7 +12,7 @@ export async function PATCH(req: Request) {
         }
 
         const body = await req.json();
-        const { nickname, qtGroup } = body;
+        const { nickname, qtGroup, grade } = body;
         const userId = (session.user as any).id;
 
         const updateData: any = {};
@@ -40,6 +40,10 @@ export async function PATCH(req: Request) {
             updateData.qtGroup = qtGroup;
         }
 
+        if (grade !== undefined) {
+            updateData.grade = grade;
+        }
+
         if (Object.keys(updateData).length === 0) {
             return NextResponse.json({ error: "수정할 내용이 없습니다." }, { status: 400 });
         }
@@ -54,7 +58,8 @@ export async function PATCH(req: Request) {
             message: "프로필이 성공적으로 변경되었습니다.",
             user: {
                 nickname: updatedUser.nickname,
-                qtGroup: updatedUser.qtGroup
+                qtGroup: updatedUser.qtGroup,
+                grade: updatedUser.grade
             }
         });
     } catch (error) {

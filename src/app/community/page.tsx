@@ -61,10 +61,9 @@ export default function CommunityBoard() {
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr)
     return d.toLocaleDateString("ko-KR", {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
     })
   }
 
