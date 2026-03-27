@@ -20,10 +20,10 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   metadataBase: new URL("https://mhawithus.shop"),
   title: {
-    default: "WITHUS | 마닐라한국아카데미 MHA withus",
+    default: "마닐라한국아카데미 학습 플랫폼 WITHUS",
     template: "%s | WITHUS",
   },
-  description: "마닐라한국아카데미(MHA) 학생과 교사를 위한 통합 스마트 학습 플랫폼 WITHUS입니다. AI 어시스턴트, 공지사항, 급식표, 시간표 정보를 제공합니다.",
+  description: "마닐라한국아카데미(MHA) 학생과 교사를 위한 통합 학습 플랫폼. 공지사항, 시간표, 급식표, AI 도우미 기능 제공.",
   keywords: [
     "mhawithus.shop",
     "MHA withus",
@@ -48,12 +48,8 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title: "WITHUS | 마닐라한국아카데미 MHA withus",
-    description: "마닐라한국아카데미(MHA) 학생들을 위한 혁신적 스마트 학습 플랫폼 WITHUS",
-    url: "https://mhawithus.shop",
-    type: "website",
+    title: "마닐라한국아카데미 학습 플랫폼 WITHUS",
     siteName: "WITHUS",
-    locale: "ko_KR",
   },
   verification: {
     google: "UgMH0SGAU1AonBchOM9OurUhEyGX1S7nRT2NwYFa688",
@@ -99,13 +95,17 @@ export default function RootLayout({
               {
                 "@context": "https://schema.org",
                 "@type": "Organization",
-                "name": "MHA withus | Manila Hankuk Academy",
-                "alternateName": "마닐라한국아카데미 위더스",
+                "name": "WITHUS",
+                "alternateName": [
+                  "마닐라한국아카데미 위더스",
+                  "MHA WithUs"
+                ],
                 "url": "https://mhawithus.shop",
                 "logo": "https://mhawithus.shop/images/site-logo.png",
                 "description": "마닐라한국아카데미(MHA) 학생과 교사를 위한 통합 스마트 학습 플랫폼 WITHUS",
                 "sameAs": [
-                  "https://www.facebook.com/manilahankukacademy",
+
+
                 ]
               }
             ]),

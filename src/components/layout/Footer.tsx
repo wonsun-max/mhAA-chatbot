@@ -1,6 +1,6 @@
 "use client"
 
-import { Bot, Mail, Globe } from "lucide-react"
+import { Bot, Mail, Globe, Instagram } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
@@ -57,6 +57,14 @@ export function Footer() {
                     <div className="space-y-6">
                         <h4 className="text-xs font-bold text-gray-200 uppercase tracking-widest">연결</h4>
                         <div className="flex space-x-4">
+                            <a 
+                                href="https://www.instagram.com/mha_withus/" 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="p-2.5 bg-white/5 rounded-xl border border-white/10 text-gray-400 hover:text-white hover:border-white/20 transition-all"
+                            >
+                                <Instagram size={18} />
+                            </a>
                             <a href="mailto:wonsunpro123444@gmail.com" className="p-2.5 bg-white/5 rounded-xl border border-white/10 text-gray-400 hover:text-white hover:border-white/20 transition-all">
                                 <Mail size={18} />
                             </a>
