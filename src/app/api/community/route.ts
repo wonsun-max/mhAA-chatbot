@@ -9,10 +9,16 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "20");
+    const authorId = searchParams.get("authorId");
     const skip = (page - 1) * limit;
 
+    const where: any = { isDeleted: false };
+    if (authorId) {
+      where.authorId = authorId;
+    }
+
     const posts = await prisma.post.findMany({
-      where: { isDeleted: false },
+      where,
       orderBy: { createdAt: "desc" },
       skip,
       take: limit,
@@ -28,7 +34,7 @@ export async function GET(req: Request) {
       },
     });
 
-    const totalCount = await prisma.post.count({ where: { isDeleted: false } });
+    const totalCount = await prisma.post.count({ where });
 
     return NextResponse.json({
       posts,

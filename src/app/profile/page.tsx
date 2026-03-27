@@ -7,7 +7,7 @@ import {
     ChevronLeft, LogOut, MessageSquare,
     Calendar, CheckCircle2, AlertCircle,
     Activity, ArrowRight, Edit3, X,
-    Settings, UserCircle, Hash
+    Settings, UserCircle, Hash, Eye, Heart, FileText, Loader2
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -19,11 +19,24 @@ interface UserStats {
     status: string
 }
 
+interface UserPost {
+    id: string
+    title: string
+    createdAt: string
+    viewCount: number
+    _count: {
+        comments: number
+        likes: number
+    }
+}
+
 export default function ProfilePage() {
     const { data: session, status, update } = useSession()
     const router = useRouter()
     const [stats, setStats] = useState<UserStats | null>(null)
     const [loadingStats, setLoadingStats] = useState(true)
+    const [userPosts, setUserPosts] = useState<UserPost[]>([])
+    const [loadingPosts, setLoadingPosts] = useState(true)
 
     // Profile Edit State
     const [isEditingNickname, setIsEditingNickname] = useState(false)
@@ -76,7 +89,8 @@ export default function ProfilePage() {
     }, [status, router])
 
     useEffect(() => {
-        if (status === "authenticated") {
+        if (status === "authenticated" && session?.user?.id) {
+            // Fetch stats
             fetch("/api/user/stats")
                 .then(res => res.json())
                 .then(data => {
@@ -84,8 +98,17 @@ export default function ProfilePage() {
                     setLoadingStats(false)
                 })
                 .catch(() => setLoadingStats(false))
+
+            // Fetch user's community posts
+            fetch(`/api/community?authorId=${session.user.id}&limit=50`)
+                .then(res => res.json())
+                .then(data => {
+                    setUserPosts(data.posts || [])
+                    setLoadingPosts(false)
+                })
+                .catch(() => setLoadingPosts(false))
         }
-    }, [status])
+    }, [status, session?.user?.id])
 
     if (status === "loading") {
         return (
@@ -164,7 +187,7 @@ export default function ProfilePage() {
                         </motion.button>
                     </div>
 
-                    <div className="grid grid-cols-1 gap-8">
+                    <div className="grid grid-cols-1 gap-12">
                         {/* Main Account Section */}
                         <motion.div variants={itemVariants} className="space-y-6">
                             <div className="glass-panel p-8 md:p-10 rounded-[2.5rem] border border-white/5 bg-zinc-950/30 backdrop-blur-2xl">
@@ -393,7 +416,7 @@ export default function ProfilePage() {
                                 </div>
                             </div>
 
-                            {/* Secondary Actions / Status */}
+                            {/* Status Section */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="glass-panel p-6 rounded-3xl border border-white/5 bg-zinc-950/20 flex items-center gap-6">
                                     <div className="w-12 h-12 rounded-2xl bg-zinc-900 flex items-center justify-center text-zinc-500 border border-white/5">
@@ -419,17 +442,73 @@ export default function ProfilePage() {
                                 </div>
                             </div>
                         </motion.div>
+
+                        {/* User's Community Posts Section */}
+                        <motion.div variants={itemVariants} className="space-y-6">
+                            <div className="flex items-center justify-between px-4">
+                                <h2 className="text-2xl font-bold tracking-tight flex items-center gap-3">
+                                    <MessageSquare className="text-blue-500" size={24} />
+                                    내가 쓴 게시물 <span className="text-sm font-medium text-zinc-500 ml-2">{userPosts.length}</span>
+                                </h2>
+                                <Link href="/community" className="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors uppercase tracking-widest">전체보기</Link>
+                            </div>
+
+                            <div className="glass-panel rounded-[2.5rem] border border-white/5 bg-zinc-950/30 backdrop-blur-2xl overflow-hidden">
+                                {loadingPosts ? (
+                                    <div className="flex flex-col items-center justify-center py-20 gap-4">
+                                        <Loader2 className="w-8 h-8 text-blue-500/40 animate-spin" />
+                                        <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-[0.2em]">게시물을 불러오는 중...</p>
+                                    </div>
+                                ) : userPosts.length === 0 ? (
+                                    <div className="flex flex-col items-center justify-center py-20 text-center px-6">
+                                        <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/5">
+                                            <FileText className="text-zinc-600" size={24} />
+                                        </div>
+                                        <h3 className="text-lg font-bold text-zinc-400 mb-2">아직 작성한 글이 없습니다</h3>
+                                        <p className="text-sm text-zinc-600 max-w-xs">커뮤니티에서 자유롭게 여러분의 생각을 나누어보세요.</p>
+                                        <Link href="/community/write" className="mt-8 px-8 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-bold transition-all active:scale-95">첫 글 작성하기</Link>
+                                    </div>
+                                ) : (
+                                    <div className="divide-y divide-white/[0.03]">
+                                        {userPosts.map((post) => (
+                                            <Link 
+                                                key={post.id} 
+                                                href={`/community/${post.id}`}
+                                                className="flex flex-col md:flex-row md:items-center justify-between p-6 md:p-8 hover:bg-white/[0.02] transition-colors group"
+                                            >
+                                                <div className="space-y-2 flex-1">
+                                                    <h4 className="text-lg font-bold text-zinc-200 group-hover:text-white transition-colors leading-tight">
+                                                        {post.title}
+                                                    </h4>
+                                                    <div className="flex items-center gap-4 text-xs font-medium text-zinc-500">
+                                                        <span>{new Date(post.createdAt).toLocaleDateString("ko-KR", { year: 'numeric', month: '2-digit', day: '2-digit' })}</span>
+                                                        <span className="flex items-center gap-1"><Eye size={12} /> {post.viewCount}</span>
+                                                        <span className="flex items-center gap-1"><Heart size={12} /> {post._count.likes}</span>
+                                                        <span className="flex items-center gap-1"><MessageSquare size={12} /> {post._count.comments}</span>
+                                                    </div>
+                                                </div>
+                                                <div className="mt-4 md:mt-0 md:ml-6">
+                                                    <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-zinc-500 group-hover:text-blue-400 group-hover:border-blue-500/20 group-hover:bg-blue-500/5 transition-all">
+                                                        <ArrowRight size={18} />
+                                                    </div>
+                                                </div>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </motion.div>
                     </div>
 
                     {/* Quick Access Footer */}
-                    <motion.div variants={itemVariants} className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <motion.div variants={itemVariants} className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-white/40">
                         <p className="text-[10px] text-zinc-600 uppercase tracking-[0.3em] font-black">
                             WITHUS Education Platform
                         </p>
-                        <div className="flex gap-4">
-                            <Link href="/community" className="text-xs text-zinc-500 hover:text-white transition-colors">커뮤니티</Link>
-                            <Link href="/collab" className="text-xs text-zinc-500 hover:text-white transition-colors">콜라보</Link>
-                            <Link href="/chatbot" className="text-xs text-zinc-500 hover:text-white transition-colors">챗봇</Link>
+                        <div className="flex gap-8">
+                            <Link href="/community" className="text-xs font-bold hover:text-white transition-colors uppercase tracking-widest">커뮤니티</Link>
+                            <Link href="/collab" className="text-xs font-bold hover:text-white transition-colors uppercase tracking-widest">콜라보</Link>
+                            <Link href="/chatbot" className="text-xs font-bold hover:text-white transition-colors uppercase tracking-widest">챗봇</Link>
                         </div>
                     </motion.div>
                 </motion.div>

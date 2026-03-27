@@ -99,10 +99,17 @@ export default function PostDetailPage() {
     <div className="min-h-screen bg-black text-white selection:bg-white/30 pt-24 pb-32">
       <div className="max-w-[800px] mx-auto px-6">
         
-        <Link href="/community" className="inline-flex items-center text-white/50 hover:text-white transition-colors gap-2 text-sm font-medium tracking-wider uppercase mb-8">
-          <ArrowLeft size={16} />
-          목록으로 돌아가기
-        </Link>
+        <div className="relative z-50 mb-8">
+          <Link 
+            href="/community" 
+            className="group inline-flex items-center text-white/50 hover:text-white transition-all duration-300 gap-2 text-sm font-medium tracking-wider uppercase active:scale-95"
+          >
+            <div className="p-2 bg-white/5 rounded-full group-hover:bg-white/10 transition-colors">
+              <ArrowLeft size={16} />
+            </div>
+            목록으로 돌아가기
+          </Link>
+        </div>
         
         {/* Post Container */}
         <motion.div 
