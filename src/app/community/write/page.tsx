@@ -47,14 +47,10 @@ export default function WritePostPage() {
 
       // Add to uploaded images list for preview
       setUploadedImages(prev => [...prev, publicUrl])
-
-      // Insert markdown into text area at cursor position
-      // Add extra newlines only if not already there to avoid excessive gaps
-      const prefix = content.endsWith('\n\n') ? '' : content.endsWith('\n') ? '\n' : '\n\n';
       
-      // Senior Dev Pro: Use a placeholder text instead of full URL for a cleaner editor
-      // This keeps the URL in the markdown but makes it more readable
-      insertAtCursor(`${prefix}![IMAGE_INSERTED](${publicUrl})\n\n`)
+      // Senior Dev Pro: Don't clutter the editor with links anymore.
+      // We'll manage images via the gallery and append them to the content on submit.
+      // alerting the user we added it to the gallery
       
     } catch (error) {
       console.error("Error uploading image:", error)
@@ -96,10 +92,17 @@ export default function WritePostPage() {
 
     setLoading(true)
     try {
+      // Append all uploaded images to the bottom of the content before submitting
+      let finalContent = content;
+      if (uploadedImages.length > 0) {
+        const imageMarkdown = uploadedImages.map(url => `\n\n![image](${url})`).join('');
+        finalContent += imageMarkdown;
+      }
+
       const res = await fetch("/api/community", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, content }),
+        body: JSON.stringify({ title, content: finalContent }),
       })
 
       if (res.ok) {
@@ -198,21 +201,25 @@ export default function WritePostPage() {
               </div>
             </div>
 
-            {/* Uploaded Images Gallery */}
+            {/* Uploaded Images Gallery - Always visible in editor mode and more premium */}
             <AnimatePresence>
               {uploadedImages.length > 0 && !isPreview && (
                 <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="flex flex-wrap gap-4 py-2"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="bg-white/5 rounded-2xl p-4 flex flex-wrap gap-4 border border-white/10"
                 >
+                  <div className="w-full text-[10px] text-white/30 uppercase tracking-widest mb-1 flex justify-between">
+                    <span>Uploaded Gallery (Images will be added to post bottom)</span>
+                    <span>{uploadedImages.length} images</span>
+                  </div>
                   {uploadedImages.map((url, index) => (
                     <motion.div
                       key={url}
                       initial={{ scale: 0.8, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
-                      className="relative group w-24 h-24 rounded-2xl overflow-hidden border border-white/10 shadow-lg"
+                      className="relative group w-20 h-20 rounded-xl overflow-hidden border border-white/10 shadow-lg"
                     >
                       <img 
                         src={url} 
@@ -222,11 +229,10 @@ export default function WritePostPage() {
                       <button
                         type="button"
                         onClick={() => removeImage(url)}
-                        className="absolute top-1 right-1 p-1.5 bg-black/60 backdrop-blur-md rounded-full text-white/80 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-1 right-1 p-1 bg-black/60 backdrop-blur-md rounded-full text-white/80 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity"
                       >
-                        <X size={14} />
+                        <X size={12} />
                       </button>
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
                     </motion.div>
                   ))}
                 </motion.div>
@@ -260,12 +266,12 @@ export default function WritePostPage() {
                     exit={{ opacity: 0 }}
                     className="w-full min-h-[450px] mt-4 prose prose-invert prose-p:text-white/70 prose-headings:text-white prose-img:rounded-2xl max-w-none py-4"
                   >
-                    {content.trim() ? (
+                    {content.trim() || uploadedImages.length > 0 ? (
                       <ReactMarkdown 
                         remarkPlugins={[remarkGfm, remarkBreaks]} 
                         rehypePlugins={[rehypeRaw]}
                       >
-                        {content}
+                        {content + (uploadedImages.length > 0 ? uploadedImages.map(url => `\n\n![image](${url})`).join('') : '')}
                       </ReactMarkdown>
                     ) : (
                       <div className="flex items-center justify-center min-h-[400px] text-white/20 uppercase tracking-widest text-xs">
