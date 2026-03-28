@@ -41,8 +41,8 @@ export function Navbar() {
         >
             <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
                 <div className="flex justify-between items-center h-16 relative">
-                    {/* Left Navigation */}
-                    <div className="hidden lg:flex items-center space-x-10">
+                    {/* Left Navigation (Desktop) */}
+                    <div className="hidden lg:flex items-center space-x-10 flex-1">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.name}
@@ -56,15 +56,15 @@ export function Navbar() {
                     </div>
 
                     {/* Centered Logo Section */}
-                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                    <div className="lg:absolute lg:left-1/2 lg:top-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 flex justify-center items-center">
                         <Link href="/" className="flex items-center space-x-3 group">
                             <motion.div
                                 className="flex flex-row items-center"
                                 whileHover={{ scale: 1.05 }}
                                 transition={{ type: "spring", stiffness: 400, damping: 20 }}
                             >
-                                <div className="flex flex-col">
-                                    <span className="text-2xl font-light text-white leading-none tracking-[0.3em] uppercase group-hover:text-white/90">
+                                <div className="flex flex-col items-center">
+                                    <span className="text-xl md:text-2xl font-light text-white leading-none tracking-[0.3em] uppercase group-hover:text-white/90">
                                         WITHUS
                                     </span>
                                     <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-white/40 to-transparent mt-1" />
@@ -74,7 +74,7 @@ export function Navbar() {
                     </div>
 
                     {/* Right Utilities & Session */}
-                    <div className="flex items-center space-x-8">
+                    <div className="flex items-center justify-end space-x-4 md:space-x-8 flex-1">
                         {/* Search/Global Icons placeholder to match the reference look */}
                         <div className="hidden lg:flex items-center space-x-6 text-white/40 border-r border-white/10 pr-8 mr-2">
                             <Globe size={18} className="hover:text-white cursor-pointer transition-colors" />
@@ -118,7 +118,7 @@ export function Navbar() {
                         )}
 
                         {/* Mobile Menu Toggle */}
-                        <div className="lg:hidden flex items-center space-x-4">
+                        <div className="lg:hidden flex items-center">
                             <button
                                 onClick={() => setIsOpen(!isOpen)}
                                 className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/5 transition-colors"
@@ -153,20 +153,34 @@ export function Navbar() {
                             <div className="pt-8 border-t border-white/5 space-y-6">
                                 {session ? (
                                     <>
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-white/40 text-sm tracking-wider uppercase">{displayName}</span>
-                                            {(session.user as any)?.role === "ADMIN" && (
-                                                <Link href="/admin" onClick={() => setIsOpen(false)}>
-                                                    <LayoutDashboard size={20} className="text-white/60" />
+                                        <div className="flex flex-col gap-4">
+                                            <div className="flex items-center justify-between">
+                                                <Link 
+                                                    href="/profile" 
+                                                    onClick={() => setIsOpen(false)}
+                                                    className="text-white/80 text-sm tracking-wider uppercase hover:text-white transition-colors flex items-center gap-2"
+                                                >
+                                                    <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-[10px]">
+                                                        {displayName?.charAt(0)}
+                                                    </div>
+                                                    내 프로필
                                                 </Link>
-                                            )}
+                                                {(session.user as any)?.role === "ADMIN" && (
+                                                    <Link href="/admin" onClick={() => setIsOpen(false)}>
+                                                        <LayoutDashboard size={20} className="text-white/60 hover:text-white" />
+                                                    </Link>
+                                                )}
+                                            </div>
+                                            <button
+                                                onClick={() => {
+                                                    setIsOpen(false)
+                                                    signOut()
+                                                }}
+                                                className="w-full py-4 rounded-xl bg-white/5 text-sm font-medium text-red-400 hover:bg-red-400/10 transition-all uppercase tracking-widest"
+                                            >
+                                                로그아웃
+                                            </button>
                                         </div>
-                                        <button
-                                            onClick={() => signOut()}
-                                            className="w-full py-4 rounded-xl bg-white/5 text-sm font-medium text-red-400 hover:bg-red-400/10 transition-all uppercase tracking-widest"
-                                        >
-                                            로그아웃
-                                        </button>
                                     </>
                                 ) : (
                                     <Link

@@ -107,15 +107,15 @@ export default function SignupPage() {
     const stepLabels = ["이메일", "코드 인증", "정보 입력", "완료"]
 
     return (
-        <div className="min-h-[100dvh] bg-black text-white flex items-center justify-center p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/10 via-black to-black">
-            <div className="w-full max-w-md">
-                <div className="text-center mb-10">
-                    <h1 className="text-4xl font-bold tracking-tight mb-2">WITHUS</h1>
-                    <p className="text-zinc-500">프라이빗 네트워크에 가입하세요</p>
+        <div className="min-h-[100dvh] bg-black text-white flex items-center justify-center p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/10 via-black to-black overflow-y-auto">
+            <div className="w-full max-w-md py-8">
+                <div className="text-center mb-6 md:mb-10">
+                    <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">WITHUS</h1>
+                    <p className="text-zinc-500 text-sm md:text-base">프라이빗 네트워크에 가입하세요</p>
                 </div>
 
                 {/* Step indicator */}
-                <div className="flex items-center justify-center mb-8 gap-2">
+                <div className="flex items-center justify-center mb-6 md:mb-8 gap-1 md:gap-2">
                     {stepLabels.map((label, i) => {
                         const s = i + 1
                         const isCompleted = step > s

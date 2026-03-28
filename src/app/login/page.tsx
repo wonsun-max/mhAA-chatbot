@@ -86,18 +86,18 @@ function LoginContent() {
     }
 
     return (
-        <div className="min-h-[100dvh] bg-black text-white flex items-center justify-center p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/10 via-black to-black">
+        <div className="min-h-[100dvh] bg-black text-white flex items-center justify-center p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/10 via-black to-black overflow-y-auto">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="w-full max-w-md space-y-8"
+                className="w-full max-w-md space-y-6 md:space-y-8 py-8"
             >
                 <div className="text-center space-y-2">
-                    <h1 className="text-4xl font-bold tracking-tight">WITHUS</h1>
-                    <p className="text-zinc-500">다시 오신 것을 환영합니다</p>
+                    <h1 className="text-3xl md:text-4xl font-bold tracking-tight">WITHUS</h1>
+                    <p className="text-zinc-500 text-sm md:text-base">다시 오신 것을 환영합니다</p>
                 </div>
 
-                <div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+                <div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 blur-3xl" />
 
                     {message && (

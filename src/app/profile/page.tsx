@@ -168,11 +168,11 @@ export default function ProfilePage() {
                             </motion.div>
                             <motion.h1
                                 variants={itemVariants}
-                                className="text-5xl md:text-6xl font-black tracking-tight"
+                                className="text-4xl md:text-6xl font-black tracking-tight"
                             >
                                 Profile<span className="text-blue-500">.</span>
                             </motion.h1>
-                            <motion.p variants={itemVariants} className="text-zinc-400 text-lg">
+                            <motion.p variants={itemVariants} className="text-zinc-400 text-base md:text-lg">
                                 나의 정보와 계정 설정을 관리합니다
                             </motion.p>
                         </div>
@@ -180,21 +180,21 @@ export default function ProfilePage() {
                         <motion.button
                             variants={itemVariants}
                             onClick={() => signOut({ callbackUrl: "/" })}
-                            className="bg-white/5 border border-white/10 hover:bg-white/10 text-white px-6 py-3 rounded-2xl flex items-center space-x-2 transition-all group active:scale-95 backdrop-blur-md"
+                            className="bg-white/5 border border-white/10 hover:bg-white/10 text-white px-5 md:px-6 py-2.5 md:py-3 rounded-2xl flex items-center space-x-2 transition-all group active:scale-95 backdrop-blur-md self-start md:self-auto"
                         >
-                            <LogOut size={18} className="text-zinc-400 group-hover:text-red-400 transition-colors" />
-                            <span className="font-medium text-sm">로그아웃</span>
+                            <LogOut size={16} className="text-zinc-400 group-hover:text-red-400 transition-colors" />
+                            <span className="font-medium text-xs md:text-sm">로그아웃</span>
                         </motion.button>
                     </div>
 
-                    <div className="grid grid-cols-1 gap-12">
+                    <div className="grid grid-cols-1 gap-8 md:gap-12">
                         {/* Main Account Section */}
                         <motion.div variants={itemVariants} className="space-y-6">
-                            <div className="glass-panel p-8 md:p-10 rounded-[2.5rem] border border-white/5 bg-zinc-950/30 backdrop-blur-2xl">
-                                <div className="flex flex-col md:flex-row items-center md:items-start gap-10">
+                            <div className="glass-panel p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-white/5 bg-zinc-950/30 backdrop-blur-2xl">
+                                <div className="flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-10">
                                     {/* Avatar Column */}
                                     <div className="flex flex-col items-center space-y-4">
-                                        <div className="w-32 h-32 rounded-full overflow-hidden shadow-2xl shadow-blue-500/10 border-2 border-white/10 p-3 bg-gradient-to-br from-white/5 to-white/10 relative group">
+                                        <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden shadow-2xl shadow-blue-500/10 border-2 border-white/10 p-3 bg-gradient-to-br from-white/5 to-white/10 relative group">
                                             <div className="absolute inset-0 bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                                             <div className="relative w-full h-full">
                                                 <Image
@@ -205,18 +205,18 @@ export default function ProfilePage() {
                                                 />
                                             </div>
                                         </div>
-                                        <div className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-[10px] font-bold text-blue-400 uppercase tracking-widest">
+                                        <div className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-[9px] md:text-[10px] font-bold text-blue-400 uppercase tracking-widest">
                                             {(session.user as any)?.role || "STUDENT"}
                                         </div>
                                     </div>
 
                                     {/* Info Grid */}
-                                    <div className="flex-1 w-full space-y-8">
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+                                    <div className="flex-1 w-full space-y-6 md:space-y-8">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 md:gap-x-12 gap-y-6 md:gap-y-8">
                                             
                                             {/* Nickname Field */}
-                                            <div className="space-y-3">
-                                                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                                            <div className="space-y-2 md:space-y-3">
+                                                <label className="text-[9px] md:text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
                                                     <UserCircle size={12} /> 닉네임
                                                 </label>
                                                 <AnimatePresence mode="wait">
@@ -253,7 +253,7 @@ export default function ProfilePage() {
                                                             animate={{ opacity: 1 }}
                                                             className="flex items-center justify-between group h-[38px]"
                                                         >
-                                                            <span className="text-xl font-bold tracking-tight">
+                                                            <span className="text-lg md:text-xl font-bold tracking-tight">
                                                                 {(session.user as any)?.nickname || "미지정"}
                                                             </span>
                                                             <button 
@@ -261,7 +261,7 @@ export default function ProfilePage() {
                                                                     setNewNickname((session.user as any)?.nickname || "")
                                                                     setIsEditingNickname(true)
                                                                 }}
-                                                                className="p-2 opacity-0 group-hover:opacity-100 bg-white/5 hover:bg-white/10 rounded-lg transition-all text-zinc-400 hover:text-white"
+                                                                className="p-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 bg-white/5 hover:bg-white/10 rounded-lg transition-all text-zinc-400 hover:text-white"
                                                             >
                                                                 <Edit3 size={14} />
                                                             </button>
@@ -271,8 +271,8 @@ export default function ProfilePage() {
                                             </div>
 
                                             {/* Grade Field */}
-                                            <div className="space-y-3">
-                                                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                                            <div className="space-y-2 md:space-y-3">
+                                                <label className="text-[9px] md:text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
                                                     <GraduationCap size={12} /> 학년/반
                                                 </label>
                                                 <AnimatePresence mode="wait">
@@ -312,7 +312,7 @@ export default function ProfilePage() {
                                                             animate={{ opacity: 1 }}
                                                             className="flex items-center justify-between group h-[38px]"
                                                         >
-                                                            <span className="text-xl font-bold tracking-tight">
+                                                            <span className="text-lg md:text-xl font-bold tracking-tight">
                                                                 {(session.user as any)?.grade ? `${(session.user as any).grade}학년` : "미지정"}
                                                             </span>
                                                             <button 
@@ -320,7 +320,7 @@ export default function ProfilePage() {
                                                                     setNewGrade((session.user as any)?.grade || "")
                                                                     setIsEditingGrade(true)
                                                                 }}
-                                                                className="p-2 opacity-0 group-hover:opacity-100 bg-white/5 hover:bg-white/10 rounded-lg transition-all text-zinc-400 hover:text-white"
+                                                                className="p-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 bg-white/5 hover:bg-white/10 rounded-lg transition-all text-zinc-400 hover:text-white"
                                                             >
                                                                 <Edit3 size={14} />
                                                             </button>
@@ -330,8 +330,8 @@ export default function ProfilePage() {
                                             </div>
 
                                             {/* QT Group Field */}
-                                            <div className="space-y-3">
-                                                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                                            <div className="space-y-2 md:space-y-3">
+                                                <label className="text-[9px] md:text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
                                                     <Hash size={12} /> QT조
                                                 </label>
                                                 <AnimatePresence mode="wait">
@@ -371,7 +371,7 @@ export default function ProfilePage() {
                                                             animate={{ opacity: 1 }}
                                                             className="flex items-center justify-between group h-[38px]"
                                                         >
-                                                            <span className="text-xl font-bold tracking-tight">
+                                                            <span className="text-lg md:text-xl font-bold tracking-tight">
                                                                 {(session.user as any)?.qtGroup ? `${(session.user as any).qtGroup}조` : "미지정"}
                                                             </span>
                                                             <button 
@@ -379,7 +379,7 @@ export default function ProfilePage() {
                                                                     setNewQtGroup((session.user as any)?.qtGroup || "")
                                                                     setIsEditingQtGroup(true)
                                                                 }}
-                                                                className="p-2 opacity-0 group-hover:opacity-100 bg-white/5 hover:bg-white/10 rounded-lg transition-all text-zinc-400 hover:text-white"
+                                                                className="p-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 bg-white/5 hover:bg-white/10 rounded-lg transition-all text-zinc-400 hover:text-white"
                                                             >
                                                                 <Edit3 size={14} />
                                                             </button>

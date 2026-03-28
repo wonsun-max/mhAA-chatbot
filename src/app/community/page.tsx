@@ -71,20 +71,20 @@ export default function CommunityBoard() {
     <div className="min-h-screen bg-black text-white selection:bg-white/30 selection:text-white pt-24 pb-20">
       <div className="max-w-[1000px] mx-auto px-6 lg:px-12">
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 space-y-6 md:space-y-0 relative z-10">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 md:mb-12 space-y-6 md:space-y-0 relative z-10">
           <div>
             <motion.h1 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-4xl md:text-5xl font-light tracking-tight mb-4"
+              className="text-3xl md:text-5xl font-light tracking-tight mb-3 md:mb-4"
             >
-              Community <span className="text-white/40">커뮤니티</span>
+              Community <span className="text-white/40 block md:inline">커뮤니티</span>
             </motion.h1>
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-white/60 font-medium"
+              className="text-sm md:text-base text-white/60 font-medium"
             >
               익명으로 자유롭게 이야기하는 공간입니다
             </motion.p>
@@ -94,10 +94,11 @@ export default function CommunityBoard() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
+            className="w-full md:w-auto"
           >
             <Link 
               href="/community/write"
-              className="group relative flex items-center gap-2 bg-white text-black px-6 py-3 rounded-full overflow-hidden transition-all duration-300 hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:scale-105 active:scale-95"
+              className="group relative flex items-center justify-center gap-2 bg-white text-black px-8 py-3.5 md:px-6 md:py-3 rounded-full overflow-hidden transition-all duration-300 hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:scale-105 active:scale-95"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-black/5 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
               <Plus size={18} className="relative z-10" />

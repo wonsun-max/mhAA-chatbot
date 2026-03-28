@@ -3,7 +3,7 @@
 import { useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { Loader2, Image as ImageIcon, Send, ArrowLeft, Eye as EyeIcon, Edit3 } from "lucide-react"
+import { Loader2, Image as ImageIcon, Send, ArrowLeft, Eye as EyeIcon, Edit3, X, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
 import ReactMarkdown from "react-markdown"
@@ -16,6 +16,7 @@ export default function WritePostPage() {
   const [loading, setLoading] = useState(false)
   const [isPreview, setIsPreview] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
+  const [uploadedImages, setUploadedImages] = useState<string[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -30,30 +31,39 @@ export default function WritePostPage() {
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
       const filePath = `post-images/${fileName}`
 
-      // Upload to Supabase Storage - replace 'community-images' with your actual bucket name
+      // Upload to Supabase Storage
       const { data, error } = await supabase.storage
         .from('community-images')
         .upload(filePath, file)
 
-      if (error) {
-        throw error
-      }
+      if (error) throw error
 
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('community-images')
         .getPublicUrl(filePath)
 
+      // Add to uploaded images list for preview
+      setUploadedImages(prev => [...prev, publicUrl])
+
       // Insert markdown into text area at cursor position
       insertAtCursor(`\n![image](${publicUrl})\n`)
       
     } catch (error) {
       console.error("Error uploading image:", error)
-      alert("이미지 업로드에 실패했습니다. (Supabase Storage 설정을 확인해주세요)")
+      alert("이미지 업로드에 실패했습니다.")
     } finally {
       setUploadingImage(false)
       if (fileInputRef.current) fileInputRef.current.value = ""
     }
+  }
+
+  const removeImage = (url: string) => {
+    setUploadedImages(prev => prev.filter(img => img !== url))
+    // Optionally remove the markdown from content, but that might be tricky if they edited it
+    // For now, just removing from the visual preview list
+    const markdownLink = `![image](${url})`
+    setContent(prev => prev.replace(new RegExp(`\\n?${markdownLink.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\n?`, 'g'), ''))
   }
 
   const insertAtCursor = (textToInsert: string) => {
@@ -180,6 +190,41 @@ export default function WritePostPage() {
                 Markdown Ready
               </div>
             </div>
+
+            {/* Uploaded Images Gallery */}
+            <AnimatePresence>
+              {uploadedImages.length > 0 && !isPreview && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="flex flex-wrap gap-4 py-2"
+                >
+                  {uploadedImages.map((url, index) => (
+                    <motion.div
+                      key={url}
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      className="relative group w-24 h-24 rounded-2xl overflow-hidden border border-white/10 shadow-lg"
+                    >
+                      <img 
+                        src={url} 
+                        alt={`upload-${index}`} 
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(url)}
+                        className="absolute top-1 right-1 p-1.5 bg-black/60 backdrop-blur-md rounded-full text-white/80 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X size={14} />
+                      </button>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
+                    </motion.div>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Content Textarea or Preview */}
             <div className="min-h-[450px]">

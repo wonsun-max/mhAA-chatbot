@@ -17,6 +17,16 @@ import { AccessGate } from "../layout/AccessGate"
 export function ChatInterface() {
     const { data: session, status: authStatus } = useSession()
     const [showScrollButton, setShowScrollButton] = useState(false)
+    const [viewportHeight, setViewportHeight] = useState("100dvh")
+
+    useEffect(() => {
+        const handleResize = () => {
+            setViewportHeight(`${window.innerHeight}px`)
+        }
+        window.addEventListener('resize', handleResize)
+        handleResize()
+        return () => window.removeEventListener('resize', handleResize)
+    }, [])
 
     const { messages, sendMessage, status } = useChat({
         transport: new DefaultChatTransport({ api: "/api/ai/chat" }),
@@ -68,7 +78,10 @@ export function ChatInterface() {
     ]
 
     return (
-        <div className="flex flex-col h-[100dvh] w-full max-w-5xl mx-auto relative px-4 md:px-8">
+        <div 
+            style={{ height: viewportHeight }}
+            className="flex flex-col w-full max-w-5xl mx-auto relative px-4 md:px-8"
+        >
             {/* Access Gate Overlay */}
             {authStatus !== "authenticated" && (
                 <AccessGate
@@ -81,16 +94,16 @@ export function ChatInterface() {
             <div
                 ref={messagesContainerRef}
                 onScroll={handleScroll}
-                className={`flex-1 overflow-y-auto pt-12 pb-60 space-y-2 scrollbar-hide [&::-webkit-scrollbar]:hidden ${messages.length === 0 ? 'flex items-center justify-center' : ''}`}
+                className={`flex-1 overflow-y-auto pt-12 pb-48 md:pb-60 space-y-2 scrollbar-hide [&::-webkit-scrollbar]:hidden ${messages.length === 0 ? 'flex items-center justify-center' : ''}`}
             >
                 {messages.length === 0 ? (
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, ease: "easeOut" }}
-                        className="w-full max-w-3xl flex flex-col items-center justify-center space-y-12"
+                        className="w-full max-w-3xl flex flex-col items-center justify-center space-y-8 md:space-y-12"
                     >
-                        <div className={`w-full space-y-4 ${authStatus !== "authenticated" ? "text-center" : "text-left"}`}>
+                        <div className={`w-full space-y-3 md:space-y-4 ${authStatus !== "authenticated" ? "text-center" : "text-left"}`}>
                             <motion.h1
                                 initial={{ opacity: 0, x: -10 }}
                                 animate={{ opacity: 1, x: 0 }}
@@ -103,7 +116,7 @@ export function ChatInterface() {
                                 initial={{ opacity: 0, x: -10 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: 0.2 }}
-                                className="text-2xl md:text-4xl font-semibold text-zinc-600 tracking-tight leading-tight"
+                                className="text-xl md:text-4xl font-semibold text-zinc-600 tracking-tight leading-tight"
                             >
                                 무엇을 도와드릴까요?
                             </motion.h2>

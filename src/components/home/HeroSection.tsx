@@ -27,7 +27,7 @@ export function HeroSection() {
           <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
             <span className="text-[10px] uppercase tracking-[0.4em] font-medium text-white/40">Immanuel</span>
           </div>
-          <h1 className="text-6xl md:text-8xl font-extralight tracking-tighter leading-[0.9]">
+          <h1 className="text-5xl sm:text-6xl md:text-8xl font-extralight tracking-tighter leading-[0.9]">
             WITH<br />US
           </h1>
           <p className="text-[11px] uppercase tracking-[0.5em] text-white/20 font-medium">하나님이 우리와 함께하십니다</p>
