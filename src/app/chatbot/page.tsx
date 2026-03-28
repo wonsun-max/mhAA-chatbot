@@ -13,7 +13,7 @@ export default function ChatbotPage() {
 
     useEffect(() => {
         if (status === "unauthenticated") {
-            router.push("/login")
+            router.push("/login?callbackUrl=/chatbot")
         }
     }, [status, router])
 

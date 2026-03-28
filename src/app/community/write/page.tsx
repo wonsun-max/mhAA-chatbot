@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Loader2, Image as ImageIcon, Send, ArrowLeft, Eye as EyeIcon, Edit3, X, Bold, Italic, List, ListOrdered, Quote } from "lucide-react"
+import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
 
@@ -14,12 +15,19 @@ import Image from '@tiptap/extension-image'
 import Placeholder from '@tiptap/extension-placeholder'
 
 export default function WritePostPage() {
+  const { status } = useSession()
   const router = useRouter()
   const [title, setTitle] = useState("")
   const [loading, setLoading] = useState(false)
   const [isPreview, setIsPreview] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login?callbackUrl=/community/write")
+    }
+  }, [status, router])
 
   // Initialize Tiptap Editor
   const editor = useEditor({
@@ -104,7 +112,15 @@ export default function WritePostPage() {
   }
 
   // Helper for toolbar actions
-  if (!editor) return null
+  if (!editor || status === "loading") {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <Loader2 className="w-10 h-10 animate-spin text-white/20" />
+      </div>
+    )
+  }
+
+  if (status === "unauthenticated") return null
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-white/30 selection:text-white pt-24 pb-20 font-sans">
