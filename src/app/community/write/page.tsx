@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useMemo, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Loader2, Image as ImageIcon, Send, ArrowLeft, Eye as EyeIcon, Edit3, X, Trash2 } from "lucide-react"
@@ -10,6 +10,11 @@ import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import remarkBreaks from "remark-breaks"
 import rehypeRaw from "rehype-raw"
+import dynamic from 'next/dynamic'
+import "easymde/dist/easymde.min.css"
+
+// Dynamic import for SimpleMDE to avoid SSR issues
+const SimpleMDE = dynamic(() => import('react-simplemde-editor'), { ssr: false })
 
 export default function WritePostPage() {
   const router = useRouter()
@@ -20,7 +25,29 @@ export default function WritePostPage() {
   const [uploadingImage, setUploadingImage] = useState(false)
   const [uploadedImages, setUploadedImages] = useState<string[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const mdeInstanceRef = useRef<any>(null)
+
+  const mdeOptions = useMemo(() => {
+    return {
+      spellChecker: false,
+      placeholder: "자유롭게 이야기를 들려주세요...",
+      status: false,
+      autosave: {
+        enabled: true,
+        uniqueId: "community-post-draft",
+        delay: 1000,
+      },
+      toolbar: [
+        "bold", "italic", "heading", "|", 
+        "quote", "unordered-list", "ordered-list", "|", 
+        "link", "image", "|", 
+        "preview", "side-by-side", "fullscreen", "|", 
+        "guide"
+      ] as any[],
+      minHeight: "450px",
+      maxHeight: "600px",
+    }
+  }, [])
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -48,9 +75,17 @@ export default function WritePostPage() {
       // Add to uploaded images list for preview
       setUploadedImages(prev => [...prev, publicUrl])
       
-      // Senior Dev Pro: Don't clutter the editor with links anymore.
-      // We'll manage images via the gallery and append them to the content on submit.
-      // alerting the user we added it to the gallery
+      // SimpleMDE Image Insertion
+      if (mdeInstanceRef.current) {
+        const cm = mdeInstanceRef.current.codemirror;
+        const stat = mdeInstanceRef.current.getState(cm);
+        const options = mdeInstanceRef.current.options;
+        const url = publicUrl;
+        
+        // Use SimpleMDE's internal logic to insert image markdown
+        const text = `\n![image](${url})\n`;
+        cm.replaceSelection(text);
+      }
       
     } catch (error) {
       console.error("Error uploading image:", error)
@@ -69,21 +104,12 @@ export default function WritePostPage() {
     setContent(prev => prev.replace(new RegExp(`\\n?${markdownLink.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\n?`, 'g'), ''))
   }
 
-  const insertAtCursor = (textToInsert: string) => {
-    if (!textareaRef.current) return
+  const handleEditorChange = (value: string) => {
+    setContent(value)
+  }
 
-    const textarea = textareaRef.current
-    const start = textarea.selectionStart
-    const end = textarea.selectionEnd
-    
-    const newText = content.substring(0, start) + textToInsert + content.substring(end)
-    setContent(newText)
-
-    // Reset cursor position
-    setTimeout(() => {
-      textarea.selectionStart = textarea.selectionEnd = start + textToInsert.length
-      textarea.focus()
-    }, 0)
+  const getMdeInstance = (instance: any) => {
+    mdeInstanceRef.current = instance
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -239,48 +265,78 @@ export default function WritePostPage() {
               )}
             </AnimatePresence>
 
-            {/* Content Textarea or Preview */}
-            <div className="min-h-[450px]">
-              <AnimatePresence mode="wait">
-                {!isPreview ? (
-                  <motion.div
-                    key="editor"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="w-full"
-                  >
-                    <textarea
-                      ref={textareaRef}
-                      placeholder="자유롭게 이야기를 들려주세요..."
-                      value={content}
-                      onChange={(e) => setContent(e.target.value)}
-                      className="w-full min-h-[450px] bg-transparent border-none text-white/90 placeholder:text-white/20 focus:outline-none focus:ring-0 resize-none text-base md:text-lg leading-relaxed mt-4"
-                    />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="preview"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="w-full min-h-[450px] mt-4 prose prose-invert prose-p:text-white/70 prose-headings:text-white prose-img:rounded-2xl max-w-none py-4"
-                  >
-                    {content.trim() || uploadedImages.length > 0 ? (
-                      <ReactMarkdown 
-                        remarkPlugins={[remarkGfm, remarkBreaks]} 
-                        rehypePlugins={[rehypeRaw]}
-                      >
-                        {content + (uploadedImages.length > 0 ? uploadedImages.map(url => `\n\n![image](${url})`).join('') : '')}
-                      </ReactMarkdown>
-                    ) : (
-                      <div className="flex items-center justify-center min-h-[400px] text-white/20 uppercase tracking-widest text-xs">
-                        Nothing to preview
-                      </div>
-                    )}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+            {/* Content Editor */}
+            <div className="min-h-[450px] editor-container">
+              {!isPreview ? (
+                <div className="mt-4">
+                  <SimpleMDE 
+                    value={content} 
+                    onChange={handleEditorChange} 
+                    options={mdeOptions}
+                    getMdeInstance={getMdeInstance}
+                  />
+                  <style jsx global>{`
+                    .editor-container .EasyMDEContainer .editor-toolbar {
+                      background: rgba(255, 255, 255, 0.03);
+                      border: 1px solid rgba(255, 255, 255, 0.1);
+                      border-top-left-radius: 16px;
+                      border-top-right-radius: 16px;
+                      opacity: 0.8;
+                      transition: opacity 0.3s;
+                    }
+                    .editor-container .EasyMDEContainer .editor-toolbar:hover {
+                      opacity: 1;
+                    }
+                    .editor-container .EasyMDEContainer .editor-toolbar button {
+                      color: rgba(255, 255, 255, 0.6) !important;
+                    }
+                    .editor-container .EasyMDEContainer .editor-toolbar button.active,
+                    .editor-container .EasyMDEContainer .editor-toolbar button:hover {
+                      background: rgba(255, 255, 255, 0.1);
+                      color: white !important;
+                    }
+                    .editor-container .CodeMirror {
+                      background: transparent !important;
+                      color: rgba(255, 255, 255, 0.9) !important;
+                      border: 1px solid rgba(255, 255, 255, 0.1);
+                      border-top: none;
+                      border-bottom-left-radius: 16px;
+                      border-bottom-right-radius: 16px;
+                      font-family: inherit;
+                      font-size: 16px;
+                      padding: 10px;
+                    }
+                    .editor-container .CodeMirror-cursor {
+                      border-left: 2px solid white !important;
+                    }
+                    .editor-container .editor-preview-active-side {
+                      background: #000 !important;
+                      border: 1px solid rgba(255, 255, 255, 0.1);
+                    }
+                  `}</style>
+                </div>
+              ) : (
+                <motion.div
+                  key="preview"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="w-full min-h-[450px] mt-4 prose prose-invert prose-p:text-white/70 prose-headings:text-white prose-img:rounded-2xl max-w-none py-4"
+                >
+                  {content.trim() || uploadedImages.length > 0 ? (
+                    <ReactMarkdown 
+                      remarkPlugins={[remarkGfm, remarkBreaks]} 
+                      rehypePlugins={[rehypeRaw]}
+                    >
+                      {content}
+                    </ReactMarkdown>
+                  ) : (
+                    <div className="flex items-center justify-center min-h-[400px] text-white/20 uppercase tracking-widest text-xs">
+                      Nothing to preview
+                    </div>
+                  )}
+                </motion.div>
+              )}
             </div>
 
             {/* Actions */}
