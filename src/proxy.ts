@@ -29,5 +29,11 @@ export const config = {
     "/profile/:path*",
     "/chatbot/:path*",
     "/collab/:path*",
+    "/community/:path*",
+    "/admin",
+    "/profile",
+    "/chatbot",
+    "/collab",
+    "/community",
   ],
 };
