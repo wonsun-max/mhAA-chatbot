@@ -8,6 +8,7 @@ import { Loader2, ArrowLeft, MoreVertical, Trash2, Heart, Eye } from "lucide-rea
 import Link from "next/link"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
+import remarkBreaks from "remark-breaks"
 import rehypeRaw from "rehype-raw"
 
 // Note: Ensure CommentSection component exists at this path
@@ -159,7 +160,7 @@ export default function PostDetailPage() {
           {/* Body Content */}
           <div className="prose prose-invert prose-p:leading-relaxed prose-p:text-white/80 prose-headings:text-white/90 prose-a:text-blue-400 prose-img:rounded-2xl max-w-none min-h-[200px] mb-12">
             <ReactMarkdown 
-              remarkPlugins={[remarkGfm]} 
+              remarkPlugins={[remarkGfm, remarkBreaks]} 
               rehypePlugins={[rehypeRaw]}
             >
               {post.content}

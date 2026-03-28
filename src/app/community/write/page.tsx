@@ -8,6 +8,7 @@ import Link from "next/link"
 import { supabase } from "@/lib/supabase"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
+import remarkBreaks from "remark-breaks"
 import rehypeRaw from "rehype-raw"
 
 export default function WritePostPage() {
@@ -50,7 +51,10 @@ export default function WritePostPage() {
       // Insert markdown into text area at cursor position
       // Add extra newlines only if not already there to avoid excessive gaps
       const prefix = content.endsWith('\n\n') ? '' : content.endsWith('\n') ? '\n' : '\n\n';
-      insertAtCursor(`${prefix}![image](${publicUrl})\n\n`)
+      
+      // Senior Dev Pro: Use a placeholder text instead of full URL for a cleaner editor
+      // This keeps the URL in the markdown but makes it more readable
+      insertAtCursor(`${prefix}![IMAGE_INSERTED](${publicUrl})\n\n`)
       
     } catch (error) {
       console.error("Error uploading image:", error)
@@ -258,7 +262,7 @@ export default function WritePostPage() {
                   >
                     {content.trim() ? (
                       <ReactMarkdown 
-                        remarkPlugins={[remarkGfm]} 
+                        remarkPlugins={[remarkGfm, remarkBreaks]} 
                         rehypePlugins={[rehypeRaw]}
                       >
                         {content}
