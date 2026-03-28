@@ -8,6 +8,7 @@ import Link from "next/link"
 import { supabase } from "@/lib/supabase"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
+import rehypeRaw from "rehype-raw"
 
 export default function WritePostPage() {
   const router = useRouter()
@@ -47,7 +48,9 @@ export default function WritePostPage() {
       setUploadedImages(prev => [...prev, publicUrl])
 
       // Insert markdown into text area at cursor position
-      insertAtCursor(`\n![image](${publicUrl})\n`)
+      // Add extra newlines only if not already there to avoid excessive gaps
+      const prefix = content.endsWith('\n\n') ? '' : content.endsWith('\n') ? '\n' : '\n\n';
+      insertAtCursor(`${prefix}![image](${publicUrl})\n\n`)
       
     } catch (error) {
       console.error("Error uploading image:", error)
@@ -254,7 +257,10 @@ export default function WritePostPage() {
                     className="w-full min-h-[450px] mt-4 prose prose-invert prose-p:text-white/70 prose-headings:text-white prose-img:rounded-2xl max-w-none py-4"
                   >
                     {content.trim() ? (
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      <ReactMarkdown 
+                        remarkPlugins={[remarkGfm]} 
+                        rehypePlugins={[rehypeRaw]}
+                      >
                         {content}
                       </ReactMarkdown>
                     ) : (
