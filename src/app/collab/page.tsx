@@ -3,9 +3,15 @@ import { Utensils, CalendarDays, Clock, Lightbulb, BookOpen, AlertCircle, Chevro
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { getLunchPrayerByDate } from "@/lib/lunch-prayer";
+import { redirect } from "next/navigation";
 
 export default async function CollabPage() {
   const session = await getServerSession(authOptions);
+  
+  if (!session) {
+    redirect("/login?callbackUrl=/collab");
+  }
+
   const qtGroup = session?.user?.qtGroup;
   
   const today = new Date();

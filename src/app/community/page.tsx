@@ -4,6 +4,8 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { Heart, MessageSquare, Plus, Eye, Loader2, FileText } from "lucide-react"
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
 
 interface Post {
   id: string
@@ -18,6 +20,8 @@ interface Post {
 }
 
 export default function CommunityBoard() {
+  const { status } = useSession()
+  const router = useRouter()
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
   const [pagination, setPagination] = useState({
@@ -28,8 +32,26 @@ export default function CommunityBoard() {
   })
 
   useEffect(() => {
-    fetchPosts(pagination.page)
-  }, [pagination.page])
+    if (status === "unauthenticated") {
+      router.push("/login?callbackUrl=/community")
+    }
+  }, [status, router])
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      fetchPosts(pagination.page)
+    }
+  }, [pagination.page, status])
+
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <Loader2 className="w-10 h-10 animate-spin text-white/20" />
+      </div>
+    )
+  }
+
+  if (status === "unauthenticated") return null
 
   const fetchPosts = async (page: number) => {
     setLoading(true)
