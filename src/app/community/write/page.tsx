@@ -21,6 +21,7 @@ export default function WritePostPage() {
   const [loading, setLoading] = useState(false)
   const [isPreview, setIsPreview] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
+  const [isEditorEmpty, setIsEditorEmpty] = useState(true)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -42,6 +43,9 @@ export default function WritePostPage() {
         placeholder: '당신의 이야기를 들려주세요...',
       }),
     ],
+    onUpdate: ({ editor }) => {
+      setIsEditorEmpty(editor.isEmpty)
+    },
     content: '',
     editorProps: {
       attributes: {
@@ -84,7 +88,7 @@ export default function WritePostPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!title.trim() || !editor || editor.isEmpty) return
+    if (!title.trim() || !editor || isEditorEmpty) return
 
     setLoading(true)
     try {
@@ -234,7 +238,7 @@ export default function WritePostPage() {
               </div>
               <button
                 type="submit"
-                disabled={loading || !title.trim() || editor.isEmpty}
+                disabled={loading || !title.trim() || isEditorEmpty}
                 className="group relative flex items-center gap-3 bg-white text-black px-12 py-4 rounded-full font-bold transition-all hover:scale-[1.03] active:scale-[0.98] disabled:opacity-20 disabled:hover:scale-100 overflow-hidden shadow-[0_0_30px_rgba(255,255,255,0.1)] active:shadow-none"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
