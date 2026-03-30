@@ -25,7 +25,7 @@ A dedicated spiritual community platform and mission hub for the Chaplaincy Depa
 3.  Configure the following Environment Variables in Vercel:
     *   `DATABASE_URL`: Your PostgreSQL connection string.
     *   `NEXTAUTH_SECRET`: A secure random string for authentication.
-    *   `NEXTAUTH_URL`: Your production domain (e.g., `https://your-app.vercel.app`).
+    *   `NEXTAUTH_URL`: Your production domain (e.g., `https://mhawithus.shop`).
     *   `OPENAI_API_KEY`: Your OpenAI API key.
     *   `EMAIL_USER`: Your Gmail address for verification codes.
     *   `EMAIL_PASS`: Your Gmail App Password.

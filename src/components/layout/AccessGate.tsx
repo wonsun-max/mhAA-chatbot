@@ -15,7 +15,7 @@ export function AccessGate({
     title = "접근 권한이 필요합니다",
     description = "이 섹션의 지능형 기능을 이용하시려면 로그인이 필요합니다.",
     loginUrl = "/login",
-    externalUrl = "https://mhawebsitess.vercel.app/auth/signup"
+    externalUrl = "https://mhawithus.shop/signup"
 }: AccessGateProps) {
     return (
         <motion.div 

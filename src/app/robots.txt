@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://withus-mha.vercel.app/sitemap.xml
