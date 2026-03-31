@@ -12,6 +12,20 @@ const config: Config = {
         sans: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
         serif: ['var(--font-cormorant)', 'Georgia', 'serif'],
       },
+      keyframes: {
+        'spin-slow': {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' },
+        },
+        'bounce-subtle': {
+          '0%, 100%': { transform: 'translateY(0)', animationTimingFunction: 'cubic-bezier(0.8,0,1,1)' },
+          '50%': { transform: 'translateY(-10%)', animationTimingFunction: 'cubic-bezier(0,0,0.2,1)' },
+        },
+      },
+      animation: {
+        'spin-slow': 'spin-slow 8s linear infinite',
+        'bounce-subtle': 'bounce-subtle 2s infinite',
+      },
       colors: {
         navy: {
           900: '#0A1929', // Deep Midnight Navy (Background)

@@ -7,7 +7,149 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ============ Enums ============
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  passwordHash String?
+  name         String?
+  grade        String?
+  role         UserRole   @default(STUDENT)
+  status       UserStatus @default(PENDING)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  nickname     String?    @unique
+  qtGroup      String?
+  chatLogs     ChatLog[]
+
+  @@index([email])
+  @@index([status])
+}
+
+model VerificationCode {
+  id        String   @id @default(cuid())
+  email     String
+  code      String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  verified  Boolean  @default(false)
+
+  @@index([email])
+  @@index([code])
+}
+
+model ChatLog {
+  id        String   @id @default(cuid())
+  userId    String
+  query     String
+  response  String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Notice {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  category  String
+  isVisible Boolean  @default(true)
+  authorId  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isPinned  Boolean  @default(false)
+
+  @@index([createdAt])
+  @@index([category])
+  @@index([isPinned])
+}
+
+model SchoolMeal {
+  id        String   @id @default(cuid())
+  date      String
+  menu      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  dayOfWeek String
+
+  @@index([date])
+}
+
+model SchoolCalendar {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  endDate   String
+  eventType String
+  name      String
+  startDate String
+
+  @@index([startDate])
+  @@index([eventType])
+}
+
+model Timetable {
+  id        String   @id @default(cuid())
+  grade     String
+  dayOfWeek String
+  period    String
+  time      String
+  subject   String
+  teacher   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([grade])
+  @@index([grade, dayOfWeek])
+}
+
+model Post {
+  id             String     @id @default(cuid())
+  title          String
+  content        String
+  authorId       String
+  authorNickname String?
+  viewCount      Int        @default(0)
+  isDeleted      Boolean    @default(false)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  comments       Comment[]
+  likes          PostLike[]
+
+  @@index([createdAt])
+  @@index([authorId])
+}
+
+model Comment {
+  id             String    @id @default(cuid())
+  content        String
+  postId         String
+  authorId       String
+  authorNickname String?
+  parentId       String?
+  isDeleted      Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  parent         Comment?  @relation("CommentToComment", fields: [parentId], references: [id], onDelete: Restrict)
+  replies        Comment[] @relation("CommentToComment")
+  post           Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@index([parentId])
+  @@index([createdAt])
+}
+
+model PostLike {
+  id        String   @id @default(cuid())
+  postId    String
+  userId    String
+  createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+  @@index([postId])
+}
 
 enum UserRole {
   STUDENT
@@ -19,173 +161,4 @@ enum UserStatus {
   PENDING
   APPROVED
   SUSPENDED
-}
-
-// ============ Models ============
-
-model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  nickname      String?   @unique // Added nickname field
-  passwordHash  String?   // bcrypt hash
-
-  name          String?
-  grade         String?   // "7", "8", ..., "12-1", "12-2"
-  qtGroup       String?   // "1", "2", ..., "8"
-  
-  role          UserRole  @default(STUDENT)
-  status        UserStatus @default(PENDING)
-
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  chatLogs      ChatLog[]
-
-  @@index([email])
-  @@index([status])
-}
-
-// verification code (6 digits, 10 min TTL)
-model VerificationCode {
-  id         String   @id @default(cuid())
-  email      String
-  code       String   // 6자리 숫자
-  expiresAt  DateTime
-  createdAt  DateTime @default(now())
-  verified   Boolean  @default(false)
-
-  @@index([email])
-  @@index([code])
-}
-
-// Chat logs for the WITHUS chatbot
-model ChatLog {
-  id             String   @id @default(cuid())
-  userId         String
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  query          String   @db.Text
-  response       String   @db.Text
-  createdAt      DateTime @default(now())
-
-  @@index([userId])
-  @@index([createdAt])
-}
-
-// Announcements / notices from the chaplaincy department (updated)
-model Notice {
-  id          String   @id @default(cuid())
-  title       String
-  content     String   @db.Text
-  category    String   // "Notice", "Mission", "Event", etc.
-  isVisible   Boolean  @default(true)
-  isPinned    Boolean  @default(false)
-  
-  authorId    String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@index([createdAt])
-  @@index([category])
-  @@index([isPinned])
-}
-
-// ============ Collab (콜라보) Models ============
-
-// 급식 정보 (School Meals)
-model SchoolMeal {
-  id          String   @id @default(cuid())
-  date        String   // 예: "2026-03-09"
-  dayOfWeek   String   // 예: "월요일"
-  menu        String   @db.Text
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@index([date])
-}
-
-// 학사 일정 (School Calendar)
-model SchoolCalendar {
-  id          String   @id @default(cuid())
-  name        String   // 일정 제목 (Name)
-  startDate   String   // 시작 날짜 (Start_Date)
-  endDate     String   // 종료 날짜 (End_Date)
-  eventType   String   // 이벤트 종류 (Event_Type: Holiday, Events 등)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@index([startDate])
-  @@index([eventType])
-}
-
-
-// 시간표 (Timetable)
-model Timetable {
-  id          String   @id @default(cuid())
-  grade       String   // 학년/반 (Grade, 예: "12-2")
-  dayOfWeek   String   // 요일 (Day of week, 예: "MON", "TUE")
-  period      String   // 교시 (Period, 예: "1", "0-1")
-  time        String   // 시간 (Time, 예: "08:00-09:15")
-  subject     String   // 과목 (Subject, 예: "ENGLISH")
-  teacher     String   // 교사 (Teacher, 예: "임종현/김연수")
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@index([grade])
-  @@index([grade, dayOfWeek])
-}
-
-// ============ Community (DC Inside style) Models ============
-
-model Post {
-  id              String      @id @default(cuid())
-  title           String
-  content         String      @db.Text
-  authorId        String      // user ID
-  authorNickname  String?     // Cached nickname for anon display
-  viewCount       Int         @default(0)
-  isDeleted       Boolean     @default(false)
-  
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-
-  comments        Comment[]
-  likes           PostLike[]
-
-  @@index([createdAt])
-  @@index([authorId])
-}
-
-model Comment {
-  id              String      @id @default(cuid())
-  content         String      @db.Text
-  postId          String
-  post            Post        @relation(fields: [postId], references: [id], onDelete: Cascade)
-  authorId        String      // user ID
-  authorNickname  String?     // Cached nickname for anon display
-  parentId        String?     // For nested comments (sub-comments)
-  parent          Comment?    @relation("CommentToComment", fields: [parentId], references: [id], onDelete: Restrict)
-  replies         Comment[]   @relation("CommentToComment")
-  isDeleted       Boolean     @default(false)
-
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-
-  @@index([postId])
-  @@index([parentId])
-  @@index([createdAt])
-}
-
-model PostLike {
-  id        String   @id @default(cuid())
-  postId    String
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  userId    String
-  
-  createdAt DateTime @default(now())
-
-  @@unique([postId, userId])
-  @@index([postId])
 }
