@@ -64,7 +64,7 @@ export function Navbar() {
                                 transition={{ type: "spring", stiffness: 400, damping: 20 }}
                             >
                                 <div className="flex flex-col items-center">
-                                    <span className="text-xl md:text-2xl font-light text-white leading-none tracking-[0.3em] uppercase group-hover:text-white/90">
+                                    <span className="text-xl md:text-2xl font-light text-white leading-none tracking-[0.3em] uppercase group-hover:text-white/90 april-fools-logo">
                                         WITHUS
                                     </span>
                                     <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-white/40 to-transparent mt-1" />

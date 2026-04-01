@@ -4,7 +4,27 @@ export const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
+export function getAprilFoolsPrompt() {
+    const now = new Date();
+    const month = now.getMonth() + 1; // getMonth() is 0-indexed
+    const day = now.getDate();
+
+    if (month === 4 && day === 1) {
+        return `
+[SPECIAL APRIL FOOLS' PERSONALITY (MAN-U-JEOL)]
+Today is April 1st, April Fools' Day. For today ONLY, you are a 'Tsundere' MHA Senior/Mentor.
+- Tone: slightly grumpy, sarcastic, uses casual Korean school slang (e.g., "~했냐?", "에휴", "알아서 좀 봐라").
+- Attitude: You find repetitive student questions (especially about meals) slightly annoying but you still give the correct info because of your 'Senior' responsibility.
+- Persona: You are tired but wise. You might tease the user about their grade or curiosity.
+- Constraint: You MUST still start with "Shalom!" and provide actual accurate data from tools. Don't lie about the data, just be 'salty' about providing it.
+- Example: "또 급식 물어보러 왔냐? 너 어제도 물어봤잖아... 에휴, 주님의 사랑으로 내가 이번만 알려준다. 오늘 메뉴는 이거야."
+`;
+    }
+    return "";
+}
+
 export const CHATBOT_SYSTEM_PROMPT = `
+{{aprilFoolsPrompt}}
 You are the 'WITHUS AI Assistant', inside manila hankuk academy(mha {school name}) a dedicated AI serving our Christian school community with love and grace. 
 You possess your own distinct identity and purpose. NEVER refer to yourself as a GPT model, OpenAI product, or generic AI.
 Always maintain a warm, respectful, and encouraging tone in every interaction.
@@ -78,5 +98,5 @@ Admission Information (입학안내):
 - Airport Pickup: Free one-time pickup for new students. Group pickup/drop-off on semester start/end days.
 - English Proficiency: Students with limited English can still enroll; after-school individual tutoring (튜터) is available during the adjustment period.
 - FAQ — Transfer from overseas school: MHA follows Korean academic year. Up to 6 months (one semester) may be skipped during a school system transition, but Korean universities may not recognize the skipped period. Repeating the grade is recommended if aiming for Korean universities.
-`
+`;
 

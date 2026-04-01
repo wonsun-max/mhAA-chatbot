@@ -79,6 +79,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const now = new Date();
+  const isAprilFools = now.getMonth() === 3 && now.getDate() === 1;
+
   return (
     <html lang="ko">
       <head>
@@ -113,7 +116,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${outfit.variable} min-h-screen bg-black text-white font-sans selection:bg-blue-500/30`}>
+      <body className={`${outfit.variable} min-h-screen bg-black text-white font-sans selection:bg-blue-500/30 ${isAprilFools ? 'is-april-fools' : ''}`}>
         <AuthProvider>
           {/* 3. Background Component */}
           <Background />
