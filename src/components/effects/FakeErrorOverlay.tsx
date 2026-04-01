@@ -33,25 +33,25 @@ export default function FakeErrorOverlay({ onDismiss }: { onDismiss: () => void 
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="fixed inset-0 z-[9999] bg-[#f8f9fa] text-black font-sans p-8 md:p-20 flex flex-col select-none"
+      className="fixed inset-0 z-[9999] bg-[#f8f9fa] text-black font-sans p-6 md:p-20 flex flex-col select-none overflow-y-auto pb-[env(safe-area-inset-bottom,24px)]"
     >
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-3xl mx-auto w-full pb-20">
         <div className="flex items-center gap-4 mb-8">
-          <div className="p-3 bg-red-50 rounded-full">
-            <AlertCircle className="text-red-500 w-10 h-10" />
+          <div className="p-3 bg-red-50 rounded-full shrink-0">
+            <AlertCircle className="text-red-500 w-8 h-8 md:w-10 md:h-10" />
           </div>
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900 italic">Aw, Snap!</h1>
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 italic">Aw, Snap!</h1>
         </div>
 
-        <div className="space-y-8 text-xl text-gray-600 leading-relaxed font-light">
+        <div className="space-y-6 md:space-y-8 text-lg md:text-xl text-gray-600 leading-relaxed font-light">
           <p>
             마닐라한국아카데미 WITHUS 플랫폼에 예상치 못한 <span className="font-bold text-red-600">치명적인 오류(0x401)</span>가 발생했습니다. 
             중력 엔진의 과부하로 인해 모든 UI 요소가 균형을 잃었습니다.
           </p>
 
-          <div className="p-8 bg-gray-50 rounded-2xl font-mono text-sm text-gray-400 border border-gray-100 shadow-inner">
-            <p className="mb-2 uppercase tracking-widest text-[10px] text-gray-300">System Diagnostic Log</p>
-            <p className="mb-1">Error: ANTIGRAVITY_SYSTEM_COLLAPSE</p>
+          <div className="p-6 md:p-8 bg-gray-50 rounded-2xl font-mono text-[11px] md:text-sm text-gray-400 border border-gray-100 shadow-inner overflow-x-hidden">
+            <p className="mb-2 uppercase tracking-widest text-[9px] text-gray-300">System Diagnostic Log</p>
+            <p className="mb-1 text-wrap break-all">Error: ANTIGRAVITY_SYSTEM_COLLAPSE</p>
             <p className="mb-1">Reason: TOO_MUCH_FLOAT_PRESSURE</p>
             <p className="mb-1">Timestamp: 2026-04-01 10:23:05</p>
             <p>Status: UI_LEAKING_TO_SPACE...</p>
@@ -62,10 +62,10 @@ export default function FakeErrorOverlay({ onDismiss }: { onDismiss: () => void 
           </p>
         </div>
 
-        <div className="mt-16 flex flex-col md:flex-row items-center gap-8">
+        <div className="mt-10 md:mt-16 flex flex-col md:flex-row items-center gap-8">
            <button 
              onClick={onDismiss}
-             className="w-full md:w-auto px-10 py-5 bg-gray-900 text-white rounded-2xl font-bold hover:scale-105 active:scale-95 transition-all shadow-2xl flex items-center justify-center gap-3"
+             className="w-full md:w-auto px-10 py-5 bg-gray-900 text-white rounded-2xl font-bold hover:scale-105 active:scale-95 transition-all shadow-2xl flex items-center justify-center gap-3 shrink-0"
            >
              <RefreshCcw className="w-5 h-5" />
              무중력 엔진 재부팅
@@ -74,7 +74,7 @@ export default function FakeErrorOverlay({ onDismiss }: { onDismiss: () => void 
            <motion.p 
              initial={{ opacity: 0, y: 10 }}
              animate={{ opacity: isRevealed ? 1 : 0, y: isRevealed ? 0 : 10 }}
-             className="text-sm font-medium text-blue-500 tracking-tight text-center md:text-left"
+             className="text-xs md:text-sm font-medium text-blue-600 tracking-tight text-center md:text-left leading-snug"
            >
              🎉 HAPPY APRIL FOOLS! 🎉 <br/>
              <span className="text-gray-400 font-normal">공부가 너무 힘들 땐 잠시 떠다녀도 괜찮아요.</span>
