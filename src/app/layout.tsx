@@ -7,7 +7,6 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { PromotionModal } from "@/components/modals/PromotionModal";
 import { CommunityPromotionModal } from "@/components/modals/CommunityPromotionModal";
-import AntigravityEffect from "@/components/effects/AntigravityEffect";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GoogleAnalytics } from "@next/third-parties/google";
@@ -80,8 +79,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const now = new Date();
-  const isAprilFools = now.getMonth() === 3 && now.getDate() === 1;
 
   return (
     <html lang="ko">
@@ -117,9 +114,8 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${outfit.variable} min-h-screen bg-black text-white font-sans selection:bg-blue-500/30 ${isAprilFools ? 'is-april-fools' : ''}`}>
+      <body className={`${outfit.variable} min-h-screen bg-black text-white font-sans selection:bg-blue-500/30`}>
         <AuthProvider>
-          <AntigravityEffect />
           {/* 3. Background Component */}
           <Background />
 

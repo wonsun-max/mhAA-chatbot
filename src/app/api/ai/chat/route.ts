@@ -3,7 +3,7 @@ import { openai } from "@ai-sdk/openai";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { CHATBOT_SYSTEM_PROMPT, getAprilFoolsPrompt } from "@/lib/openai";
+import { CHATBOT_SYSTEM_PROMPT } from "@/lib/openai";
 import { aiTools } from "@/lib/ai/tools";
 import { getDailyContent } from "@/lib/daily-content";
 import { getMealOrder } from "@/lib/meal-utils";
@@ -98,7 +98,6 @@ ${lunchPrayerSchedule.map(s => {
 `;
 
         const systemPrompt = CHATBOT_SYSTEM_PROMPT
-            .replace("{{aprilFoolsPrompt}}", getAprilFoolsPrompt())
             .replace("{{currentTime}}", currentTime)
             .replace("{{displayName}}", displayName)
             .replace("{{userGrade}}", userGradeText)
