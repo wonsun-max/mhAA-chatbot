@@ -128,10 +128,15 @@ export function NoticeManager() {
                 {showModal && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowModal(false)} className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
-                        <motion.div initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }} className="relative w-full max-w-xl bg-zinc-900 border border-white/10 rounded-[40px] p-10 shadow-2xl">
-                            <button onClick={() => setShowModal(false)} className="absolute top-8 right-8 text-zinc-500 hover:text-white"><X size={20} /></button>
-                            <h3 className="text-2xl font-light mb-8">{editingNotice ? "공지사항 수정" : "새 공지사항"}</h3>
-                            <form onSubmit={handleSubmit} className="space-y-6">
+                        <motion.div 
+                            initial={{ scale: 0.95, opacity: 0, y: 20 }} 
+                            animate={{ scale: 1, opacity: 1, y: 0 }} 
+                            exit={{ scale: 0.95, opacity: 0, y: 20 }} 
+                            className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto bg-zinc-900 border border-white/10 rounded-[30px] md:rounded-[40px] p-6 md:p-10 shadow-2xl no-scrollbar"
+                        >
+                            <button onClick={() => setShowModal(false)} className="absolute top-6 right-6 md:top-8 md:right-8 text-zinc-500 hover:text-white"><X size={20} /></button>
+                            <h3 className="text-xl md:text-2xl font-light mb-6 md:mb-8">{editingNotice ? "공지사항 수정" : "새 공지사항"}</h3>
+                            <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
                                 <div className="space-y-4">
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-1">

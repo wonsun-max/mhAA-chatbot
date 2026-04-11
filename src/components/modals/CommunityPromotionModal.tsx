@@ -82,13 +82,13 @@ export function CommunityPromotionModal() {
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.95, opacity: 0, y: 10 }}
                         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                        className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-white/10 bg-zinc-900/40 p-1 shadow-2xl backdrop-blur-2xl"
+                        className="relative w-full max-w-lg max-h-[calc(100vh-2rem)] overflow-y-auto rounded-3xl border border-white/10 bg-zinc-900/40 p-1 shadow-2xl backdrop-blur-2xl no-scrollbar"
                     >
                         {/* Interactive AI-like Background Glows */}
                         <div className="absolute -top-32 -right-32 h-64 w-64 rounded-full bg-cyan-500/20 blur-[80px] pointer-events-none animate-pulse" />
                         <div className="absolute -bottom-32 -left-32 h-64 w-64 rounded-full bg-purple-500/20 blur-[80px] pointer-events-none animate-pulse" />
 
-                        <div className="relative z-10 bg-zinc-900/60 rounded-[22px] p-8 md:p-10 space-y-8">
+                        <div className="relative z-10 bg-zinc-900/60 rounded-[22px] p-6 md:p-10 space-y-6 md:space-y-8">
                             {/* Close Button */}
                             <button
                                 onClick={closeBase}
@@ -108,7 +108,7 @@ export function CommunityPromotionModal() {
                                     <Sparkles size={14} className="animate-spin-slow" />
                                     Community Insight
                                 </motion.div>
-                                <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white leading-tight">
+                                <h2 className="text-2xl md:text-4xl font-bold tracking-tight text-white leading-tight">
                                     우리의 일상을 더 깊게,<br/>
                                     <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
                                         "withus Community"

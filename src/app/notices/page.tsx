@@ -276,7 +276,7 @@ export default function NoticesPage() {
                             initial={{ scale: 0.95, opacity: 0, y: 20 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.95, opacity: 0, y: 20 }}
-                            className="relative w-full max-w-xl bg-zinc-900 border border-white/10 rounded-3xl shadow-2xl overflow-hidden p-8 md:p-10"
+                            className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto bg-zinc-900 border border-white/10 rounded-3xl shadow-2xl p-6 md:p-10 no-scrollbar"
                         >
                             <button
                                 onClick={() => setShowAddModal(false)}
