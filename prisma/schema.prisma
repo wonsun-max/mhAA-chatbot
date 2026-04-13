@@ -162,3 +162,20 @@ enum UserStatus {
   APPROVED
   SUSPENDED
 }
+
+model ExamSchedule {
+  id        String   @id @default(cuid())
+  examType  String   // MIDTERM / FINALS
+  semester  String   // 1 / 2
+  year      Int
+  date      String   
+  dayOfWeek String   
+  period    Int
+  time      String   
+  subject   String
+  grades    String[] 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([examType, year, semester])
+}

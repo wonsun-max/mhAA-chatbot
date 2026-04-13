@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Utensils, CalendarDays, Clock, Lightbulb, BookOpen, AlertCircle, ChevronRight } from "lucide-react";
+import { Utensils, CalendarDays, Clock, Lightbulb, BookOpen, AlertCircle, ChevronRight, Pencil } from "lucide-react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { getLunchPrayerByDate } from "@/lib/lunch-prayer";
@@ -142,6 +142,29 @@ export default async function CollabPage() {
                 </p>
               </div>
               <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/20 group-hover:text-amber-400 group-hover:border-amber-500/30 transition-all">
+                <ChevronRight size={20} />
+              </div>
+            </div>
+          </div>
+        </Link>
+
+        {/* Exam Schedule Card */}
+        <Link href="/collab/exams" className="group">
+          <div className="h-full bg-zinc-900/30 backdrop-blur-sm rounded-[2.5rem] p-8 border border-white/5 hover:border-rose-500/30 transition-all duration-500 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 blur-[50px] rounded-full group-hover:bg-rose-500/10 transition-colors" />
+            
+            <div className="w-14 h-14 rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500">
+              <Pencil className="w-7 h-7 text-rose-400" />
+            </div>
+            
+            <div className="flex justify-between items-end">
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-2">시험 일정</h3>
+                <p className="text-zinc-500 font-medium text-sm leading-relaxed max-w-[240px]">
+                  중간/기말고사 시간표를 확인하고 시험 기간을 완벽하게 대비하세요.
+                </p>
+              </div>
+              <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/20 group-hover:text-rose-400 group-hover:border-rose-500/30 transition-all">
                 <ChevronRight size={20} />
               </div>
             </div>

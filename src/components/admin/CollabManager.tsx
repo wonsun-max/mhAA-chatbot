@@ -5,7 +5,7 @@ import { motion } from "framer-motion"
 import { Loader2, Plus, Trash2, Calendar, Clock, Utensils, BookOpen } from "lucide-react"
 
 // Types
-type CollabTab = "meals" | "calendar" | "timetable"
+type CollabTab = "meals" | "calendar" | "timetable" | "exams"
 
 export function CollabManager() {
     const [subTab, setSubTab] = useState<CollabTab>("meals")
@@ -21,7 +21,7 @@ export function CollabManager() {
 
             {/* Sub-navigation for Collab categories */}
             <div className="flex gap-2 p-1 bg-white/5 rounded-xl border border-white/10 w-fit">
-                {(["meals", "calendar", "timetable"] as CollabTab[]).map((tab) => (
+                {(["meals", "calendar", "timetable", "exams"] as CollabTab[]).map((tab) => (
                     <button
                         key={tab}
                         onClick={() => setSubTab(tab)}
@@ -33,6 +33,7 @@ export function CollabManager() {
                         {tab === "meals" && <span className="flex items-center gap-2"><Utensils size={16} /> 급식</span>}
                         {tab === "calendar" && <span className="flex items-center gap-2"><Calendar size={16} /> 학사 일정</span>}
                         {tab === "timetable" && <span className="flex items-center gap-2"><Clock size={16} /> 시간표</span>}
+                        {tab === "exams" && <span className="flex items-center gap-2"><BookOpen size={16} /> 시험 일정</span>}
                     </button>
                 ))}
             </div>
@@ -48,6 +49,7 @@ export function CollabManager() {
                 {subTab === "meals" && <MealsAdmin />}
                 {subTab === "calendar" && <CalendarAdmin />}
                 {subTab === "timetable" && <TimetableAdmin />}
+                {subTab === "exams" && <ExamsAdmin />}
             </motion.div>
         </div>
     )
@@ -628,3 +630,272 @@ function TimetableAdmin() {
         </div>
     )
 }
+
+// ==========================================
+// 4. Exams Admin Component
+// ==========================================
+function ExamsAdmin() {
+    const [exams, setExams] = useState<any[]>([])
+    const [loading, setLoading] = useState(true)
+    const [isAdding, setIsAdding] = useState(false)
+    const [formData, setFormData] = useState({
+        examType: "MIDTERM",
+        semester: "1",
+        year: "2026",
+        date: "",
+        dayOfWeek: "",
+        period: "",
+        time: "",
+        subject: "",
+        grades: "" // Comma separated: "7, 8, 9"
+    })
+
+    useEffect(() => {
+        fetchExams()
+    }, [])
+
+    const fetchExams = async () => {
+        setLoading(true)
+        try {
+            const res = await fetch("/api/admin/collab/exams")
+            const data = await res.json()
+            if (data.exams) setExams(data.exams)
+        } catch (error) {
+            console.error(error)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleAdd = async (e: React.FormEvent) => {
+        e.preventDefault()
+        try {
+            const res = await fetch("/api/admin/collab/exams", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
+            })
+            if (res.ok) {
+                // Keep year/semester/date/day for repetitive entry
+                setFormData(prev => ({ ...prev, period: "", time: "", subject: "" }))
+                setIsAdding(false)
+                fetchExams()
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    const handleDelete = async (id: string) => {
+        if (!confirm("정말 이 시험 정보를 삭제하시겠습니까?")) return
+        try {
+            const res = await fetch(`/api/admin/collab/exams?id=${id}`, { method: "DELETE" })
+            if (res.ok) fetchExams()
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    return (
+        <div className="p-8 space-y-6">
+            <div className="flex items-center justify-between">
+                <h3 className="text-lg font-bold">시험 일정 관리</h3>
+                <button
+                    onClick={() => setIsAdding(!isAdding)}
+                    className="px-4 py-2 bg-rose-500/10 text-rose-500 hover:bg-rose-500/20 rounded-xl text-sm font-bold transition-all flex items-center gap-2"
+                >
+                    <Plus size={16} />
+                    {isAdding ? "취소" : "새 시험 추가"}
+                </button>
+            </div>
+
+            {isAdding && (
+                <motion.form
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    onSubmit={handleAdd}
+                    className="bg-zinc-900/50 p-6 rounded-2xl border border-white/5 space-y-4"
+                >
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-zinc-500 ml-1 uppercase">Exam Type</label>
+                            <select
+                                required
+                                value={formData.examType}
+                                onChange={(e) => setFormData({ ...formData, examType: e.target.value })}
+                                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 transition-colors text-white"
+                            >
+                                <option value="MIDTERM">중간고사 (MIDTERM)</option>
+                                <option value="FINALS">기말고사 (FINALS)</option>
+                            </select>
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-zinc-500 ml-1 uppercase">Semester</label>
+                            <select
+                                required
+                                value={formData.semester}
+                                onChange={(e) => setFormData({ ...formData, semester: e.target.value })}
+                                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 transition-colors text-white"
+                            >
+                                <option value="1">1학기</option>
+                                <option value="2">2학기</option>
+                            </select>
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-zinc-500 ml-1 uppercase">Year</label>
+                            <input
+                                type="number"
+                                required
+                                value={formData.year}
+                                onChange={(e) => setFormData({ ...formData, year: e.target.value })}
+                                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 transition-colors"
+                            />
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-zinc-500 ml-1 uppercase">Date</label>
+                            <input
+                                type="text"
+                                placeholder="예: 4/24"
+                                required
+                                value={formData.date}
+                                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 transition-colors"
+                            />
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-zinc-500 ml-1 uppercase">Day</label>
+                            <input
+                                type="text"
+                                placeholder="예: 금요일 (Fri.)"
+                                required
+                                value={formData.dayOfWeek}
+                                onChange={(e) => setFormData({ ...formData, dayOfWeek: e.target.value })}
+                                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 transition-colors"
+                            />
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-zinc-500 ml-1 uppercase">Period</label>
+                            <input
+                                type="number"
+                                placeholder="예: 1"
+                                required
+                                value={formData.period}
+                                onChange={(e) => setFormData({ ...formData, period: e.target.value })}
+                                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 transition-colors"
+                            />
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-zinc-500 ml-1 uppercase">Time Range</label>
+                            <input
+                                type="text"
+                                placeholder="예: 08:30 - 09:15"
+                                required
+                                value={formData.time}
+                                onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 transition-colors"
+                            />
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-zinc-500 ml-1 uppercase">Subject</label>
+                            <input
+                                type="text"
+                                placeholder="예: 국어과"
+                                required
+                                value={formData.subject}
+                                onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 transition-colors"
+                            />
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-zinc-500 ml-1 uppercase">Target Grades (Comma separated)</label>
+                            <input
+                                type="text"
+                                placeholder="예: 7, 8, 9 (전학년일 경우 All)"
+                                required
+                                value={formData.grades}
+                                onChange={(e) => setFormData({ ...formData, grades: e.target.value })}
+                                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 transition-colors"
+                            />
+                        </div>
+                    </div>
+                    <div className="flex items-center justify-between pt-2">
+                        <p className="text-[11px] text-zinc-500">💡 팁: '전학년' 대상일 경우 학년 칸에 'All'을 입력하세요.</p>
+                        <button type="submit" className="px-6 py-2 bg-rose-500 hover:bg-rose-600 text-white rounded-xl text-sm font-bold transition-all">
+                            저장하기
+                        </button>
+                    </div>
+                </motion.form>
+            )}
+
+            {loading ? (
+                <div className="flex justify-center py-12">
+                    <Loader2 className="w-6 h-6 animate-spin text-zinc-500" />
+                </div>
+            ) : exams.length === 0 ? (
+                <div className="text-center py-12 text-zinc-500 border border-dashed border-white/10 rounded-2xl bg-white/5">
+                    등록된 시험 일정이 없습니다.
+                </div>
+            ) : (
+                <div className="border border-white/5 rounded-2xl overflow-hidden overflow-x-auto">
+                    <table className="w-full text-sm text-left min-w-[800px]">
+                        <thead className="bg-white/5 text-zinc-400 font-medium">
+                            <tr>
+                                <th className="px-4 py-4">유형/학기</th>
+                                <th className="px-4 py-4">날짜</th>
+                                <th className="px-4 py-4">교시</th>
+                                <th className="px-4 py-4">시간</th>
+                                <th className="px-4 py-4">과목</th>
+                                <th className="px-4 py-4">학년</th>
+                                <th className="px-4 py-4 text-right">관리</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                            {exams.map((exam) => (
+                                <tr key={exam.id} className="hover:bg-white/5 transition-colors">
+                                    <td className="px-4 py-4">
+                                        <div className="flex flex-col">
+                                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded w-fit mb-1 ${
+                                                exam.examType === 'MIDTERM' ? 'bg-amber-500/10 text-amber-500' : 'bg-rose-500/10 text-rose-500'
+                                            }`}>
+                                                {exam.examType}
+                                            </span>
+                                            <span className="text-xs text-zinc-500">{exam.year}-{exam.semester}</span>
+                                        </div>
+                                    </td>
+                                    <td className="px-4 py-4">
+                                        <div className="flex flex-col">
+                                            <span className="font-bold text-zinc-200">{exam.date}</span>
+                                            <span className="text-xs text-zinc-500">{exam.dayOfWeek}</span>
+                                        </div>
+                                    </td>
+                                    <td className="px-4 py-4 font-mono text-zinc-400">{exam.period}교시</td>
+                                    <td className="px-4 py-4 font-mono text-zinc-400">{exam.time}</td>
+                                    <td className="px-4 py-4 text-zinc-300 font-medium">{exam.subject}</td>
+                                    <td className="px-4 py-4">
+                                        <div className="flex flex-wrap gap-1">
+                                            {exam.grades.map((g: string) => (
+                                                <span key={g} className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[10px] text-zinc-400">
+                                                    {g}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </td>
+                                    <td className="px-4 py-4 text-right">
+                                        <button
+                                            onClick={() => handleDelete(exam.id)}
+                                            className="p-2 text-zinc-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
+                                            title="삭제"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+        </div>
+    )
+}
+
