@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, type CSSProperties, type ComponentPropsWithoutRef, type ReactNode } from "react"
+import { useState, type ComponentPropsWithoutRef, type ReactNode } from "react"
 import { Copy, Check } from "lucide-react"
 import Image from "next/image"
 import ReactMarkdown, { type Components } from "react-markdown"
@@ -22,7 +22,7 @@ type MarkdownCodeProps = ComponentPropsWithoutRef<"code"> & {
 export function ChatMessage({ role, content }: ChatMessageProps) {
     const isAssistant = role === "assistant"
     const markdownComponents: Components = {
-        code({ className, children, style: _style, ...props }: MarkdownCodeProps) {
+        code({ className, children, ...props }: MarkdownCodeProps) {
             const match = /language-(\w+)/.exec(className || "");
 
             return match ? (
@@ -32,7 +32,8 @@ export function ChatMessage({ role, content }: ChatMessageProps) {
                         <CopyButton text={String(children).replace(/\n$/, "")} />
                     </div>
                     <SyntaxHighlighter
-                        style={vscDarkPlus as unknown as { [key: string]: CSSProperties }}
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        style={vscDarkPlus as any}
                         language={match[1]}
                         PreTag="div"
                         customStyle={{

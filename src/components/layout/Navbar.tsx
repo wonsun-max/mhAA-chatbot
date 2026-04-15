@@ -82,7 +82,7 @@ export function Navbar() {
 
                         {session ? (
                             <div className="hidden lg:flex items-center space-x-6">
-                                {session.user && (session.user as { role?: string }).role === "ADMIN" && (
+                                {session.user && session.user.role === "ADMIN" && (
                                     <Link
                                         href="/admin"
                                         className="p-2 text-white/40 hover:text-white transition-colors"
@@ -91,7 +91,7 @@ export function Navbar() {
                                         <LayoutDashboard size={18} />
                                     </Link>
                                 )}
-                                {session.user && (session.user as { role?: string }).role === "ADMIN" && (
+                                {session.user && session.user.role === "ADMIN" && (
                                     <div className="h-4 w-[1px] bg-white/10" />
                                 )}
                                 <div className="flex items-center space-x-3 group cursor-pointer">

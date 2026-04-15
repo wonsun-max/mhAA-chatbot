@@ -11,6 +11,10 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "필수 정보를 모두 입력해야 합니다." }, { status: 400 });
         }
 
+        if (password.length < 6) {
+            return NextResponse.json({ error: "비밀번호는 최소 6자 이상이어야 합니다." }, { status: 400 });
+        }
+
         // Additional validation for students
         if (role === "STUDENT" && (!grade || !qtGroup)) {
             return NextResponse.json({ error: "학생은 학년과 QT조를 입력해야 합니다." }, { status: 400 });

@@ -20,14 +20,10 @@ export async function GET(
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
 
-    // Increment view count
-    await prisma.post.update({
+    // Increment view count and fetch post in a single atomic operation
+    const post = await prisma.post.update({
       where: { id },
       data: { viewCount: { increment: 1 } },
-    });
-
-    const post = await prisma.post.findUnique({
-      where: { id },
       include: {
         _count: {
           select: { likes: true },

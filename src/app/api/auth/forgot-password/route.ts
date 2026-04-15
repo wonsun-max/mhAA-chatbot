@@ -21,8 +21,8 @@ export async function POST(request: Request) {
         });
 
         if (!user || user.status !== "APPROVED") {
-            // Return a generic message to avoid user enumeration
-            return NextResponse.json({ error: "해당 이메일로 등록된 활성 계정이 없습니다." }, { status: 404 });
+            // Return a generic success message to prevent user enumeration
+            return NextResponse.json({ message: "비밀번호 재설정 코드가 전송되었습니다." });
         }
 
         // Generate 6-digit code

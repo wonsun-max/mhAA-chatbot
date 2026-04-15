@@ -28,7 +28,9 @@ export function ChatInterface() {
         return () => window.removeEventListener('resize', handleResize)
     }, [])
 
-    const transport = new DefaultChatTransport({ api: "/api/ai/chat" }) as unknown as NonNullable<Parameters<typeof useChat>[0]>["transport"];
+    // Cast to any to handle internal type mismatches between @ai-sdk/react and ai packages
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const transport = new DefaultChatTransport({ api: "/api/ai/chat" }) as any;
 
     const { messages, sendMessage, status } = useChat({
         transport,
