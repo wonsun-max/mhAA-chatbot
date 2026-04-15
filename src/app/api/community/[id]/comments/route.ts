@@ -15,8 +15,9 @@ export async function POST(
 
     const { id: postId } = await params;
     const { content, parentId } = await req.json();
+    const safeContent = typeof content === "string" ? content.trim() : "";
 
-    if (!content) {
+    if (!safeContent) {
       return NextResponse.json(
         { error: "Content is required" },
         { status: 400 }
@@ -38,11 +39,11 @@ export async function POST(
 
     const newComment = await prisma.comment.create({
       data: {
-        content,
+        content: safeContent,
         postId,
         parentId: parentId || null,
         authorId: session.user.id,
-        authorNickname: (session.user as any).nickname || session.user.name || "Anonymous",
+        authorNickname: session.user.nickname || session.user.name || "Anonymous",
       },
     });
 

@@ -25,7 +25,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Invalid comment for this post" }, { status: 400 });
     }
 
-    const userRole = (session as any).user?.role;
+    const userRole = session.user.role;
     // Check if owner or ADMIN
     if (comment.authorId !== session.user.id && userRole !== "ADMIN") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });

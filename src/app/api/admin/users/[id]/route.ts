@@ -10,7 +10,7 @@ export async function POST(
     try {
         const session = await getServerSession(authOptions);
 
-        if (!session || (session.user as any).role !== "ADMIN") {
+        if (session?.user?.role !== "ADMIN") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
@@ -41,7 +41,7 @@ export async function DELETE(
     try {
         const session = await getServerSession(authOptions);
 
-        if (!session || (session.user as any).role !== "ADMIN") {
+        if (session?.user?.role !== "ADMIN") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 

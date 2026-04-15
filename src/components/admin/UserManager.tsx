@@ -2,10 +2,18 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { User, Check, X, Loader2, Search } from "lucide-react"
+import { User, Check, X, Loader2 } from "lucide-react"
+
+interface PendingUser {
+    id: string
+    name: string | null
+    nickname: string | null
+    email: string
+    grade: string | null
+}
 
 export function UserManager() {
-    const [users, setUsers] = useState<any[]>([])
+    const [users, setUsers] = useState<PendingUser[]>([])
     const [loading, setLoading] = useState(true)
     const [filter, setFilter] = useState("PENDING") // PENDING, APPROVED
 

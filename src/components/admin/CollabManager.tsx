@@ -1,11 +1,49 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { motion } from "framer-motion"
 import { Loader2, Plus, Trash2, Calendar, Clock, Utensils, BookOpen } from "lucide-react"
 
 // Types
 type CollabTab = "meals" | "calendar" | "timetable" | "exams"
+
+interface MealRecord {
+    id: string
+    date: string
+    dayOfWeek: string
+    menu: string
+}
+
+interface CalendarEventRecord {
+    id: string
+    name: string
+    startDate: string
+    endDate: string
+    eventType: string
+}
+
+interface TimetableRecord {
+    id: string
+    grade: string
+    dayOfWeek: string
+    period: string
+    time: string
+    subject: string
+    teacher: string
+}
+
+interface ExamRecord {
+    id: string
+    examType: string
+    semester: string
+    year: number
+    date: string
+    dayOfWeek: string
+    period: number
+    time: string
+    subject: string
+    grades: string[]
+}
 
 export function CollabManager() {
     const [subTab, setSubTab] = useState<CollabTab>("meals")
@@ -59,7 +97,7 @@ export function CollabManager() {
 // 1. Meals Admin Component
 // ==========================================
 function MealsAdmin() {
-    const [meals, setMeals] = useState<any[]>([])
+    const [meals, setMeals] = useState<MealRecord[]>([])
     const [loading, setLoading] = useState(true)
     const [isAdding, setIsAdding] = useState(false)
     const [formData, setFormData] = useState({ date: "", dayOfWeek: "", menu: "" })
@@ -229,7 +267,7 @@ function MealsAdmin() {
 // 2. Calendar Admin Component
 // ==========================================
 function CalendarAdmin() {
-    const [events, setEvents] = useState<any[]>([])
+    const [events, setEvents] = useState<CalendarEventRecord[]>([])
     const [loading, setLoading] = useState(true)
     const [isAdding, setIsAdding] = useState(false)
     const [formData, setFormData] = useState({ name: "", startDate: "", endDate: "", eventType: "Event" })
@@ -412,7 +450,7 @@ function CalendarAdmin() {
 // 3. Timetable Admin Component
 // ==========================================
 function TimetableAdmin() {
-    const [timetables, setTimetables] = useState<any[]>([])
+    const [timetables, setTimetables] = useState<TimetableRecord[]>([])
     const [loading, setLoading] = useState(true)
     const [isAdding, setIsAdding] = useState(false)
     const [filterGrade, setFilterGrade] = useState("")
@@ -420,11 +458,7 @@ function TimetableAdmin() {
         grade: "", dayOfWeek: "MON", period: "", time: "", subject: "", teacher: ""
     })
 
-    useEffect(() => {
-        fetchTimetables()
-    }, [filterGrade]) // refetch when filter changes
-
-    const fetchTimetables = async () => {
+    const fetchTimetables = useCallback(async () => {
         setLoading(true)
         try {
             const url = filterGrade
@@ -439,7 +473,11 @@ function TimetableAdmin() {
         } finally {
             setLoading(false)
         }
-    }
+    }, [filterGrade])
+
+    useEffect(() => {
+        fetchTimetables()
+    }, [fetchTimetables])
 
     const handleAdd = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -573,7 +611,7 @@ function TimetableAdmin() {
                         </div>
                     </div>
                     <div className="flex items-center justify-between pt-2">
-                        <p className="text-[11px] text-zinc-500">💡 팁: '학년/반' 이름이 사용자의 정보와 일치해야 해당 학생에게 보입니다.</p>
+                        <p className="text-[11px] text-zinc-500">💡 팁: &apos;학년/반&apos; 이름이 사용자의 정보와 일치해야 해당 학생에게 보입니다.</p>
                         <button type="submit" className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-bold transition-all">
                             저장하기
                         </button>
@@ -635,7 +673,7 @@ function TimetableAdmin() {
 // 4. Exams Admin Component
 // ==========================================
 function ExamsAdmin() {
-    const [exams, setExams] = useState<any[]>([])
+    const [exams, setExams] = useState<ExamRecord[]>([])
     const [loading, setLoading] = useState(true)
     const [isAdding, setIsAdding] = useState(false)
     const [formData, setFormData] = useState({
@@ -819,7 +857,7 @@ function ExamsAdmin() {
                         </div>
                     </div>
                     <div className="flex items-center justify-between pt-2">
-                        <p className="text-[11px] text-zinc-500">💡 팁: '전학년' 대상일 경우 학년 칸에 'All'을 입력하세요.</p>
+                        <p className="text-[11px] text-zinc-500">💡 팁: &apos;전학년&apos; 대상일 경우 학년 칸에 &apos;All&apos;을 입력하세요.</p>
                         <button type="submit" className="px-6 py-2 bg-rose-500 hover:bg-rose-600 text-white rounded-xl text-sm font-bold transition-all">
                             저장하기
                         </button>
@@ -898,4 +936,3 @@ function ExamsAdmin() {
         </div>
     )
 }
-

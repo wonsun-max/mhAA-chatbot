@@ -1,16 +1,19 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { 
   Clock, Pencil, BookOpen, Calendar, 
-  ChevronRight, LayoutGrid, List, Info, 
+  LayoutGrid, List, Info, 
   GraduationCap, Calculator, Globe, Languages, 
   Microscope, Sparkles, Search, Home, ArrowLeft,
   Loader2
 } from "lucide-react";
 import Link from "next/link";
+import type { Session } from "next-auth";
+import { getAcademicSemester, getAcademicYear } from "@/lib/academic-calendar";
+import { matchesExamGrade, simplifyGradeLabel } from "@/lib/exam-grade";
 
 /**
  * Interface for a specific exam subject per period.
@@ -38,6 +41,21 @@ interface ExamDay {
   day: string;
   periods: ExamPeriod[];
 }
+
+interface ExamScheduleEntry {
+  id: string;
+  examType: string;
+  semester: string;
+  year: number;
+  date: string;
+  dayOfWeek: string;
+  period: number;
+  time: string;
+  subject: string;
+  grades: string[];
+}
+
+type SessionUser = Session["user"];
 
 const GRADES = ["7", "8", "9", "10", "11", "12"];
 
@@ -77,20 +95,18 @@ export default function ExamSchedulePage() {
   const [activeExam, setActiveExam] = useState<"midterm" | "finals">("midterm");
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [currentTime, setCurrentTime] = useState(new Date());
+  const currentAcademicYear = getAcademicYear();
+  const currentAcademicSemester = getAcademicSemester();
   
   // Real database states
-  const [rawExams, setRawExams] = useState<any[]>([]);
+  const [rawExams, setRawExams] = useState<ExamScheduleEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    fetchExams();
-  }, [activeExam]);
-
-  const fetchExams = async () => {
+  const fetchExams = useCallback(async () => {
     setIsLoading(true);
     try {
       const type = activeExam === "midterm" ? "MIDTERM" : "FINALS";
-      const res = await fetch(`/api/collab/exams?type=${type}&year=2026&semester=1`);
+      const res = await fetch(`/api/collab/exams?type=${type}`);
       const data = await res.json();
       if (data.exams) setRawExams(data.exams);
     } catch (error) {
@@ -98,7 +114,11 @@ export default function ExamSchedulePage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [activeExam]);
+
+  useEffect(() => {
+    fetchExams();
+  }, [fetchExams]);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
@@ -106,15 +126,9 @@ export default function ExamSchedulePage() {
   }, []);
 
   useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 60000);
-    return () => clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    if (session?.user && (session.user as any).grade) {
-      const grade = (session.user as any).grade;
-      // Handle cases like "12-1" or "12-2" by taking the prefix
-      const simpleGrade = grade.split("-")[0];
+    const sessionUser: SessionUser | undefined = session?.user;
+    if (sessionUser?.grade) {
+      const simpleGrade = simplifyGradeLabel(sessionUser.grade);
       if (GRADES.includes(simpleGrade)) {
         setSelectedGrade(simpleGrade);
       }
@@ -131,7 +145,7 @@ export default function ExamSchedulePage() {
     // 1. Group by Date to create ExamDay[] structure
     const daysMap = new Map<string, ExamDay>();
     
-    rawExams.forEach(entry => {
+    rawExams.forEach((entry) => {
       if (!daysMap.has(entry.date)) {
         daysMap.set(entry.date, {
           id: entry.date,
@@ -162,7 +176,7 @@ export default function ExamSchedulePage() {
       periods: day.periods.map(period => {
         // Find subject for this grade or "All"
         const specificSubject = period.subjects.find(s => 
-          s.grade.includes("All") || s.grade.includes(selectedGrade)
+          matchesExamGrade(selectedGrade, s.grade)
         );
 
         if (specificSubject) {
@@ -187,8 +201,17 @@ export default function ExamSchedulePage() {
    */
   const isCurrentPeriod = (dateStr: string, timeRange: string) => {
     const today = new Date();
-    const [month, day] = dateStr.split("/").map(Number);
-    if (today.getMonth() + 1 !== month || today.getDate() !== day) return false;
+    const normalizedDate = dateStr.includes("-")
+      ? new Date(dateStr)
+      : new Date(today.getFullYear(), Number(dateStr.split("/")[0]) - 1, Number(dateStr.split("/")[1]));
+
+    if (
+      today.getFullYear() !== normalizedDate.getFullYear() ||
+      today.getMonth() !== normalizedDate.getMonth() ||
+      today.getDate() !== normalizedDate.getDate()
+    ) {
+      return false;
+    }
 
     const [start, end] = timeRange.split(" - ");
     const [sH, sM] = start.split(":").map(Number);
@@ -248,7 +271,7 @@ export default function ExamSchedulePage() {
               <span className="text-rose-500">{activeExam === "midterm" ? "중간고사" : "기말고사"}</span> 일정
             </h1>
             <p className="text-zinc-500 max-w-xl font-medium">
-              2026학년도 1학기 시험 시간표입니다.<br />
+              {currentAcademicYear}학년도 {currentAcademicSemester}학기 시험 시간표입니다.<br />
               완벽한 준비로 최고의 결과를 만들어보세요.
             </p>
           </motion.div>

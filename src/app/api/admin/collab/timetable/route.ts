@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
+import type { Prisma } from "@prisma/client"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 
@@ -7,7 +8,7 @@ import { prisma } from "@/lib/prisma"
 export async function POST(req: Request) {
     const session = await getServerSession(authOptions)
 
-    if (!session || (session.user as any).role !== "ADMIN") {
+    if (session?.user?.role !== "ADMIN") {
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
     }
 
@@ -40,24 +41,21 @@ export async function POST(req: Request) {
 export async function GET(req: Request) {
     const session = await getServerSession(authOptions)
 
-    if (!session) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    if (session?.user?.role !== "ADMIN") {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
     }
 
     try {
         const { searchParams } = new URL(req.url)
         const gradeFilter = searchParams.get("grade")
         
-        let queryOptions: any = {
+        const queryOptions: Prisma.TimetableFindManyArgs = {
+            where: gradeFilter ? { grade: gradeFilter } : undefined,
             orderBy: [
                 { grade: 'asc' },
                 { dayOfWeek: 'asc' },
                 { period: 'asc' }
             ]
-        }
-        
-        if (gradeFilter) {
-             queryOptions.where = { grade: gradeFilter }
         }
 
         const timetables = await prisma.timetable.findMany(queryOptions)
@@ -73,7 +71,7 @@ export async function GET(req: Request) {
 export async function DELETE(req: Request) {
     const session = await getServerSession(authOptions)
 
-    if (!session || (session.user as any).role !== "ADMIN") {
+    if (session?.user?.role !== "ADMIN") {
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
     }
 

@@ -4,12 +4,13 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useSession } from "next-auth/react";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { 
-  Clock, User, BookOpen, Calendar, MapPin, 
+  Clock, User, BookOpen, 
   ChevronRight, LayoutGrid, List, Info, 
   GraduationCap, Calculator, Globe, Languages, 
-  Pencil, Microscope, Music, Palette, Trophy, 
+  Microscope, Music, Palette, Trophy, 
   CircleDot, Sparkles, Search
 } from "lucide-react";
+import type { Session } from "next-auth";
 
 interface TimetableEntry {
   id: string;
@@ -20,6 +21,8 @@ interface TimetableEntry {
   subject: string;
   teacher: string;
 }
+
+type SessionUser = Session["user"];
 
 const DAYS = [
   { key: "MON", label: "월요일" },
@@ -69,8 +72,10 @@ export default function TimetablePage() {
   useEffect(() => {
     if (status === "loading") return;
 
-    if (session?.user && (session.user as any).grade) {
-      setSelectedGrade((session.user as any).grade);
+    const sessionUser: SessionUser | undefined = session?.user;
+
+    if (sessionUser?.grade) {
+      setSelectedGrade(sessionUser.grade);
     } else {
       setSelectedGrade("7");
     }
@@ -82,7 +87,7 @@ export default function TimetablePage() {
       
       setLoading(true);
       try {
-        const res = await fetch(`/api/admin/collab/timetable?grade=${encodeURIComponent(selectedGrade)}`);
+        const res = await fetch(`/api/collab/timetable?grade=${encodeURIComponent(selectedGrade)}`);
         const data = await res.json();
         if (data.timetables) {
           setTimetable(data.timetables);
@@ -157,7 +162,7 @@ export default function TimetablePage() {
   const dailyEntries = useMemo(() => {
     return timetable
       .filter(item => item.dayOfWeek === activeTab)
-      .sort((a, b) => a.period.localeCompare(b.period));
+      .sort((a, b) => Number(a.period) - Number(b.period));
   }, [timetable, activeTab]);
 
   if (loading && timetable.length === 0) {

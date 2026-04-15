@@ -1,7 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
-
 export default function Background() {
     return (
         <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">

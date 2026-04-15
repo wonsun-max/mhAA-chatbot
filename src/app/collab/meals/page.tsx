@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Calendar, Utensils, ChevronRight, Clock, Info, Sparkles } from "lucide-react";
 
-import { GROUP_1, GROUP_2, getMealOrder } from "@/lib/meal-utils";
+import { getMealOrder } from "@/lib/meal-utils";
 
 interface Meal {
   id: string;

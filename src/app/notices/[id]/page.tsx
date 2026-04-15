@@ -2,9 +2,8 @@
 
 import { useState, useEffect, use } from "react"
 import Link from "next/link"
-import { ArrowLeft, Calendar, Bell, Loader2, Sparkles, User, Tag } from "lucide-react"
+import { ArrowLeft, Calendar, Loader2, Sparkles } from "lucide-react"
 import { motion } from "framer-motion"
-import { Navbar } from "@/components/layout/Navbar"
 
 interface Notice {
     id: string

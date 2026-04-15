@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { ChevronRight, Bell, Calendar, Search, Filter, ArrowLeft, Plus, Trash2, X, Loader2 } from "lucide-react"
+import { ChevronRight, Bell, Search, Plus, Trash2, X, Loader2 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useSession } from "next-auth/react"
 
@@ -18,7 +18,7 @@ interface Notice {
 
 export default function NoticesPage() {
     const { data: session } = useSession()
-    const isAdmin = (session?.user as any)?.role === "ADMIN"
+    const isAdmin = session?.user?.role === "ADMIN"
 
     const [notices, setNotices] = useState<Notice[]>([])
     const [loading, setLoading] = useState(true)

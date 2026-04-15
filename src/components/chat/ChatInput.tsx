@@ -1,8 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { ArrowUp, ShieldCheck, Lock } from "lucide-react"
-import Link from "next/link"
+import { ArrowUp } from "lucide-react"
 import { motion } from "framer-motion"
 
 interface ChatInputProps {

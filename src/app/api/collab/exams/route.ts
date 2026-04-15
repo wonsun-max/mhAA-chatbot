@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { getAcademicSemester, getAcademicYear } from "@/lib/academic-calendar"
 
 /**
  * Handle GET: Fetch exam schedule for students
@@ -8,13 +9,13 @@ import { prisma } from "@/lib/prisma"
 export async function GET(req: Request) {
     try {
         const { searchParams } = new URL(req.url)
-        const year = searchParams.get("year") || "2026"
-        const semester = searchParams.get("semester") || "1"
+        const year = Number(searchParams.get("year") || getAcademicYear())
+        const semester = searchParams.get("semester") || getAcademicSemester()
         const type = searchParams.get("type") || "MIDTERM"
 
-        const exams = await prisma.examSchedule.findMany({
+        let exams = await prisma.examSchedule.findMany({
             where: {
-                year: Number(year),
+                year,
                 semester: String(semester),
                 examType: String(type),
             },
@@ -23,6 +24,33 @@ export async function GET(req: Request) {
                 { period: 'asc' }
             ]
         })
+
+        if (exams.length === 0 && !searchParams.get("year")) {
+            const latestCycle = await prisma.examSchedule.findFirst({
+                where: { examType: String(type) },
+                select: { year: true, semester: true },
+                orderBy: [
+                    { year: "desc" },
+                    { semester: "desc" },
+                    { date: "desc" },
+                    { period: "desc" },
+                ],
+            })
+
+            if (latestCycle) {
+                exams = await prisma.examSchedule.findMany({
+                    where: {
+                        year: latestCycle.year,
+                        semester: latestCycle.semester,
+                        examType: String(type),
+                    },
+                    orderBy: [
+                        { date: "asc" },
+                        { period: "asc" },
+                    ],
+                })
+            }
+        }
 
         return NextResponse.json({ exams })
     } catch (error) {

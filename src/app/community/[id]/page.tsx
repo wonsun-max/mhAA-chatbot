@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { motion } from "framer-motion"
@@ -14,18 +14,40 @@ import rehypeRaw from "rehype-raw"
 // Note: Ensure CommentSection component exists at this path
 import { CommentSection } from "@/components/community/CommentSection" 
 
+interface PostDetail {
+  id: string
+  title: string
+  content: string
+  authorId: string
+  authorNickname: string | null
+  createdAt: string
+  viewCount: number
+  comments: Array<{
+    id: string
+    content: string
+    authorId: string
+    authorNickname: string | null
+    parentId: string | null
+    createdAt: string
+    isDeleted: boolean
+  }>
+  _count: {
+    likes: number
+  }
+}
+
 export default function PostDetailPage() {
   const { id } = useParams()
   const router = useRouter()
   const { data: session } = useSession()
   
-  const [post, setPost] = useState<any>(null)
+  const [post, setPost] = useState<PostDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [liked, setLiked] = useState(false) // You could fetch actual user state if your API returns `hasLiked` boolean
   const [likeCount, setLikeCount] = useState(0)
   const [menuOpen, setMenuOpen] = useState(false)
 
-  const fetchPost = async () => {
+  const fetchPost = useCallback(async () => {
     try {
       const res = await fetch(`/api/community/${id}`)
       if (res.ok) {
@@ -41,11 +63,11 @@ export default function PostDetailPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [id, router])
 
   useEffect(() => {
     if (id) fetchPost()
-  }, [id])
+  }, [fetchPost, id])
 
   const handleLike = async () => {
     if (!session) return alert("로그인이 필요합니다.")
@@ -63,7 +85,7 @@ export default function PostDetailPage() {
       const data = await res.json()
       setLiked(data.liked)
       setLikeCount(data.count)
-    } catch (error) {
+    } catch {
       // Rollback
       setLiked(prevLiked)
       setLikeCount(prevCount)
@@ -95,7 +117,7 @@ export default function PostDetailPage() {
 
   if (!post) return null
 
-  const canDelete = session?.user?.id === post.authorId || (session?.user as any)?.role === "ADMIN"
+  const canDelete = session?.user?.id === post.authorId || session?.user?.role === "ADMIN"
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-white/30 pt-24 pb-32">
@@ -187,7 +209,7 @@ export default function PostDetailPage() {
           postAuthorId={post.authorId}
           comments={post.comments || []} 
           currentUserId={session?.user?.id}
-          currentUserRole={(session?.user as any)?.role}
+          currentUserRole={session?.user?.role}
           onCommentAdded={fetchPost} 
         />
 

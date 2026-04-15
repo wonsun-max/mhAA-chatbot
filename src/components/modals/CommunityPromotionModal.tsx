@@ -13,14 +13,12 @@ import Link from "next/link";
 export function CommunityPromotionModal() {
     const { status } = useSession();
     const [isOpen, setIsOpen] = useState(false);
-    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        setMounted(true);
         // Don't show if unauthenticated
-        if (status !== "authenticated") return;
+        if (status !== "authenticated" || typeof window === "undefined") return;
 
-        const hideUntil = typeof window !== "undefined" ? localStorage.getItem("mha-community-promo-hide-until") : null;
+        const hideUntil = localStorage.getItem("mha-community-promo-hide-until");
         
         // Show after 2 seconds if not hidden
         if (!hideUntil || Date.now() > parseInt(hideUntil)) {
@@ -37,7 +35,7 @@ export function CommunityPromotionModal() {
         setIsOpen(false);
     };
 
-    if (!mounted || status !== "authenticated") return null;
+    if (status !== "authenticated") return null;
 
     const features = [
         {
@@ -111,7 +109,7 @@ export function CommunityPromotionModal() {
                                 <h2 className="text-2xl md:text-4xl font-bold tracking-tight text-white leading-tight">
                                     우리의 일상을 더 깊게,<br/>
                                     <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-                                        "withus Community"
+                                        &ldquo;withus Community&rdquo;
                                     </span>
                                 </h2>
                             </div>

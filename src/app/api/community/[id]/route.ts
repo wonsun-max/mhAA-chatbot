@@ -82,7 +82,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
 
-    const userRole = (session as any).user?.role;
+    const userRole = session.user.role;
     // Check if owner or ADMIN
     if (post.authorId !== session.user.id && userRole !== "ADMIN") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });

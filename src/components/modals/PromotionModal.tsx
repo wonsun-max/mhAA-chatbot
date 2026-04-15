@@ -13,17 +13,17 @@ import Link from "next/link";
 export function PromotionModal() {
     const { status } = useSession();
     const [isOpen, setIsOpen] = useState(false);
-    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        setMounted(true);
-        const hideUntil = typeof window !== "undefined" ? localStorage.getItem("mha-promo-hide-until") : null;
+        if (typeof window === "undefined") return;
+
+        const hideUntil = localStorage.getItem("mha-promo-hide-until");
         if (!hideUntil || Date.now() > parseInt(hideUntil)) {
             // Delay opening slightly for a smoother entry
             const timer = setTimeout(() => setIsOpen(true), 1000);
             return () => clearTimeout(timer);
         }
-    }, [setMounted]); // Added dependency to satisfy lint if needed, though it's static
+    }, []);
 
     const closeBase = () => setIsOpen(false);
 
@@ -33,7 +33,7 @@ export function PromotionModal() {
         setIsOpen(false);
     };
 
-    if (!mounted || status === "authenticated") return null;
+    if (status === "authenticated") return null;
 
     return (
         <AnimatePresence>

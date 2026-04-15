@@ -2,7 +2,7 @@
 
 import { useState, Suspense, useEffect } from "react"
 import { signIn, useSession } from "next-auth/react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Loader2, Lock, ChevronRight, User } from "lucide-react"
 import { motion } from "framer-motion"
@@ -12,7 +12,6 @@ function LoginContent() {
     const [password, setPassword] = useState("")
     const [error, setError] = useState("")
     const [isLoading, setIsLoading] = useState(false)
-    const router = useRouter()
     const searchParams = useSearchParams()
     const { status } = useSession()
     const message = searchParams.get("message")

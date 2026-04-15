@@ -1,4 +1,4 @@
-import { NextAuthOptions } from "next-auth";
+import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "./prisma";
 import bcrypt from "bcryptjs";
@@ -56,27 +56,28 @@ export const authOptions: NextAuthOptions = {
         async jwt({ token, user, trigger, session }) {
             if (user) {
                 token.id = user.id;
-                token.role = (user as any).role;
-                token.status = (user as any).status;
-                token.grade = (user as any).grade;
-                token.nickname = (user as any).nickname;
-                token.qtGroup = (user as any).qtGroup;
+                token.role = user.role;
+                token.status = user.status;
+                token.grade = user.grade;
+                token.nickname = user.nickname;
+                token.qtGroup = user.qtGroup;
             }
             // Support updating token values if needed
             if (trigger === "update") {
-                if (session?.nickname) token.nickname = session.nickname;
-                if (session?.qtGroup) token.qtGroup = session.qtGroup;
+                if (session?.nickname !== undefined) token.nickname = session.nickname;
+                if (session?.qtGroup !== undefined) token.qtGroup = session.qtGroup;
+                if (session?.grade !== undefined) token.grade = session.grade;
             }
             return token;
         },
         async session({ session, token }) {
             if (session.user) {
-                (session.user as any).id = token.id;
-                (session.user as any).role = token.role;
-                (session.user as any).status = token.status;
-                (session.user as any).grade = token.grade;
-                (session.user as any).nickname = token.nickname;
-                (session.user as any).qtGroup = token.qtGroup;
+                session.user.id = token.id;
+                session.user.role = token.role;
+                session.user.status = token.status;
+                session.user.grade = token.grade;
+                session.user.nickname = token.nickname;
+                session.user.qtGroup = token.qtGroup;
             }
             return session;
         }

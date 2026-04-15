@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Calendar as CalendarIcon, Clock, Tag, Bell, Filter, Award, Sparkles, PartyPopper, ChevronRight } from "lucide-react";
+import { Calendar as CalendarIcon, Clock, Tag, Bell, Award, Sparkles, PartyPopper, ChevronRight } from "lucide-react";
 
 interface CalendarEvent {
   id: string;

@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Loader2, Send, CornerDownRight, Trash2, Heart } from "lucide-react"
+import { Loader2, Send, CornerDownRight, Trash2 } from "lucide-react"
 
 interface CommentType {
   id: string

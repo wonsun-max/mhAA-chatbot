@@ -6,17 +6,14 @@ import { prisma } from "@/lib/prisma"
 export async function GET() {
     const session = await getServerSession(authOptions)
 
-    if (!session || (session.user as any)?.role !== "ADMIN") {
+    if (session?.user?.role !== "ADMIN") {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     try {
         const [totalUsers, pendingUsers, totalNotices] = await Promise.all([
-            // @ts-ignore
             prisma.user.count(),
-            // @ts-ignore
             prisma.user.count({ where: { status: "PENDING" } }),
-            // @ts-ignore
             prisma.notice.count()
         ])
 

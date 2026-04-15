@@ -3,6 +3,9 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+const VALID_QT_GROUPS = new Set(["1", "2", "3", "4", "5", "6", "7", "8"]);
+const VALID_GRADES = new Set(["7", "8", "9", "10", "11", "12-1", "12-2"]);
+
 export async function PATCH(req: Request) {
     try {
         const session = await getServerSession(authOptions);
@@ -13,19 +16,24 @@ export async function PATCH(req: Request) {
 
         const body = await req.json();
         const { nickname, qtGroup, grade } = body;
-        const userId = (session.user as any).id;
+        const userId = session.user.id;
 
-        const updateData: any = {};
+        const updateData: {
+            nickname?: string;
+            qtGroup?: string | null;
+            grade?: string | null;
+        } = {};
 
         if (nickname !== undefined) {
-            if (nickname.trim().length < 2) {
+            const safeNickname = typeof nickname === "string" ? nickname.trim() : "";
+            if (safeNickname.length < 2) {
                 return NextResponse.json({ error: "닉네임은 최소 2글자 이상이어야 합니다." }, { status: 400 });
             }
 
             // Check for duplicates
             const existingUser = await prisma.user.findFirst({
                 where: {
-                    nickname: nickname.trim(),
+                    nickname: safeNickname,
                     NOT: { id: userId }
                 }
             });
@@ -33,14 +41,20 @@ export async function PATCH(req: Request) {
             if (existingUser) {
                 return NextResponse.json({ error: "이미 사용 중인 닉네임입니다." }, { status: 400 });
             }
-            updateData.nickname = nickname.trim();
+            updateData.nickname = safeNickname;
         }
 
         if (qtGroup !== undefined) {
+            if (qtGroup !== null && (!VALID_QT_GROUPS.has(qtGroup))) {
+                return NextResponse.json({ error: "유효하지 않은 QT조입니다." }, { status: 400 });
+            }
             updateData.qtGroup = qtGroup;
         }
 
         if (grade !== undefined) {
+            if (grade !== null && !VALID_GRADES.has(grade)) {
+                return NextResponse.json({ error: "유효하지 않은 학년/반입니다." }, { status: 400 });
+            }
             updateData.grade = grade;
         }
 

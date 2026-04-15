@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Plus, Trash2, Edit3, Loader2, Bell, Search, X } from "lucide-react"
+import { Plus, Trash2, Edit3, Loader2, Bell, X } from "lucide-react"
 
 interface Notice {
     id: string

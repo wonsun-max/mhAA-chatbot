@@ -57,7 +57,7 @@ export default function Home() {
 
             <blockquote className="space-y-4">
               <p className="text-xl md:text-2xl font-serif italic text-white/80 leading-relaxed font-light">
-                "이스라엘아 들으라 우리 하나님 여호와는 오직 유일한 여호와이시니 너는 마음을 다하고 뜻을 다하고 힘을 다하여 네 하나님 여호와를 사랑하라."
+                &ldquo;이스라엘아 들으라 우리 하나님 여호와는 오직 유일한 여호와이시니 너는 마음을 다하고 뜻을 다하고 힘을 다하여 네 하나님 여호와를 사랑하라.&rdquo;
               </p>
               <p className="text-[10px] text-white/20 uppercase tracking-[0.4em] font-bold">신명기 6:4-5</p>
             </blockquote>

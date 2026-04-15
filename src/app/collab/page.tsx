@@ -2,7 +2,6 @@ import Link from "next/link";
 import { Utensils, CalendarDays, Clock, Lightbulb, BookOpen, AlertCircle, ChevronRight, Pencil } from "lucide-react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { getLunchPrayerByDate } from "@/lib/lunch-prayer";
 import { redirect } from "next/navigation";
 
 export default async function CollabPage() {
@@ -14,9 +13,6 @@ export default async function CollabPage() {
 
   const qtGroup = session?.user?.qtGroup;
   
-  const today = new Date();
-  const todayPrayer = getLunchPrayerByDate(today);
-
   return (
     <div className="min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
       {/* Hero Section */}

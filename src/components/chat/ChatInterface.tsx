@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useLayoutEffect, useState, useEffect } from "react"
-import { MessageSquare, Sparkles, Brain, ChevronDown, BookOpen, Languages, Utensils, Calendar } from "lucide-react"
+import { ChevronDown, BookOpen, Languages, Utensils, Calendar } from "lucide-react"
 import { ChatMessage } from "./ChatMessage"
 import { ChatInput } from "./ChatInput"
 import { motion, AnimatePresence } from "framer-motion"
@@ -28,15 +28,23 @@ export function ChatInterface() {
         return () => window.removeEventListener('resize', handleResize)
     }, [])
 
+    const transport = new DefaultChatTransport({ api: "/api/ai/chat" }) as unknown as NonNullable<Parameters<typeof useChat>[0]>["transport"];
+
     const { messages, sendMessage, status } = useChat({
-        transport: new DefaultChatTransport({ api: "/api/ai/chat" }),
-        onError: (error: any) => {
+        transport,
+        onError: (error) => {
             console.error("Chat Interaction Error:", error);
         },
         onFinish: () => {
             scrollToBottom();
         }
-    } as any) as any;
+    });
+
+    const getMessageText = (message: (typeof messages)[number]) =>
+        message.parts
+            .filter((part) => part.type === "text")
+            .map((part) => part.text)
+            .join("");
 
     const isChatLoading = status !== 'ready';
 
@@ -157,25 +165,15 @@ export function ChatInterface() {
                 ) : (
                     <div className="max-w-4xl mx-auto w-full flex flex-col">
                         <AnimatePresence mode="popLayout">
-                            {messages.map((m: any, i: number) => {
-                                let textContent = "";
-                                if (typeof m.content === 'string') {
-                                    textContent = m.content;
-                                } else if (Array.isArray(m.parts)) {
-                                    textContent = m.parts
-                                        .filter((p: any) => p.type === 'text' || p.text)
-                                        .map((p: any) => p.text)
-                                        .join("");
-                                } else if (m.parts?.[0]?.text) {
-                                    textContent = m.parts[0].text;
-                                }
+                            {messages.map((message, i) => {
+                                const textContent = getMessageText(message);
 
-                                if (!textContent && m.role !== 'user') return null;
+                                if (!textContent && message.role !== 'user') return null;
 
                                 return (
                                     <ChatMessage
-                                        key={m.id || i}
-                                        role={m.role as "user" | "assistant"}
+                                        key={message.id || i}
+                                        role={message.role as "user" | "assistant"}
                                         content={textContent}
                                     />
                                 );

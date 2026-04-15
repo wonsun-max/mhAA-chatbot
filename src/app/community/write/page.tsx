@@ -2,8 +2,8 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { motion, AnimatePresence } from "framer-motion"
-import { Loader2, Image as ImageIcon, Send, ArrowLeft, Eye as EyeIcon, Edit3, X, Bold, Italic, List, ListOrdered, Quote } from "lucide-react"
+import { motion } from "framer-motion"
+import { Loader2, Image as ImageIcon, Send, ArrowLeft, Bold, Italic, List, ListOrdered, Quote } from "lucide-react"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
@@ -19,7 +19,6 @@ export default function WritePostPage() {
   const router = useRouter()
   const [title, setTitle] = useState("")
   const [loading, setLoading] = useState(false)
-  const [isPreview, setIsPreview] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
   const [isEditorEmpty, setIsEditorEmpty] = useState(true)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -64,7 +63,7 @@ export default function WritePostPage() {
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
       const filePath = `post-images/${fileName}`
 
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from('community-images')
         .upload(filePath, file)
 

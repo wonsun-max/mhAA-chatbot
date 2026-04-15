@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
+import type { Prisma } from "@prisma/client"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 
@@ -9,7 +10,7 @@ import { prisma } from "@/lib/prisma"
 export async function POST(req: Request) {
     const session = await getServerSession(authOptions)
 
-    if (!session || (session.user as any).role !== "ADMIN") {
+    if (session?.user?.role !== "ADMIN") {
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
     }
 
@@ -47,7 +48,7 @@ export async function POST(req: Request) {
 export async function GET(req: Request) {
     const session = await getServerSession(authOptions)
 
-    if (!session || (session.user as any).role !== "ADMIN") {
+    if (session?.user?.role !== "ADMIN") {
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
     }
 
@@ -56,21 +57,18 @@ export async function GET(req: Request) {
         const year = searchParams.get("year")
         const type = searchParams.get("type")
         
-        let queryOptions: any = {
+        const filter: Prisma.ExamScheduleWhereInput = {}
+        if (year) filter.year = Number(year)
+        if (type) filter.examType = type
+
+        const queryOptions: Prisma.ExamScheduleFindManyArgs = {
+            where: Object.keys(filter).length > 0 ? filter : undefined,
             orderBy: [
                 { year: 'desc' },
                 { semester: 'desc' },
                 { date: 'asc' },
                 { period: 'asc' }
             ]
-        }
-        
-        const filter: any = {}
-        if (year) filter.year = Number(year)
-        if (type) filter.examType = type
-        
-        if (Object.keys(filter).length > 0) {
-            queryOptions.where = filter
         }
 
         const exams = await prisma.examSchedule.findMany(queryOptions)
@@ -88,7 +86,7 @@ export async function GET(req: Request) {
 export async function DELETE(req: Request) {
     const session = await getServerSession(authOptions)
 
-    if (!session || (session.user as any).role !== "ADMIN") {
+    if (session?.user?.role !== "ADMIN") {
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
     }
 

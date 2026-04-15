@@ -1,6 +1,9 @@
 import { z } from "zod";
 import { tool, zodSchema } from "ai";
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
+import { getAcademicSemester, getAcademicYear } from "@/lib/academic-calendar";
+import { matchesExamGrade } from "@/lib/exam-grade";
 
 /**
  * Normalizes a date string to YYYY-MM-DD format.
@@ -34,7 +37,7 @@ export const aiTools = {
             const start = normalizeDate(startDate);
             const end = normalizeDate(endDate);
             
-            const where: any = {};
+            const where: Prisma.SchoolCalendarWhereInput = {};
             if (start && end) {
                 where.OR = [
                     {
@@ -70,7 +73,7 @@ export const aiTools = {
             const start = normalizeDate(startDate);
             const end = normalizeDate(endDate);
 
-            const where: any = {};
+            const where: Prisma.SchoolMealWhereInput = {};
             if (d) {
                 where.date = d;
             } else if (start && end) {
@@ -94,7 +97,7 @@ export const aiTools = {
             subject: z.string().optional(),
         })),
         execute: async ({ grade, dayOfWeek, teacher, subject }) => {
-            const where: any = {};
+            const where: Prisma.TimetableWhereInput = {};
             if (grade) where.grade = grade;
 
             if (dayOfWeek) {
@@ -127,6 +130,68 @@ export const aiTools = {
                     // Match if query is inside db name or vice versa (fuzzy)
                     return dbSub.includes(querySub) || querySub.includes(dbSub);
                 });
+            }
+
+            return records;
+        },
+    }),
+    getExamSchedules: tool({
+        description: "Fetch detailed exam schedules (Midterms/Finals). Supports grade, year, semester, and exam type filters, including multi-grade labels like 12-1, 12-2, 11-12, or All.",
+        inputSchema: zodSchema(z.object({
+            grade: z.string().optional().describe("Grade to filter for, e.g., '12', '12-1', or '12th grade'"),
+            year: z.number().optional().describe("Academic year, e.g., 2026"),
+            semester: z.string().optional().describe("Semester, '1' or '2'"),
+            examType: z.enum(["MIDTERM", "FINALS"]).optional(),
+        })),
+        execute: async ({ grade, year, semester, examType }) => {
+            const where: Prisma.ExamScheduleWhereInput = {};
+            const academicYear = year ?? getAcademicYear();
+            const academicSemester = semester ?? (year === undefined ? getAcademicSemester() : undefined);
+
+            where.year = academicYear;
+            if (academicSemester) where.semester = academicSemester;
+            if (examType) where.examType = examType;
+
+            let records = await prisma.examSchedule.findMany({
+                where,
+                orderBy: [
+                    { date: 'asc' },
+                    { period: 'asc' }
+                ]
+            });
+
+            if (records.length === 0 && year === undefined) {
+                const latestCycle = await prisma.examSchedule.findFirst({
+                    where: {
+                        ...(examType ? { examType } : {}),
+                        ...(semester ? { semester } : {}),
+                    },
+                    select: { year: true, semester: true },
+                    orderBy: [
+                        { year: 'desc' },
+                        { semester: 'desc' },
+                        { date: 'desc' },
+                        { period: 'desc' }
+                    ]
+                });
+
+                if (latestCycle) {
+                    records = await prisma.examSchedule.findMany({
+                        where: {
+                            year: latestCycle.year,
+                            semester: semester ?? latestCycle.semester,
+                            ...(examType ? { examType } : {}),
+                        },
+                        orderBy: [
+                            { date: 'asc' },
+                            { period: 'asc' }
+                        ]
+                    });
+                }
+            }
+
+            if (grade) {
+                records = records.filter((record) => matchesExamGrade(grade, record.grades));
             }
 
             return records;

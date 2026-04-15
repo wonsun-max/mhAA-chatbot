@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { Heart, MessageSquare, Plus, Eye, Loader2, FileText } from "lucide-react"
@@ -37,23 +37,7 @@ export default function CommunityBoard() {
     }
   }, [status, router])
 
-  useEffect(() => {
-    if (status === "authenticated") {
-      fetchPosts(pagination.page)
-    }
-  }, [pagination.page, status])
-
-  if (status === "loading") {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <Loader2 className="w-10 h-10 animate-spin text-white/20" />
-      </div>
-    )
-  }
-
-  if (status === "unauthenticated") return null
-
-  const fetchPosts = async (page: number) => {
+  const fetchPosts = useCallback(async (page: number) => {
     setLoading(true)
     try {
       const res = await fetch(`/api/community?page=${page}&limit=${pagination.limit}`)
@@ -71,7 +55,23 @@ export default function CommunityBoard() {
     } finally {
       setLoading(false)
     }
+  }, [pagination.limit])
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      fetchPosts(pagination.page)
+    }
+  }, [fetchPosts, pagination.page, status])
+
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <Loader2 className="w-10 h-10 animate-spin text-white/20" />
+      </div>
+    )
   }
+
+  if (status === "unauthenticated") return null
 
   const handlePageChange = (newPage: number) => {
     if (newPage < 1 || newPage > pagination.totalPages) return

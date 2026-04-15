@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { Loader2, Users, Bell, TrendingUp, ShieldCheck } from "lucide-react"
+import { Loader2, Users, Bell, ShieldCheck, type LucideIcon } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { AdminLayout } from "@/components/admin/AdminLayout"
@@ -16,7 +16,7 @@ interface Stats {
     totalNotices: number
 }
 
-function StatCard({ label, value, icon: Icon, color }: { label: string, value: number, icon: any, color: string }) {
+function StatCard({ label, value, icon: Icon, color }: { label: string, value: number, icon: LucideIcon, color: string }) {
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -59,7 +59,7 @@ function Overview({ stats }: { stats: Stats | null }) {
                 <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 to-transparent pointer-events-none" />
                 <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
                     <div className="space-y-2 text-center md:text-left">
-                        <h3 className="text-xl font-light tracking-tight italic">"이스라엘아 들으라 우리 하나님 여호와는 오직 유일한 여호와이시니 너는 마음을 다하고 뜻을 다하고 힘을 다하여 네 하나님 여호와를 사랑하라."</h3>
+                        <h3 className="text-xl font-light tracking-tight italic">&ldquo;이스라엘아 들으라 우리 하나님 여호와는 오직 유일한 여호와이시니 너는 마음을 다하고 뜻을 다하고 힘을 다하여 네 하나님 여호와를 사랑하라.&rdquo;</h3>
                         <p className="text-xs text-white/20 uppercase tracking-[0.4em] font-bold">신명기 6:4-5</p>
                     </div>
                 </div>
@@ -76,7 +76,7 @@ export default function AdminDashboardPage() {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        if (status === "unauthenticated" || (session?.user as any)?.role !== "ADMIN") {
+        if (status === "unauthenticated" || session?.user?.role !== "ADMIN") {
             router.push("/")
         } else if (status === "authenticated") {
             fetchStats()

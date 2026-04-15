@@ -3,11 +3,11 @@
 import { useSession, signOut } from "next-auth/react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-    User, Mail, GraduationCap, Shield,
+    Mail, GraduationCap, Shield,
     ChevronLeft, LogOut, MessageSquare,
     Calendar, CheckCircle2, AlertCircle,
-    Activity, ArrowRight, Edit3, X,
-    Settings, UserCircle, Hash, Eye, Heart, FileText, Loader2
+    ArrowRight, Edit3, X,
+    UserCircle, Hash, Eye, Heart, FileText, Loader2
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -75,8 +75,8 @@ export default function ProfilePage() {
             if (fields.grade) setIsEditingGrade(false)
             
             setUpdateError(null)
-        } catch (err: any) {
-            setUpdateError(err.message)
+        } catch (err: unknown) {
+            setUpdateError(err instanceof Error ? err.message : "변경에 실패했습니다.")
         } finally {
             setIsSaving(false)
         }
@@ -122,6 +122,8 @@ export default function ProfilePage() {
     }
 
     if (!session) return null
+
+    const currentUser = session.user
 
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -206,7 +208,7 @@ export default function ProfilePage() {
                                             </div>
                                         </div>
                                         <div className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-[9px] md:text-[10px] font-bold text-blue-400 uppercase tracking-widest">
-                                            {(session.user as any)?.role || "STUDENT"}
+                                            {currentUser.role || "STUDENT"}
                                         </div>
                                     </div>
 
@@ -236,6 +238,7 @@ export default function ProfilePage() {
                                                             />
                                                             <button 
                                                                 onClick={() => handleUpdate({ nickname: newNickname })}
+                                                                disabled={isSaving}
                                                                 className="p-2 bg-blue-500 rounded-xl hover:bg-blue-600 transition-colors"
                                                             >
                                                                 <CheckCircle2 size={16} />
@@ -254,11 +257,11 @@ export default function ProfilePage() {
                                                             className="flex items-center justify-between group h-[38px]"
                                                         >
                                                             <span className="text-lg md:text-xl font-bold tracking-tight">
-                                                                {(session.user as any)?.nickname || "미지정"}
+                                                                {currentUser.nickname || "미지정"}
                                                             </span>
                                                             <button 
                                                                 onClick={() => {
-                                                                    setNewNickname((session.user as any)?.nickname || "")
+                                                                    setNewNickname(currentUser.nickname || "")
                                                                     setIsEditingNickname(true)
                                                                 }}
                                                                 className="p-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 bg-white/5 hover:bg-white/10 rounded-lg transition-all text-zinc-400 hover:text-white"
@@ -295,6 +298,7 @@ export default function ProfilePage() {
                                                             </select>
                                                             <button 
                                                                 onClick={() => handleUpdate({ grade: newGrade })}
+                                                                disabled={isSaving}
                                                                 className="p-2 bg-blue-500 rounded-xl hover:bg-blue-600 transition-colors"
                                                             >
                                                                 <CheckCircle2 size={16} />
@@ -313,11 +317,11 @@ export default function ProfilePage() {
                                                             className="flex items-center justify-between group h-[38px]"
                                                         >
                                                             <span className="text-lg md:text-xl font-bold tracking-tight">
-                                                                {(session.user as any)?.grade ? `${(session.user as any).grade}학년` : "미지정"}
+                                                                {currentUser.grade ? `${currentUser.grade}학년` : "미지정"}
                                                             </span>
                                                             <button 
                                                                 onClick={() => {
-                                                                    setNewGrade((session.user as any)?.grade || "")
+                                                                    setNewGrade(currentUser.grade || "")
                                                                     setIsEditingGrade(true)
                                                                 }}
                                                                 className="p-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 bg-white/5 hover:bg-white/10 rounded-lg transition-all text-zinc-400 hover:text-white"
@@ -354,6 +358,7 @@ export default function ProfilePage() {
                                                             </select>
                                                             <button 
                                                                 onClick={() => handleUpdate({ qtGroup: newQtGroup })}
+                                                                disabled={isSaving}
                                                                 className="p-2 bg-blue-500 rounded-xl hover:bg-blue-600 transition-colors"
                                                             >
                                                                 <CheckCircle2 size={16} />
@@ -372,11 +377,11 @@ export default function ProfilePage() {
                                                             className="flex items-center justify-between group h-[38px]"
                                                         >
                                                             <span className="text-lg md:text-xl font-bold tracking-tight">
-                                                                {(session.user as any)?.qtGroup ? `${(session.user as any).qtGroup}조` : "미지정"}
+                                                                {currentUser.qtGroup ? `${currentUser.qtGroup}조` : "미지정"}
                                                             </span>
                                                             <button 
                                                                 onClick={() => {
-                                                                    setNewQtGroup((session.user as any)?.qtGroup || "")
+                                                                    setNewQtGroup(currentUser.qtGroup || "")
                                                                     setIsEditingQtGroup(true)
                                                                 }}
                                                                 className="p-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 bg-white/5 hover:bg-white/10 rounded-lg transition-all text-zinc-400 hover:text-white"
@@ -425,7 +430,7 @@ export default function ProfilePage() {
                                     <div>
                                         <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">가입 일자</p>
                                         <p className="text-sm font-bold text-zinc-300">
-                                            {stats?.memberSince ? new Date(stats.memberSince).toLocaleDateString("ko-KR", { year: 'numeric', month: 'long', day: 'numeric' }) : "---"}
+                                            {loadingStats ? "불러오는 중..." : stats?.memberSince ? new Date(stats.memberSince).toLocaleDateString("ko-KR", { year: 'numeric', month: 'long', day: 'numeric' }) : "---"}
                                         </p>
                                     </div>
                                 </div>
@@ -436,7 +441,7 @@ export default function ProfilePage() {
                                     <div>
                                         <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">계정 상태</p>
                                         <p className="text-sm font-bold text-zinc-300">
-                                            {stats?.status === "APPROVED" ? "활동 가능" : "승인 대기 중"}
+                                            {loadingStats ? "불러오는 중..." : stats?.status === "APPROVED" ? "활동 가능" : "승인 대기 중"}
                                         </p>
                                     </div>
                                 </div>

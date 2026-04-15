@@ -1,13 +1,12 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Users, Bell, LayoutDashboard, LogOut, ChevronLeft } from "lucide-react"
+import { Users, Bell, LayoutDashboard, ChevronLeft, type LucideIcon } from "lucide-react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
 import { cn } from "../../lib/utils"
 
 interface SidebarItemProps {
-    icon: any
+    icon: LucideIcon
     label: string
     active: boolean
     onClick: () => void

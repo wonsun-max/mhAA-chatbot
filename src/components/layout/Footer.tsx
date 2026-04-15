@@ -1,6 +1,6 @@
 "use client"
 
-import { Bot, Mail, Globe, Instagram } from "lucide-react"
+import { Mail, Instagram } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"

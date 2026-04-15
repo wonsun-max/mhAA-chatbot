@@ -19,6 +19,12 @@ interface RawClientMessage {
     parts?: Array<{ type: string; text?: string }>;
 }
 
+interface SessionUserContext {
+    id: string;
+    name?: string | null;
+    grade?: string | null;
+}
+
 function convertToModelMessages(rawMessages: RawClientMessage[]): ModelMessage[] {
     return rawMessages.map((msg): ModelMessage => {
         let content: string;
@@ -64,9 +70,10 @@ export async function POST(req: Request) {
         }
 
         const messages: ModelMessage[] = convertToModelMessages(clientMessages);
+        const sessionUser = session.user as SessionUserContext;
 
-        const displayName = (session.user as any)?.name || "Member";
-        const userGradeText = (session.user as any)?.grade || "Unknown";
+        const displayName = sessionUser.name || "Member";
+        const userGradeText = sessionUser.grade || "Unknown";
 
         const currentTime = new Intl.DateTimeFormat("ko-KR", {
             timeZone: "Asia/Manila",
@@ -97,11 +104,21 @@ ${lunchPrayerSchedule.map(s => {
 }).join('\n')}
 `;
 
+        const operationalScheduleInstructions = `
+[Additional Schedule Access Rules]
+- The "Today's Meal Order" line above is authoritative for questions about 먼저 먹는 학년, 나중에 먹는 학년, lunch turn, or meal order.
+- The [점심기도 안내 및 당번표] block below is authoritative for questions about lunch prayer, duty rotation, no-meeting dates, or exam-related prayer pauses.
+- For specific exam timing questions, always call getExamSchedules before getEvents. Use school calendar events only for broad exam windows or general calendar summaries.
+- Grade-specific exam requests must match direct grades, homeroom labels (e.g., 12-1, 12-2), and multi-grade/range labels that include the requested grade.
+- When presenting exam schedules, use a Markdown table with columns: Date | Day | Period | Time | Subject | Grades.
+`;
+
         const systemPrompt = CHATBOT_SYSTEM_PROMPT
             .replace("{{currentTime}}", currentTime)
             .replace("{{displayName}}", displayName)
             .replace("{{userGrade}}", userGradeText)
             .replace("{{mealOrder}}", mealOrderText)
+            + "\n\n" + operationalScheduleInstructions
             + "\n\n" + dailyContext
             + "\n\n" + lunchPrayerContext;
 
@@ -136,10 +153,11 @@ ${lunchPrayerSchedule.map(s => {
 
         return result.toUIMessageStreamResponse();
 
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
         console.error("[ChatAPI] Processing Error:", error);
         return new Response(
-            JSON.stringify({ error: "System Error: The AI core encountered an unexpected disruption.", details: error.message }),
+            JSON.stringify({ error: "System Error: The AI core encountered an unexpected disruption.", details: errorMessage }),
             {
                 status: 500,
                 headers: { 'Content-Type': 'application/json' }

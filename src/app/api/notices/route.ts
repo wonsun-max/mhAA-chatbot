@@ -7,9 +7,10 @@ export async function GET(req: Request) {
     try {
         const { searchParams } = new URL(req.url);
         const category = searchParams.get("category");
-        const limit = searchParams.get("limit") ? parseInt(searchParams.get("limit")!) : undefined;
+        const parsedLimit = searchParams.get("limit");
+        const limit = parsedLimit ? Number.parseInt(parsedLimit, 10) : undefined;
+        const safeLimit = limit && limit > 0 ? limit : undefined;
 
-        // @ts-ignore - Prisma type issue in IDE (Verified in Production Build)
         const notices = await prisma.notice.findMany({
             where: {
                 isVisible: true,
@@ -19,11 +20,12 @@ export async function GET(req: Request) {
                 { isPinned: "desc" },
                 { createdAt: "desc" },
             ],
-            take: limit,
+            take: safeLimit,
         });
 
         return NextResponse.json(notices);
     } catch (error) {
+        console.error("Failed to fetch notices:", error);
         return NextResponse.json({ error: "Failed to fetch notices" }, { status: 500 });
     }
 }
@@ -32,29 +34,32 @@ export async function POST(req: Request) {
     try {
         const session = await getServerSession(authOptions);
 
-        if (!session || (session.user as any).role !== "ADMIN") {
+        if (session?.user?.role !== "ADMIN") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
         const { title, content, category, isPinned } = await req.json();
+        const safeTitle = typeof title === "string" ? title.trim() : "";
+        const safeContent = typeof content === "string" ? content.trim() : "";
+        const safeCategory = typeof category === "string" ? category.trim() : "";
 
-        if (!title || !content || !category) {
+        if (!safeTitle || !safeContent || !safeCategory) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
         }
 
-        // @ts-ignore - Prisma type issue in IDE (Verified in Production Build)
         const notice = await prisma.notice.create({
             data: {
-                title,
-                content,
-                category,
-                isPinned: isPinned || false,
+                title: safeTitle,
+                content: safeContent,
+                category: safeCategory,
+                isPinned: Boolean(isPinned),
                 authorId: session.user.id,
             },
         });
 
         return NextResponse.json(notice);
     } catch (error) {
+        console.error("Failed to create notice:", error);
         return NextResponse.json({ error: "Failed to create notice" }, { status: 500 });
     }
 }

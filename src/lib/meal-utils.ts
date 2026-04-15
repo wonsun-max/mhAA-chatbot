@@ -31,9 +31,6 @@ export function getMealOrder(date: Date) {
     const start = new Date(refDate);
     start.setHours(0, 0, 0, 0);
     
-    const diffTime = current.getTime() - start.getTime();
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    
     // Find the Monday of the current week to calculate week difference
     const currentMondayDiff = (day === 0 ? -6 : 1 - day);
     const currentMonday = new Date(current);

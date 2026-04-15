@@ -2,17 +2,17 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth"; // Verify path to authOptions
-import { UserRole } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "20");
+    const page = Math.max(Number.parseInt(searchParams.get("page") || "1", 10), 1);
+    const limit = Math.min(Math.max(Number.parseInt(searchParams.get("limit") || "20", 10), 1), 100);
     const authorId = searchParams.get("authorId");
     const skip = (page - 1) * limit;
 
-    const where: any = { isDeleted: false };
+    const where: Prisma.PostWhereInput = { isDeleted: false };
     if (authorId) {
       where.authorId = authorId;
     }
@@ -62,15 +62,16 @@ export async function POST(req: Request) {
     }
 
     // Only approved users can post
-    const userRole = (session as any).user?.role || "STUDENT";
-    const status = (session as any).user?.status;
+    const status = session.user.status;
     if (status && status !== "APPROVED") {
       return NextResponse.json({ error: "Access denied" }, { status: 403 });
     }
 
     const { title, content } = await req.json();
+    const safeTitle = typeof title === "string" ? title.trim() : "";
+    const safeContent = typeof content === "string" ? content.trim() : "";
 
-    if (!title || !content) {
+    if (!safeTitle || !safeContent) {
       return NextResponse.json(
         { error: "Title and content are required" },
         { status: 400 }
@@ -79,10 +80,10 @@ export async function POST(req: Request) {
 
     const newPost = await prisma.post.create({
       data: {
-        title,
-        content,
+        title: safeTitle,
+        content: safeContent,
         authorId: session.user.id,
-        authorNickname: (session.user as any).nickname || session.user.name || "Anonymous",
+        authorNickname: session.user.nickname || session.user.name || "Anonymous",
       },
     });
 

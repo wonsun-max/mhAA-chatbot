@@ -1,9 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import Image from "next/image"
 import { useSession, signOut } from "next-auth/react"
-import { Bot, LogOut, Menu, X, LayoutDashboard, Globe } from "lucide-react"
+import { LogOut, Menu, X, LayoutDashboard, Globe } from "lucide-react"
 import { useState, useEffect } from "react"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
@@ -22,7 +21,8 @@ export function Navbar() {
 
     if (pathname.startsWith("/admin")) return null
 
-    const displayName = (session?.user as any)?.nickname || (session?.user as any)?.koreanName || session?.user?.name || session?.user?.email
+    const currentUser = session?.user
+    const displayName = currentUser?.nickname || currentUser?.name || currentUser?.email
 
     const navLinks = [
         { name: "홈", href: "/" },
@@ -140,7 +140,7 @@ export function Navbar() {
                         className="lg:hidden border-t border-white/5 bg-black/98 backdrop-blur-2xl overflow-hidden"
                     >
                         <div className="px-8 pt-8 pb-12 space-y-6">
-                            {navLinks.map((link: any) => (
+                            {navLinks.map((link) => (
                                 <Link
                                     key={link.name}
                                     href={link.href}
@@ -165,7 +165,7 @@ export function Navbar() {
                                                     </div>
                                                     내 프로필
                                                 </Link>
-                                                {(session.user as any)?.role === "ADMIN" && (
+                                                {session.user?.role === "ADMIN" && (
                                                     <Link href="/admin" onClick={() => setIsOpen(false)}>
                                                         <LayoutDashboard size={20} className="text-white/60 hover:text-white" />
                                                     </Link>
