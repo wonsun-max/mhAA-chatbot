@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth"; // Verify path to authOptions
+import { postSchema } from "@/lib/validations";
+import { logger } from "@/lib/logger";
 import type { Prisma } from "@prisma/client";
 
 export async function GET(req: Request) {
@@ -46,7 +48,7 @@ export async function GET(req: Request) {
       },
     });
   } catch (error) {
-    console.error("Failed to fetch community posts:", error);
+    logger.error("Failed to fetch community posts", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }
@@ -67,21 +69,22 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Access denied" }, { status: 403 });
     }
 
-    const { title, content } = await req.json();
-    const safeTitle = typeof title === "string" ? title.trim() : "";
-    const safeContent = typeof content === "string" ? content.trim() : "";
+    const body = await req.json();
+    const result = postSchema.safeParse(body);
 
-    if (!safeTitle || !safeContent) {
+    if (!result.success) {
       return NextResponse.json(
-        { error: "Title and content are required" },
+        { error: result.error.errors[0].message },
         { status: 400 }
       );
     }
 
+    const { title, content } = result.data;
+
     const newPost = await prisma.post.create({
       data: {
-        title: safeTitle,
-        content: safeContent,
+        title,
+        content,
         authorId: session.user.id,
         authorNickname: session.user.nickname || session.user.name || "Anonymous",
       },
@@ -89,7 +92,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ post: newPost }, { status: 201 });
   } catch (error) {
-    console.error("Failed to create post:", error);
+    logger.error("Failed to create post", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }
