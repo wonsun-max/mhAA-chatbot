@@ -25,7 +25,7 @@ export default function MealsPage() {
   useEffect(() => {
     const fetchMeals = async () => {
       try {
-        const res = await fetch("/api/admin/collab/meals");
+        const res = await fetch("/api/collab/meals");
         const data = await res.json();
         if (data.meals) {
           const sortedMeals = data.meals.sort((a: Meal, b: Meal) => a.date.localeCompare(b.date));

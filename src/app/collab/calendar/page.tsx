@@ -28,7 +28,7 @@ export default function CalendarPage() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await fetch("/api/admin/collab/calendar");
+        const res = await fetch("/api/collab/calendar");
         const data = await res.json();
         if (data.events) {
           const sortedEvents = data.events.sort((a: CalendarEvent, b: CalendarEvent) => 
