@@ -3,9 +3,9 @@
 import React, { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { 
-  ArrowLeft, Calculator, Sparkles, BookOpen, 
-  Globe, Languages, Microscope, Calendar, GraduationCap 
+import {
+  ArrowLeft, Calculator, Sparkles, BookOpen,
+  Globe, Languages, Microscope, Calendar, GraduationCap
 } from "lucide-react";
 
 // The grading scale up to 4.5
@@ -78,15 +78,15 @@ export default function GpaCalculatorPage() {
     <div className="min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
       {/* Header */}
       <div className="mb-12">
-        <Link 
-          href="/collab" 
+        <Link
+          href="/collab"
           className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors mb-8 group"
         >
           <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
           <span className="text-sm font-bold">Back to Hub</span>
         </Link>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
         >
@@ -95,7 +95,7 @@ export default function GpaCalculatorPage() {
             GPA Calculator
           </div>
           <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight mb-4">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">학점 계산기</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">BETAAAA 학점 계산기</span>
           </h1>
           <p className="text-zinc-500 max-w-xl font-medium text-lg leading-relaxed">
             나의 성취도를 한눈에 확인하세요.<br />
@@ -105,10 +105,10 @@ export default function GpaCalculatorPage() {
       </div>
 
       <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
-        
+
         {/* Left Side: Subject Inputs */}
         <div className="flex-1 w-full space-y-4">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
@@ -119,7 +119,7 @@ export default function GpaCalculatorPage() {
               const gradeDef = GRADE_SCALE.find(g => g.label === currentGrade)!;
 
               return (
-                <div 
+                <div
                   key={subject.id}
                   className="bg-zinc-900/40 backdrop-blur-md border border-white/5 rounded-[2rem] p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all hover:border-white/10"
                 >
@@ -162,7 +162,7 @@ export default function GpaCalculatorPage() {
         </div>
 
         {/* Right Side: GPA Display */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2, type: "spring" }}
@@ -171,31 +171,31 @@ export default function GpaCalculatorPage() {
           <div className="bg-zinc-900/60 backdrop-blur-2xl rounded-[3rem] border border-white/10 p-8 sm:p-12 relative overflow-hidden group">
             {/* Background glowing effects */}
             <div className={`absolute top-0 right-0 w-64 h-64 blur-[80px] rounded-full opacity-20 transition-colors duration-700 ${getRingColor(gpa).replace("text-", "bg-")}`} />
-            
+
             <div className="relative z-10 flex flex-col items-center">
               <div className="w-16 h-16 rounded-3xl bg-zinc-800/50 border border-white/5 flex items-center justify-center mb-8">
                 <GraduationCap className="w-8 h-8 text-white" />
               </div>
 
               <h2 className="text-zinc-400 font-bold tracking-widest uppercase text-xs mb-6">Your Average GPA</h2>
-              
+
               <div className="relative w-48 h-48 flex items-center justify-center mb-8">
                 {/* SVG Progress Ring */}
                 <svg className="absolute inset-0 w-full h-full -rotate-90 transform" viewBox="0 0 100 100">
                   {/* Background Track */}
-                  <circle 
-                    cx="50" cy="50" r="45" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="4" 
+                  <circle
+                    cx="50" cy="50" r="45"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="4"
                     className="text-zinc-800"
                   />
                   {/* Progress Line */}
-                  <motion.circle 
-                    cx="50" cy="50" r="45" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="4" 
+                  <motion.circle
+                    cx="50" cy="50" r="45"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="4"
                     strokeLinecap="round"
                     className={`${getRingColor(gpa)} transition-colors duration-700`}
                     initial={{ strokeDasharray: "283", strokeDashoffset: "283" }}
