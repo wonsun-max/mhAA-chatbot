@@ -171,6 +171,21 @@ export default function ExamSchedulePage() {
     // 2. Filter for specific grade and inject Self-Study
     const formattedDays = Array.from(daysMap.values()).sort((a, b) => a.date.localeCompare(b.date));
 
+    if (formattedDays.length > 0) {
+      const lastDay = formattedDays[formattedDays.length - 1];
+      const today = new Date();
+      const dateStr = lastDay.date;
+      const lastDate = dateStr.includes("-")
+        ? new Date(dateStr)
+        : new Date(today.getFullYear(), Number(dateStr.split("/")[0]) - 1, Number(dateStr.split("/")[1]));
+      
+      lastDate.setHours(23, 59, 59, 999);
+
+      if (today.getTime() > lastDate.getTime()) {
+        return [];
+      }
+    }
+
     return formattedDays.map(day => ({
       ...day,
       periods: day.periods.map(period => {
@@ -466,9 +481,12 @@ export default function ExamSchedulePage() {
                 <Calendar size={40} strokeWidth={1} />
               </div>
               <h3 className="text-2xl font-bold text-white mb-2">
-                {activeExam === "midterm" ? "중간고사" : "기말고사"} 일정이 아직 없습니다
+                현재는 {activeExam === "midterm" ? "중간고사" : "기말고사"} 기간이 아닙니다
               </h3>
-              <p className="text-zinc-500 font-medium">현재 일정을 준비 중입니다. 확정되는 대로 업데이트될 예정입니다.</p>
+              <p className="text-zinc-500 font-medium">
+                다음 시험 일정이 확정되는 대로 업데이트될 예정입니다.<br />
+                그동안은 정규 수업 및 자습에 집중해 주세요.
+              </p>
             </motion.div>
           )}
         </AnimatePresence>
