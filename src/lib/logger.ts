@@ -9,19 +9,34 @@ class Logger {
     return `[${timestamp}] [${level.toUpperCase()}] ${message}`;
   }
 
-  info(message: string, ...args: any[]) {
+  /**
+   * Logs an informational message.
+   * Uses unknown[] instead of any[] to ensure type-safety when handling log parameters.
+   */
+  info(message: string, ...args: unknown[]) {
     console.info(this.format("info", message), ...args);
   }
 
-  warn(message: string, ...args: any[]) {
+  /**
+   * Logs a warning message.
+   * Parameters are typed as unknown[] to prevent uncontrolled type propagation.
+   */
+  warn(message: string, ...args: unknown[]) {
     console.warn(this.format("warn", message), ...args);
   }
 
-  error(message: string, error?: any, ...args: any[]) {
+  /**
+   * Logs an error message.
+   * Uses unknown for error type to handle native Error objects or custom error structures uniformly without bypassing compiler checks.
+   */
+  error(message: string, error?: unknown, ...args: unknown[]) {
     console.error(this.format("error", message), error, ...args);
   }
 
-  debug(message: string, ...args: any[]) {
+  /**
+   * Logs a debug message, which is disabled in production environments to minimize overhead.
+   */
+  debug(message: string, ...args: unknown[]) {
     if (process.env.NODE_ENV !== "production") {
       console.debug(this.format("debug", message), ...args);
     }
