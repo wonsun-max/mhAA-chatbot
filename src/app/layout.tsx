@@ -20,10 +20,10 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   metadataBase: new URL("https://mhawithus.shop"),
   title: {
-    default: "마닐라한국아카데미 학습 플랫폼 WITHUS",
+    default: "마닐라한국아카데미 통합 캠퍼스 라이프 플랫폼 WITHUS",
     template: "%s | WITHUS",
   },
-  description: "마닐라한국아카데미(MHA) 학생과 교사를 위한 통합 학습 플랫폼. 공지사항, 시간표, 급식표, AI 도우미 기능 제공.",
+  description: "마닐라한국아카데미(MHA) 학생과 교사를 위한 통합 캠퍼스 라이프 플랫폼. 공지사항, 시간표, 급식표, 커뮤니티 및 AI 도우미 서비스 제공.",
   keywords: [
     "mhawithus.shop",
     "MHA withus",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     "위더스",
     "마한아",
     "필리핀 한국학교",
-    "MHA 학습 허브",
+    "MHA 캠퍼스 라이프",
     "MHA 교사",
     "MHA 선생님",
     "MHA 학생 커뮤니티",
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title: "마닐라한국아카데미 학습 플랫폼 WITHUS",
+    title: "마닐라한국아카데미 통합 캠퍼스 라이프 플랫폼 WITHUS",
     siteName: "WITHUS",
   },
   verification: {
@@ -103,7 +103,7 @@ export default function RootLayout({
                 ],
                 "url": "https://mhawithus.shop",
                 "logo": "https://mhawithus.shop/images/site-logo.png",
-                "description": "마닐라한국아카데미(MHA) 학생과 교사를 위한 통합 스마트 학습 플랫폼 WITHUS",
+                "description": "마닐라한국아카데미(MHA) 학생과 교사를 위한 통합 스마트 캠퍼스 라이프 플랫폼 WITHUS",
                 "sameAs": [
 
 

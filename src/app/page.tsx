@@ -72,7 +72,7 @@ export default function Home() {
           <div className="space-y-2">
             <p className="text-[9px] uppercase tracking-[0.5em] text-white/10 font-bold">WITHUS HUB</p>
             <p className="text-[9px] text-white/10 font-light max-w-xs leading-loose">
-              본 플랫폼은 학생들의 학술적 성장과 지능형 학습 지원을 위해 운영됩니다.
+              본 플랫폼은 학생들의 학교 생활 편의와 지능형 소통 지원을 위해 운영됩니다.
             </p>
           </div>
 

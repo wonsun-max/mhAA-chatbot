@@ -39,14 +39,14 @@ export default function TermsPage() {
                     <section className="space-y-4">
                         <h2 className="text-xl font-bold text-white uppercase tracking-wider">2. 커뮤니티 가이드라인</h2>
                         <p className="text-zinc-400 leading-relaxed text-sm">
-                            본 서비스는 상호 존중과 건전한 학습 환경을 지향합니다. 타인을 비방하거나 부적절한 언어를 사용하는 행위, 혐오 또는 차별적 내용을 유포하는 행위는 엄격히 금지되며, 위반 시 서비스 이용이 제한될 수 있습니다.
+                            본 서비스는 상호 존중과 건전한 커뮤니티 환경을 지향합니다. 타인을 비방하거나 부적절한 언어를 사용하는 행위, 혐오 또는 차별적 내용을 유포하는 행위는 엄격히 금지되며, 위반 시 서비스 이용이 제한될 수 있습니다.
                         </p>
                     </section>
 
                     <section className="space-y-4">
-                        <h2 className="text-xl font-bold text-white uppercase tracking-wider">3. 학업 및 인공지능 윤리</h2>
+                        <h2 className="text-xl font-bold text-white uppercase tracking-wider">3. 이용 및 인공지능 윤리</h2>
                         <p className="text-zinc-400 leading-relaxed text-sm">
-                            WITHUS AI는 학생들의 학습과 학업 생산성을 지원하기 위한 도구입니다. 과제 대행 등 학업 정직성을 해치는 용도로 사용하는 것을 금하며, 모든 AI 응답은 참고 자료로만 활용하시기 바랍니다. AI가 생성한 콘텐츠의 정확성을 보장하지 않습니다.
+                            WITHUS AI는 학생들의 일상 편의와 소통 생산성을 지원하기 위한 도구입니다. 과제 대행 등 학사 규정을 해치는 용도로 사용하는 것을 금하며, 모든 AI 응답은 참고 자료로만 활용하시기 바랍니다. AI가 생성한 콘텐츠의 정확성을 보장하지 않습니다.
                         </p>
                     </section>
 

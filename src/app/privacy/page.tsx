@@ -32,14 +32,14 @@ export default function PrivacyPage() {
                     <section className="space-y-4">
                         <h2 className="text-xl font-bold text-white uppercase tracking-wider">1. 정보 수집 및 이용 목적</h2>
                         <p className="text-zinc-400 leading-relaxed text-sm">
-                            WITHUS는 학생들의 학술적 성장과 효율적인 학습 지원을 위해 운영되는 AI 기반 플랫폼입니다. 수집된 정보(성명, 닉네임, 이메일, 학년, 채팅 로그 등)는 사용자에게 맞춤형 AI 응답을 제공하고, 안전한 학습 환경을 조성하는 데에만 사용됩니다.
+                            WITHUS는 학생들의 풍요로운 학교 생활 편의와 지능형 소통 지원을 위해 운영되는 AI 기반 플랫폼입니다. 수집된 정보(성명, 닉네임, 이메일, 학년, 채팅 로그 등)는 사용자에게 맞춤형 AI 응답을 제공하고, 안전하고 편안한 서비스 환경을 조성하는 데에만 사용됩니다.
                         </p>
                     </section>
 
                     <section className="space-y-4">
                         <h2 className="text-xl font-bold text-white uppercase tracking-wider">2. 채팅 로그의 보관 및 보호</h2>
                         <p className="text-zinc-400 leading-relaxed text-sm">
-                            사용자와 AI 간의 모든 대화 내용은 암호화되어 안전하게 보관됩니다. 대화 기록은 서비스 품질 개선 및 연속적인 학습 지원을 목적으로만 활용되며, 법령에 의한 경우를 제외하고 제3자에게 제공되지 않습니다.
+                            사용자와 AI 간의 모든 대화 내용은 암호화되어 안전하게 보관됩니다. 대화 기록은 서비스 품질 개선 및 연속적인 소통 지원을 목적으로만 활용되며, 법령에 의한 경우를 제외하고 제3자에게 제공되지 않습니다.
                         </p>
                     </section>
 
