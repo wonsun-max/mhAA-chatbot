@@ -1,226 +1,186 @@
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
-
 const YEAR = 2026;
 
-// Subject credits per grade per semester
-// credits = periods per week (단위수)
-// Practical English is 5 for all grades
-const SUBJECT_CREDITS: Array<{
-  grade: string;
-  subject: string;
-  credits: number;
-  semester: "1" | "2";
-}> = [
-  // ─── G7 ───────────────────────────────────────────
-  { grade: "7", subject: "국어과", credits: 4, semester: "1" },
-  { grade: "7", subject: "수학과", credits: 4, semester: "1" },
-  { grade: "7", subject: "Science", credits: 3, semester: "1" },
-  { grade: "7", subject: "Social Studies", credits: 3, semester: "1" },
-  { grade: "7", subject: "Literature", credits: 3, semester: "1" },
-  { grade: "7", subject: "Grammar", credits: 2, semester: "1" },
-  { grade: "7", subject: "Practical English (실용영어)", credits: 5, semester: "1" },
-  { grade: "7", subject: "Filipino", credits: 2, semester: "1" },
-  { grade: "7", subject: "한문", credits: 2, semester: "1" },
-  { grade: "7", subject: "사회", credits: 2, semester: "1" },
-  { grade: "7", subject: "성경 (Bible)", credits: 2, semester: "1" },
-  { grade: "7", subject: "음악 (Music)", credits: 2, semester: "1" },
-  { grade: "7", subject: "Physical Education (체육)", credits: 3, semester: "1" },
-  { grade: "7", subject: "E.P.", credits: 1, semester: "1" },
-
-  { grade: "7", subject: "국어과", credits: 4, semester: "2" },
-  { grade: "7", subject: "수학과", credits: 4, semester: "2" },
-  { grade: "7", subject: "Science", credits: 3, semester: "2" },
-  { grade: "7", subject: "Social Studies", credits: 3, semester: "2" },
-  { grade: "7", subject: "Literature", credits: 3, semester: "2" },
-  { grade: "7", subject: "Grammar", credits: 2, semester: "2" },
-  { grade: "7", subject: "Practical English (실용영어)", credits: 5, semester: "2" },
-  { grade: "7", subject: "Filipino", credits: 2, semester: "2" },
-  { grade: "7", subject: "한문", credits: 2, semester: "2" },
-  { grade: "7", subject: "사회", credits: 2, semester: "2" },
-  { grade: "7", subject: "성경 (Bible)", credits: 2, semester: "2" },
-  { grade: "7", subject: "음악 (Music)", credits: 2, semester: "2" },
-  { grade: "7", subject: "Physical Education (체육)", credits: 3, semester: "2" },
-  { grade: "7", subject: "E.P.", credits: 1, semester: "2" },
-
-  // ─── G8 ───────────────────────────────────────────
-  { grade: "8", subject: "국어과", credits: 4, semester: "1" },
-  { grade: "8", subject: "수학과", credits: 4, semester: "1" },
-  { grade: "8", subject: "Science", credits: 3, semester: "1" },
-  { grade: "8", subject: "Social Studies", credits: 3, semester: "1" },
-  { grade: "8", subject: "Literature", credits: 3, semester: "1" },
-  { grade: "8", subject: "Grammar", credits: 2, semester: "1" },
-  { grade: "8", subject: "Practical English (실용영어)", credits: 5, semester: "1" },
-  { grade: "8", subject: "Filipino", credits: 2, semester: "1" },
-  { grade: "8", subject: "한문", credits: 2, semester: "1" },
-  { grade: "8", subject: "역사과", credits: 3, semester: "1" },
-  { grade: "8", subject: "성경 (Bible)", credits: 2, semester: "1" },
-  { grade: "8", subject: "음악 (Music)", credits: 2, semester: "1" },
-  { grade: "8", subject: "Physical Education (체육)", credits: 3, semester: "1" },
-  { grade: "8", subject: "E.P.", credits: 1, semester: "1" },
-
-  { grade: "8", subject: "국어과", credits: 4, semester: "2" },
-  { grade: "8", subject: "수학과", credits: 4, semester: "2" },
-  { grade: "8", subject: "Science", credits: 3, semester: "2" },
-  { grade: "8", subject: "Social Studies", credits: 3, semester: "2" },
-  { grade: "8", subject: "Literature", credits: 3, semester: "2" },
-  { grade: "8", subject: "Grammar", credits: 2, semester: "2" },
-  { grade: "8", subject: "Practical English (실용영어)", credits: 5, semester: "2" },
-  { grade: "8", subject: "Filipino", credits: 2, semester: "2" },
-  { grade: "8", subject: "한문", credits: 2, semester: "2" },
-  { grade: "8", subject: "역사과", credits: 3, semester: "2" },
-  { grade: "8", subject: "성경 (Bible)", credits: 2, semester: "2" },
-  { grade: "8", subject: "음악 (Music)", credits: 2, semester: "2" },
-  { grade: "8", subject: "Physical Education (체육)", credits: 3, semester: "2" },
-  { grade: "8", subject: "E.P.", credits: 1, semester: "2" },
-
-  // ─── G9 ───────────────────────────────────────────
-  { grade: "9", subject: "국어과", credits: 4, semester: "1" },
-  { grade: "9", subject: "수학과", credits: 4, semester: "1" },
-  { grade: "9", subject: "Science", credits: 3, semester: "1" },
-  { grade: "9", subject: "Social Studies", credits: 3, semester: "1" },
-  { grade: "9", subject: "Literature", credits: 3, semester: "1" },
-  { grade: "9", subject: "Grammar", credits: 2, semester: "1" },
-  { grade: "9", subject: "Practical English (실용영어)", credits: 5, semester: "1" },
-  { grade: "9", subject: "Chinese", credits: 2, semester: "1" },
-  { grade: "9", subject: "역사과", credits: 3, semester: "1" },
-  { grade: "9", subject: "미술", credits: 2, semester: "1" },
-  { grade: "9", subject: "성경 (Bible)", credits: 2, semester: "1" },
-  { grade: "9", subject: "음악 (Music)", credits: 2, semester: "1" },
-  { grade: "9", subject: "Physical Education (체육)", credits: 3, semester: "1" },
-  { grade: "9", subject: "E.P.", credits: 1, semester: "1" },
-
-  { grade: "9", subject: "국어과", credits: 4, semester: "2" },
-  { grade: "9", subject: "수학과", credits: 4, semester: "2" },
-  { grade: "9", subject: "Science", credits: 3, semester: "2" },
-  { grade: "9", subject: "Social Studies", credits: 3, semester: "2" },
-  { grade: "9", subject: "Literature", credits: 3, semester: "2" },
-  { grade: "9", subject: "Grammar", credits: 2, semester: "2" },
-  { grade: "9", subject: "Practical English (실용영어)", credits: 5, semester: "2" },
-  { grade: "9", subject: "Chinese", credits: 2, semester: "2" },
-  { grade: "9", subject: "역사과", credits: 3, semester: "2" },
-  { grade: "9", subject: "미술", credits: 2, semester: "2" },
-  { grade: "9", subject: "성경 (Bible)", credits: 2, semester: "2" },
-  { grade: "9", subject: "음악 (Music)", credits: 2, semester: "2" },
-  { grade: "9", subject: "Physical Education (체육)", credits: 3, semester: "2" },
-  { grade: "9", subject: "E.P.", credits: 1, semester: "2" },
-
-  // ─── G10 ──────────────────────────────────────────
-  { grade: "10", subject: "국어과", credits: 4, semester: "1" },
-  { grade: "10", subject: "수학과", credits: 4, semester: "1" },
-  { grade: "10", subject: "Science", credits: 3, semester: "1" },
-  { grade: "10", subject: "Social Studies", credits: 3, semester: "1" },
-  { grade: "10", subject: "Literature", credits: 3, semester: "1" },
-  { grade: "10", subject: "Grammar", credits: 2, semester: "1" },
-  { grade: "10", subject: "Practical English (실용영어)", credits: 5, semester: "1" },
-  { grade: "10", subject: "Chinese", credits: 2, semester: "1" },
-  { grade: "10", subject: "Inter. Math", credits: 4, semester: "1" },
-  { grade: "10", subject: "미술", credits: 2, semester: "1" },
-  { grade: "10", subject: "성경 (Bible)", credits: 2, semester: "1" },
-  { grade: "10", subject: "음악 (Music)", credits: 2, semester: "1" },
-  { grade: "10", subject: "Physical Education (체육)", credits: 3, semester: "1" },
-  { grade: "10", subject: "E.P.", credits: 1, semester: "1" },
-
-  { grade: "10", subject: "국어과", credits: 4, semester: "2" },
-  { grade: "10", subject: "수학과", credits: 4, semester: "2" },
-  { grade: "10", subject: "Science", credits: 3, semester: "2" },
-  { grade: "10", subject: "Social Studies", credits: 3, semester: "2" },
-  { grade: "10", subject: "Literature", credits: 3, semester: "2" },
-  { grade: "10", subject: "Grammar", credits: 2, semester: "2" },
-  { grade: "10", subject: "Practical English (실용영어)", credits: 5, semester: "2" },
-  { grade: "10", subject: "Chinese", credits: 2, semester: "2" },
-  { grade: "10", subject: "Inter. Math", credits: 4, semester: "2" },
-  { grade: "10", subject: "미술", credits: 2, semester: "2" },
-  { grade: "10", subject: "성경 (Bible)", credits: 2, semester: "2" },
-  { grade: "10", subject: "음악 (Music)", credits: 2, semester: "2" },
-  { grade: "10", subject: "Physical Education (체육)", credits: 3, semester: "2" },
-  { grade: "10", subject: "E.P.", credits: 1, semester: "2" },
-
-  // ─── G11 ──────────────────────────────────────────
-  { grade: "11", subject: "국어과", credits: 4, semester: "1" },
-  { grade: "11", subject: "수학과", credits: 4, semester: "1" },
-  { grade: "11", subject: "Science", credits: 3, semester: "1" },
-  { grade: "11", subject: "Social Studies", credits: 3, semester: "1" },
-  { grade: "11", subject: "Literature", credits: 3, semester: "1" },
-  { grade: "11", subject: "Writing", credits: 2, semester: "1" },
-  { grade: "11", subject: "Practical English (실용영어)", credits: 5, semester: "1" },
-  { grade: "11", subject: "Inter. Math", credits: 4, semester: "1" },
-  { grade: "11", subject: "미술", credits: 2, semester: "1" },
-  { grade: "11", subject: "성경 (Bible)", credits: 2, semester: "1" },
-  { grade: "11", subject: "음악 (Music)", credits: 2, semester: "1" },
-  { grade: "11", subject: "Physical Education (체육)", credits: 3, semester: "1" },
-  { grade: "11", subject: "E.P.", credits: 1, semester: "1" },
-
-  { grade: "11", subject: "국어과", credits: 4, semester: "2" },
-  { grade: "11", subject: "수학과", credits: 4, semester: "2" },
-  { grade: "11", subject: "Science", credits: 3, semester: "2" },
-  { grade: "11", subject: "Social Studies", credits: 3, semester: "2" },
-  { grade: "11", subject: "Literature", credits: 3, semester: "2" },
-  { grade: "11", subject: "Writing", credits: 2, semester: "2" },
-  { grade: "11", subject: "Practical English (실용영어)", credits: 5, semester: "2" },
-  { grade: "11", subject: "Inter. Math", credits: 4, semester: "2" },
-  { grade: "11", subject: "미술", credits: 2, semester: "2" },
-  { grade: "11", subject: "성경 (Bible)", credits: 2, semester: "2" },
-  { grade: "11", subject: "음악 (Music)", credits: 2, semester: "2" },
-  { grade: "11", subject: "Physical Education (체육)", credits: 3, semester: "2" },
-  { grade: "11", subject: "E.P.", credits: 1, semester: "2" },
-
-  // ─── G12-1 & G12-2 (same subjects, credits based on Timetable weekly periods) ──
-  // Weekly periods → credits: divide by 2 (2 periods = 1 credit)
-  // 문학:8→4, 선택수학:8→4, E.P.:6→3, Inter.Studies:6→3, E.Lit.:6→3
-  // 한국사:4→2, Rhetoric:4→2, P.E.:4→2, Writing:4→2, 정보:2→1, 성경:2→1
-  ...["12-1", "12-2"].flatMap((grade) =>
-    (["1", "2"] as const).flatMap((semester) => [
-      { grade, subject: "문학",                      credits: 4, semester },
-      { grade, subject: "선택 수학(직무/미적분II)",    credits: 4, semester },
-      { grade, subject: "E.P.",                      credits: 3, semester },
-      { grade, subject: "Inter.Studies",             credits: 3, semester },
-      { grade, subject: "E.Lit.",                    credits: 3, semester },
-      { grade, subject: "한국사",                    credits: 2, semester },
-      { grade, subject: "Rhetoric",                  credits: 2, semester },
-      { grade, subject: "P.E.",                      credits: 2, semester },
-      { grade, subject: "Writing",                   credits: 2, semester },
-      { grade, subject: "정보",                      credits: 1, semester },
-      { grade, subject: "성경",                      credits: 1, semester },
-    ])
-  ),
+// ─── Non-academic subjects (Pass/Fail, excluded from GPA) ─────────────────────
+// These appear in every grade. credits = weekly periods / 2.
+const NON_ACADEMIC_COMMON = [
+  { subject: "Worship Service",       credits: 1 }, // 채플
+  { subject: "CA (Club Activity)",    credits: 1 }, // 동아리
+  { subject: "전체 QT",               credits: 1 },
+  { subject: "Korean QT",             credits: 1 },
+  { subject: "English QT",            credits: 1 },
+  { subject: "창의적 체험활동(자율)", credits: 1 },
 ];
+
+const NON_ACADEMIC_G12 = [
+  { subject: "진로와 직업", credits: 1 }, // Career Development (G12 only)
+];
+
+// ─── Academic subjects per grade ──────────────────────────────────────────────
+// credits = weekly periods / 2 (2 periods/wk = 1 credit)
+// Subject names match Timetable DB exactly.
+
+type SubjectRow = { subject: string; credits: number };
+
+const ACADEMIC: Record<string, SubjectRow[]> = {
+  "7": [
+    { subject: "국어",      credits: 2 },
+    { subject: "수학",      credits: 2 },
+    { subject: "Science",   credits: 2 },
+    { subject: "Lit.",      credits: 2 }, // Literature
+    { subject: "ENGLISH",   credits: 3 }, // Practical English block
+    { subject: "E.P.",      credits: 2 }, // English Practicum
+    { subject: "Grammar",   credits: 1 },
+    { subject: "W.History", credits: 1 }, // World History → 사회/역사
+    { subject: "Filipino",  credits: 1 },
+    { subject: "한문",      credits: 1 },
+    { subject: "사회",      credits: 1 },
+    { subject: "P.E.",      credits: 1 },
+    { subject: "음악",      credits: 1 },
+    { subject: "성경",      credits: 1 },
+  ],
+  "8": [
+    { subject: "국어",    credits: 2 },
+    { subject: "수학",    credits: 3 },
+    { subject: "Science", credits: 2 },
+    { subject: "Lit.",    credits: 2 },
+    { subject: "ENGLISH", credits: 3 },
+    { subject: "E.P.",    credits: 1 },
+    { subject: "Grammar", credits: 1 },
+    { subject: "Filipino",credits: 1 },
+    { subject: "한문",    credits: 1 },
+    { subject: "Geo.",    credits: 1 }, // Geography
+    { subject: "역사",    credits: 1 },
+    { subject: "P.E.",    credits: 1 },
+    { subject: "음악",    credits: 1 },
+    { subject: "성경",    credits: 1 },
+  ],
+  "9": [
+    { subject: "국어",    credits: 2 },
+    { subject: "수학",    credits: 2 },
+    { subject: "Science", credits: 2 },
+    { subject: "Lit.",    credits: 2 },
+    { subject: "ENGLISH", credits: 3 },
+    { subject: "E.P.",    credits: 2 },
+    { subject: "Grammar", credits: 1 },
+    { subject: "중국어",  credits: 1 },
+    { subject: "역사",    credits: 1 },
+    { subject: "Sociology",credits: 1 },
+    { subject: "미술",    credits: 1 },
+    { subject: "P.E.",    credits: 1 },
+    { subject: "음악",    credits: 1 },
+    { subject: "성경",    credits: 1 },
+  ],
+  "10": [
+    { subject: "공통 국어",  credits: 2 },
+    { subject: "공통 수학",  credits: 2 },
+    { subject: "Psychology", credits: 2 },
+    { subject: "Biology",    credits: 2 },
+    { subject: "W.Lit.",     credits: 2 }, // World Literature
+    { subject: "ENGLISH",    credits: 3 },
+    { subject: "E.P.",       credits: 2 },
+    { subject: "Grammar",    credits: 1 },
+    { subject: "중국어",     credits: 1 },
+    { subject: "Integ.Math", credits: 1 },
+    { subject: "미술",       credits: 1 },
+    { subject: "P.E.",       credits: 1 },
+    { subject: "음악",       credits: 1 },
+    { subject: "성경",       credits: 1 },
+  ],
+  "11": [
+    { subject: "화법과 언어", credits: 2 },
+    { subject: "대수",        credits: 2 },
+    { subject: "Chemistry",   credits: 2 },
+    { subject: "Economics",   credits: 2 },
+    { subject: "A.Lit.",      credits: 2 }, // Advanced Literature
+    { subject: "ENGLISH",     credits: 3 },
+    { subject: "E.P.",        credits: 2 },
+    { subject: "Writing",     credits: 2 },
+    { subject: "Integ.Math",  credits: 1 },
+    { subject: "미술",        credits: 1 },
+    { subject: "P.E.",        credits: 1 },
+    { subject: "음악",        credits: 1 },
+    { subject: "성경",        credits: 1 },
+  ],
+  // G12-1 and G12-2 share the same academic subjects
+  "12-1": [
+    { subject: "문학",                    credits: 4 }, // Korean Literature
+    { subject: "선택 수학(직무/미적분II)", credits: 4 }, // Calculus / Vocational Math
+    { subject: "Physics",                 credits: 4 },
+    { subject: "Inter.Studies",           credits: 3 }, // International Studies
+    { subject: "E.Lit.",                  credits: 3 }, // English Literature
+    { subject: "E.P.",                    credits: 3 }, // English Practicum
+    { subject: "Rhetoric",                credits: 2 },
+    { subject: "Writing",                 credits: 2 },
+    { subject: "한국사",                  credits: 2 }, // Korean History
+    { subject: "P.E.",                    credits: 2 },
+    { subject: "정보",                    credits: 1 }, // Informatics
+    { subject: "성경",                    credits: 1 },
+  ],
+  "12-2": [
+    { subject: "문학",                    credits: 4 },
+    { subject: "선택 수학(직무/미적분II)", credits: 4 },
+    { subject: "Physics",                 credits: 4 },
+    { subject: "Inter.Studies",           credits: 3 },
+    { subject: "E.Lit.",                  credits: 3 },
+    { subject: "E.P.",                    credits: 3 },
+    { subject: "Rhetoric",                credits: 2 },
+    { subject: "Writing",                 credits: 2 },
+    { subject: "한국사",                  credits: 2 },
+    { subject: "P.E.",                    credits: 2 },
+    { subject: "정보",                    credits: 1 },
+    { subject: "성경",                    credits: 1 },
+  ],
+};
+
+const ALL_GRADES = ["7", "8", "9", "10", "11", "12-1", "12-2"] as const;
+const SEMESTERS = ["1", "2"] as const;
 
 async function main() {
   console.log("Seeding SubjectCredit data...");
-
   let upserted = 0;
-  for (const row of SUBJECT_CREDITS) {
-    await prisma.subjectCredit.upsert({
-      where: {
-        grade_subject_semester_year: {
-          grade: row.grade,
-          subject: row.subject,
-          semester: row.semester,
-          year: YEAR,
-        },
-      },
-      update: { credits: row.credits },
-      create: {
-        grade: row.grade,
-        subject: row.subject,
-        credits: row.credits,
-        semester: row.semester,
-        year: YEAR,
-      },
-    });
-    upserted++;
+
+  for (const grade of ALL_GRADES) {
+    for (const semester of SEMESTERS) {
+      // Academic subjects
+      for (const row of ACADEMIC[grade]) {
+        await prisma.subjectCredit.upsert({
+          where: { grade_subject_semester_year: { grade, subject: row.subject, semester, year: YEAR } },
+          update: { credits: row.credits, isAcademic: true },
+          create: { grade, subject: row.subject, credits: row.credits, semester, year: YEAR, isAcademic: true },
+        });
+        upserted++;
+      }
+
+      // Non-academic (common)
+      for (const row of NON_ACADEMIC_COMMON) {
+        await prisma.subjectCredit.upsert({
+          where: { grade_subject_semester_year: { grade, subject: row.subject, semester, year: YEAR } },
+          update: { credits: row.credits, isAcademic: false },
+          create: { grade, subject: row.subject, credits: row.credits, semester, year: YEAR, isAcademic: false },
+        });
+        upserted++;
+      }
+
+      // Non-academic G12 only
+      if (grade === "12-1" || grade === "12-2") {
+        for (const row of NON_ACADEMIC_G12) {
+          await prisma.subjectCredit.upsert({
+            where: { grade_subject_semester_year: { grade, subject: row.subject, semester, year: YEAR } },
+            update: { credits: row.credits, isAcademic: false },
+            create: { grade, subject: row.subject, credits: row.credits, semester, year: YEAR, isAcademic: false },
+          });
+          upserted++;
+        }
+      }
+    }
   }
 
   console.log(`Done. Upserted ${upserted} SubjectCredit rows.`);
 }
 
 main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+  .catch((e) => { console.error(e); process.exit(1); })
+  .finally(async () => { await prisma.$disconnect(); });

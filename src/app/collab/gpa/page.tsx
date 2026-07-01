@@ -8,7 +8,7 @@ import {
   ArrowLeft, Calculator, Sparkles, GraduationCap,
   ChevronDown, Loader2, AlertCircle, RefreshCw,
   BookOpen, Music, Dumbbell, Globe, Languages,
-  Microscope, Palette, PenLine, BookMarked, Cpu,
+  Microscope, Palette, PenLine, BookMarked, Cpu, CheckCircle2,
 } from "lucide-react";
 import { simplifyGradeLabel } from "@/lib/exam-grade";
 import { getAcademicSemester, getAcademicYear } from "@/lib/academic-calendar";
@@ -22,6 +22,7 @@ interface SubjectCredit {
   credits: number;
   semester: string;
   year: number;
+  isAcademic: boolean;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -29,18 +30,12 @@ interface SubjectCredit {
 const GRADES = ["7", "8", "9", "10", "11", "12-1", "12-2"] as const;
 type Grade = typeof GRADES[number];
 
-// Score → letter + GPA point
-const scoreToGrade = (score: number | null): { letter: string; point: number } | null => {
-  if (score === null) return null;
-  if (score >= 95) return { letter: "A+", point: 4.5 };
-  if (score >= 90) return { letter: "A",  point: 4.0 };
-  if (score >= 85) return { letter: "B+", point: 3.5 };
-  if (score >= 80) return { letter: "B",  point: 3.0 };
-  if (score >= 75) return { letter: "C+", point: 2.5 };
-  if (score >= 70) return { letter: "C",  point: 2.0 };
-  if (score >= 65) return { letter: "D+", point: 1.5 };
-  if (score >= 60) return { letter: "D",  point: 1.0 };
-  return             { letter: "F",  point: 0.0 };
+const LETTER_GRADES = ["A+", "A", "B+", "B", "C+", "C", "D+", "D", "F"] as const;
+type LetterGrade = typeof LETTER_GRADES[number];
+
+const LETTER_TO_POINT: Record<LetterGrade, number> = {
+  "A+": 4.5, "A": 4.0, "B+": 3.5, "B": 3.0,
+  "C+": 2.5, "C": 2.0, "D+": 1.5, "D": 1.0, "F": 0.0,
 };
 
 const gradeColors: Record<string, { text: string; bg: string; border: string }> = {
@@ -56,36 +51,45 @@ const gradeColors: Record<string, { text: string; bg: string; border: string }> 
 };
 
 const SUBJECT_ICONS: Record<string, React.ReactNode> = {
-  "국어":     <Languages  size={18} />,
-  "수학":     <Calculator size={18} />,
-  "Science":  <Microscope size={18} />,
-  "Social":   <Globe      size={18} />,
-  "Literature":<BookOpen  size={18} />,
-  "Grammar":  <PenLine    size={18} />,
-  "Writing":  <PenLine    size={18} />,
-  "English":  <Globe      size={18} />,
-  "Filipino": <Globe      size={18} />,
-  "Chinese":  <Globe      size={18} />,
-  "Inter.":   <Calculator size={18} />,
-  "미술":     <Palette    size={18} />,
-  "음악":     <Music      size={18} />,
-  "Music":    <Music      size={18} />,
-  "체육":     <Dumbbell   size={18} />,
-  "Physical": <Dumbbell   size={18} />,
-  "성경":     <BookMarked size={18} />,
-  "Bible":    <BookMarked size={18} />,
-  "한문":     <BookOpen   size={18} />,
-  "역사":     <BookOpen   size={18} />,
-  "사회":     <Globe      size={18} />,
-  "E.P.":     <Cpu        size={18} />,
-  "Rhetoric":     <PenLine    size={18} />,
-  "문학":         <Languages  size={18} />,
-  "한국사":       <BookOpen   size={18} />,
-  "정보":         <Cpu        size={18} />,
-  "Inter.Studies":<Globe      size={18} />,
-  "E.Lit.":       <BookOpen   size={18} />,
-  "선택 수학":    <Calculator size={18} />,
-  "P.E.":         <Dumbbell   size={18} />,
+  "국어":       <Languages  size={18} />,
+  "수학":       <Calculator size={18} />,
+  "Science":    <Microscope size={18} />,
+  "Grammar":    <PenLine    size={18} />,
+  "Writing":    <PenLine    size={18} />,
+  "Rhetoric":   <PenLine    size={18} />,
+  "Filipino":   <Globe      size={18} />,
+  "중국어":     <Globe      size={18} />,
+  "사회":       <Globe      size={18} />,
+  "Sociology":  <Globe      size={18} />,
+  "W.History":  <Globe      size={18} />,
+  "한문":       <BookOpen   size={18} />,
+  "역사":       <BookOpen   size={18} />,
+  "Geo.":       <BookOpen   size={18} />,
+  "Lit.":       <BookOpen   size={18} />,
+  "W.Lit.":     <BookOpen   size={18} />,
+  "A.Lit.":     <BookOpen   size={18} />,
+  "Economics":  <BookOpen   size={18} />,
+  "Psychology": <BookOpen   size={18} />,
+  "Biology":    <Microscope size={18} />,
+  "Chemistry":  <Microscope size={18} />,
+  "Physics":    <Microscope size={18} />,
+  "미술":       <Palette    size={18} />,
+  "음악":       <Music      size={18} />,
+  "성경":       <BookMarked size={18} />,
+  "E.P.":       <Cpu        size={18} />,
+  "ENGLISH":    <Globe      size={18} />,
+  "Integ.Math": <Calculator size={18} />,
+  "대수":       <Calculator size={18} />,
+  "화법과 언어":<Languages  size={18} />,
+  "공통 국어":  <Languages  size={18} />,
+  "공통 수학":  <Calculator size={18} />,
+  "문학":       <Languages  size={18} />,
+  "선택 수학":  <Calculator size={18} />,
+  "한국사":     <BookOpen   size={18} />,
+  "Inter.Studies":<Globe   size={18} />,
+  "E.Lit.":     <BookOpen   size={18} />,
+  "P.E.":       <Dumbbell   size={18} />,
+  "정보":       <Cpu        size={18} />,
 };
 
 const getSubjectIcon = (name: string) => {
@@ -95,20 +99,18 @@ const getSubjectIcon = (name: string) => {
   return <GraduationCap size={18} />;
 };
 
-// ─── Score Conversion Table (shown in info panel) ─────────────────────────────
 const GRADE_TABLE = [
-  { range: "95 ~ 100", letter: "A+", point: 4.5 },
-  { range: "90 ~ 94",  letter: "A",  point: 4.0 },
-  { range: "85 ~ 89",  letter: "B+", point: 3.5 },
-  { range: "80 ~ 84",  letter: "B",  point: 3.0 },
-  { range: "75 ~ 79",  letter: "C+", point: 2.5 },
-  { range: "70 ~ 74",  letter: "C",  point: 2.0 },
-  { range: "65 ~ 69",  letter: "D+", point: 1.5 },
-  { range: "60 ~ 64",  letter: "D",  point: 1.0 },
-  { range: "0 ~ 59",   letter: "F",  point: 0.0 },
+  { letter: "A+", point: 4.5 },
+  { letter: "A",  point: 4.0 },
+  { letter: "B+", point: 3.5 },
+  { letter: "B",  point: 3.0 },
+  { letter: "C+", point: 2.5 },
+  { letter: "C",  point: 2.0 },
+  { letter: "D+", point: 1.5 },
+  { letter: "D",  point: 1.0 },
+  { letter: "F",  point: 0.0 },
 ];
 
-// ─── GPA ring color ────────────────────────────────────────────────────────────
 const getRingColor = (gpa: number) => {
   if (gpa >= 4.0) return { text: "text-emerald-500", glow: "bg-emerald-500" };
   if (gpa >= 3.0) return { text: "text-sky-500",     glow: "bg-sky-500" };
@@ -117,14 +119,82 @@ const getRingColor = (gpa: number) => {
   return                  { text: "text-zinc-700",   glow: "bg-zinc-700" };
 };
 
-// ─── GPA label ─────────────────────────────────────────────────────────────────
 const getGpaLabel = (gpa: number) => {
-  if (gpa >= 4.3) return "Excellent";
+  if (gpa >= 4.0) return "Excellent";
   if (gpa >= 3.5) return "Great";
   if (gpa >= 2.5) return "Good";
   if (gpa >= 1.5) return "Fair";
   if (gpa >  0)   return "Below Avg";
   return "—";
+};
+
+// ─── Grade Select Dropdown ─────────────────────────────────────────────────────
+
+interface GradeSelectProps {
+  id: string;
+  value: string;
+  onChange: (id: string, value: string) => void;
+}
+
+const GradeSelect = ({ id, value, onChange }: GradeSelectProps) => {
+  const [open, setOpen] = useState(false);
+  const selected = value as LetterGrade | "";
+  const colors = selected ? gradeColors[selected] : null;
+
+  return (
+    <div className="relative shrink-0">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className={`w-24 h-11 rounded-2xl border text-sm font-black flex items-center justify-center gap-1.5 transition-all ${
+          colors
+            ? `${colors.bg} ${colors.border} ${colors.text}`
+            : "bg-zinc-950/60 border-white/10 text-zinc-600 hover:text-white hover:border-white/20"
+        }`}
+      >
+        <span>{selected || "—"}</span>
+        <ChevronDown size={12} className={`transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <>
+            <div className="fixed inset-0 z-30" onClick={() => setOpen(false)} />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: -4 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: -4 }}
+              transition={{ duration: 0.12 }}
+              className="absolute right-0 top-13 z-40 mt-1 bg-zinc-900 border border-white/10 rounded-2xl p-1.5 shadow-2xl min-w-[7rem]"
+            >
+              {/* Clear option */}
+              <button
+                onClick={() => { onChange(id, ""); setOpen(false); }}
+                className="w-full px-3 py-1.5 text-xs font-bold text-zinc-600 hover:text-zinc-400 rounded-xl transition-colors text-left"
+              >
+                선택 안함
+              </button>
+              {LETTER_GRADES.map((g) => {
+                const c = gradeColors[g];
+                const pt = LETTER_TO_POINT[g];
+                return (
+                  <button
+                    key={g}
+                    onClick={() => { onChange(id, g); setOpen(false); }}
+                    className={`w-full px-3 py-1.5 rounded-xl text-sm font-black flex items-center justify-between gap-3 transition-colors ${
+                      selected === g ? `${c.bg} ${c.text}` : `text-zinc-400 hover:${c.bg} hover:${c.text}`
+                    }`}
+                  >
+                    <span>{g}</span>
+                    <span className="text-[10px] opacity-60">{pt.toFixed(1)}</span>
+                  </button>
+                );
+              })}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
+  );
 };
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -139,7 +209,6 @@ export default function GpaCalculatorPage() {
   const [error, setError] = useState<string | null>(null);
   const [showTable, setShowTable] = useState(false);
 
-  // Auto-detect grade from session
   useEffect(() => {
     if (session?.user?.grade) {
       const g = simplifyGradeLabel(session.user.grade);
@@ -159,7 +228,6 @@ export default function GpaCalculatorPage() {
       if (!res.ok) throw new Error("Failed to fetch");
       const data = await res.json();
       setSubjects(data.subjects ?? []);
-      // Reset scores when grade changes
       const initial: Record<string, string> = {};
       (data.subjects ?? []).forEach((s: SubjectCredit) => { initial[s.id] = ""; });
       setScores(initial);
@@ -174,31 +242,33 @@ export default function GpaCalculatorPage() {
     fetchSubjects(selectedGrade);
   }, [selectedGrade, fetchSubjects]);
 
-  const handleScoreChange = (id: string, value: string) => {
-    // Only allow 0-100 integers
-    if (value === "" || (/^\d{1,3}$/.test(value) && Number(value) <= 100)) {
-      setScores((prev) => ({ ...prev, [id]: value }));
-    }
+  const handleGradeChange = (id: string, value: string) => {
+    setScores((prev) => ({ ...prev, [id]: value }));
   };
 
-  // Weighted GPA calculation
+  const handlePassToggle = (id: string) => {
+    setScores((prev) => ({ ...prev, [id]: prev[id] === "PASS" ? "" : "PASS" }));
+  };
+
+  // Weighted GPA: only academic subjects count
   const { gpa, totalCredits, earnedCredits, subjectsCount } = useMemo(() => {
     let weightedSum = 0;
     let totalCr = 0;
     let earnedCr = 0;
     let count = 0;
 
-    subjects.forEach((s) => {
-      const raw = scores[s.id];
-      const scoreNum = raw !== "" && raw !== undefined && raw !== null ? Number(raw) : null;
-      const result = scoreToGrade(scoreNum);
-      totalCr += s.credits;
-      if (result !== null) {
-        weightedSum += result.point * s.credits;
-        earnedCr += s.credits;
-        count++;
-      }
-    });
+    subjects
+      .filter((s) => s.isAcademic)
+      .forEach((s) => {
+        const letter = scores[s.id] as LetterGrade | "";
+        totalCr += s.credits;
+        if (letter && letter in LETTER_TO_POINT) {
+          const point = LETTER_TO_POINT[letter as LetterGrade];
+          weightedSum += point * s.credits;
+          earnedCr += s.credits;
+          count++;
+        }
+      });
 
     return {
       gpa: earnedCr > 0 ? weightedSum / earnedCr : 0,
@@ -215,6 +285,9 @@ export default function GpaCalculatorPage() {
     subjects.forEach((s) => { reset[s.id] = ""; });
     setScores(reset);
   };
+
+  const academicSubjects = subjects.filter((s) => s.isAcademic);
+  const nonAcademicSubjects = subjects.filter((s) => !s.isAcademic);
 
   return (
     <div className="min-h-screen pt-32 pb-24 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
@@ -240,24 +313,21 @@ export default function GpaCalculatorPage() {
             </span>
           </h1>
           <p className="text-zinc-500 max-w-xl font-medium text-base leading-relaxed">
-            학년을 선택하고 각 과목 점수를 입력하면 가중 평균 GPA가 자동 계산됩니다.<br />
-            4.5 만점 기준 · 단위수 가중 계산
+            학년을 선택하고 각 과목 학점을 선택하면 가중 평균 GPA가 자동 계산됩니다.<br />
+            4.5 만점 기준 · 단위수 가중 계산 · Non-academic 과목 제외
           </p>
         </motion.div>
       </div>
 
-      {/* Grade Selector + Info Toggle */}
+      {/* Grade Selector + Controls */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-8">
-        {/* Grade Pills */}
         <div className="flex items-center gap-2 p-1.5 bg-zinc-900/40 border border-white/5 rounded-[1.5rem] flex-wrap">
           {GRADES.map((g) => (
             <button
               key={g}
               onClick={() => setSelectedGrade(g)}
               className={`relative px-5 py-2.5 rounded-2xl text-sm font-black transition-all duration-300 ${
-                selectedGrade === g
-                  ? "text-white"
-                  : "text-zinc-600 hover:text-zinc-300"
+                selectedGrade === g ? "text-white" : "text-zinc-600 hover:text-zinc-300"
               }`}
             >
               {selectedGrade === g && (
@@ -273,7 +343,6 @@ export default function GpaCalculatorPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Reset button */}
           <button
             onClick={handleReset}
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-zinc-900/40 border border-white/5 text-zinc-500 hover:text-white hover:border-white/15 transition-all text-sm font-bold"
@@ -281,8 +350,6 @@ export default function GpaCalculatorPage() {
             <RefreshCw size={14} />
             초기화
           </button>
-
-          {/* Grade table toggle */}
           <button
             onClick={() => setShowTable((v) => !v)}
             className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl border text-sm font-bold transition-all ${
@@ -291,13 +358,13 @@ export default function GpaCalculatorPage() {
                 : "bg-zinc-900/40 border-white/5 text-zinc-500 hover:text-white hover:border-white/15"
             }`}
           >
-            환산표
+            학점표
             <ChevronDown size={14} className={`transition-transform ${showTable ? "rotate-180" : ""}`} />
           </button>
         </div>
       </div>
 
-      {/* Grade Conversion Table (collapsible) */}
+      {/* Grade Table */}
       <AnimatePresence>
         {showTable && (
           <motion.div
@@ -307,7 +374,7 @@ export default function GpaCalculatorPage() {
             className="overflow-hidden mb-8"
           >
             <div className="bg-zinc-900/40 border border-white/5 rounded-[2rem] p-6">
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 mb-4">점수 → 학점 환산 기준</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 mb-4">학점 환산 기준</p>
               <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-2">
                 {GRADE_TABLE.map((row) => {
                   const c = gradeColors[row.letter];
@@ -315,7 +382,6 @@ export default function GpaCalculatorPage() {
                     <div key={row.letter} className={`rounded-2xl p-3 text-center border ${c.bg} ${c.border}`}>
                       <p className={`text-lg font-black ${c.text}`}>{row.letter}</p>
                       <p className="text-[10px] text-zinc-500 font-bold mt-0.5">{row.point.toFixed(1)}</p>
-                      <p className="text-[9px] text-zinc-600 font-medium mt-1 leading-tight">{row.range}</p>
                     </div>
                   );
                 })}
@@ -334,9 +400,7 @@ export default function GpaCalculatorPage() {
             {isLoading ? (
               <motion.div
                 key="loading"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 className="flex flex-col items-center justify-center py-32 bg-zinc-900/20 rounded-[3rem] border border-white/5 border-dashed"
               >
                 <Loader2 className="w-10 h-10 text-emerald-500/30 animate-spin mb-4" />
@@ -345,9 +409,7 @@ export default function GpaCalculatorPage() {
             ) : error ? (
               <motion.div
                 key="error"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 className="flex flex-col items-center justify-center py-32 bg-zinc-900/20 rounded-[3rem] border border-red-500/10"
               >
                 <AlertCircle className="w-10 h-10 text-red-500/40 mb-4" />
@@ -362,9 +424,7 @@ export default function GpaCalculatorPage() {
             ) : subjects.length === 0 ? (
               <motion.div
                 key="empty"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 className="flex flex-col items-center justify-center py-32 bg-zinc-900/20 rounded-[3rem] border border-white/5 border-dashed"
               >
                 <GraduationCap className="w-10 h-10 text-zinc-700 mb-4" />
@@ -375,79 +435,121 @@ export default function GpaCalculatorPage() {
             ) : (
               <motion.div
                 key={selectedGrade}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -12 }}
+                initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
                 transition={{ duration: 0.3 }}
-                className="space-y-3"
+                className="space-y-6"
               >
-                {subjects.map((subject, idx) => {
-                  const raw = scores[subject.id] ?? "";
-                  const scoreNum = raw !== "" ? Number(raw) : null;
-                  const result = scoreToGrade(scoreNum);
-                  const colors = result ? gradeColors[result.letter] : null;
+                {/* Academic subjects */}
+                {academicSubjects.length > 0 && (
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 mb-3 px-1">
+                      Academic · GPA 반영
+                    </p>
+                    <div className="space-y-2.5">
+                      {academicSubjects.map((subject, idx) => {
+                        const letter = (scores[subject.id] ?? "") as LetterGrade | "";
+                        const colors = letter ? gradeColors[letter] : null;
 
-                  return (
-                    <motion.div
-                      key={subject.id}
-                      initial={{ opacity: 0, y: 16 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.04, duration: 0.3 }}
-                      className={`group bg-zinc-900/30 backdrop-blur-xl border rounded-[2rem] p-4 sm:p-5 flex items-center gap-4 transition-all duration-300 ${
-                        result && colors
-                          ? `${colors.border} ${colors.bg}`
-                          : "border-white/5 hover:border-white/10"
-                      }`}
-                    >
-                      {/* Icon */}
-                      <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${
-                        result && colors ? `${colors.bg} ${colors.text}` : "bg-zinc-800/60 text-zinc-600"
-                      }`}>
-                        {getSubjectIcon(subject.subject)}
-                      </div>
-
-                      {/* Subject name + credits */}
-                      <div className="flex-1 min-w-0">
-                        <p className="text-white font-bold text-sm sm:text-base truncate">{subject.subject}</p>
-                        <p className="text-zinc-600 text-[11px] font-medium mt-0.5">{subject.credits}학점</p>
-                      </div>
-
-                      {/* Grade badge */}
-                      <AnimatePresence>
-                        {result && colors && (
+                        return (
                           <motion.div
-                            key={result.letter}
-                            initial={{ scale: 0.7, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.7, opacity: 0 }}
-                            className={`shrink-0 flex flex-col items-center justify-center w-14 h-14 rounded-2xl border font-black ${colors.bg} ${colors.border} ${colors.text}`}
+                            key={subject.id}
+                            initial={{ opacity: 0, y: 16 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: idx * 0.04, duration: 0.3 }}
+                            className={`group bg-zinc-900/30 backdrop-blur-xl border rounded-[2rem] p-4 sm:p-5 flex items-center gap-4 transition-all duration-300 ${
+                              colors ? `${colors.border} ${colors.bg}` : "border-white/5 hover:border-white/10"
+                            }`}
                           >
-                            <span className="text-base leading-none">{result.letter}</span>
-                            <span className="text-[10px] text-zinc-500 mt-0.5">{result.point.toFixed(1)}</span>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
+                            {/* Icon */}
+                            <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${
+                              colors ? `${colors.bg} ${colors.text}` : "bg-zinc-800/60 text-zinc-600"
+                            }`}>
+                              {getSubjectIcon(subject.subject)}
+                            </div>
 
-                      {/* Score input */}
-                      <div className="shrink-0 relative">
-                        <input
-                          type="number"
-                          min={0}
-                          max={100}
-                          value={raw}
-                          onChange={(e) => handleScoreChange(subject.id, e.target.value)}
-                          placeholder="—"
-                          className={`w-20 h-11 rounded-2xl border text-center font-black text-sm bg-zinc-950/60 text-white outline-none transition-all placeholder:text-zinc-700 focus:ring-1 focus:ring-emerald-500/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
-                            result && colors ? `${colors.border}` : "border-white/10 focus:border-white/20"
-                          }`}
-                        />
-                        {raw !== "" && (
-                          <span className="absolute -top-2 -right-1 text-[9px] font-black text-zinc-600">점</span>
-                        )}
-                      </div>
-                    </motion.div>
-                  );
-                })}
+                            {/* Subject name + credits */}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-white font-bold text-sm sm:text-base truncate">{subject.subject}</p>
+                              <p className="text-zinc-600 text-[11px] font-medium mt-0.5">{subject.credits}학점</p>
+                            </div>
+
+                            {/* Grade point badge */}
+                            <AnimatePresence>
+                              {letter && colors && (
+                                <motion.div
+                                  key={letter}
+                                  initial={{ scale: 0.7, opacity: 0 }}
+                                  animate={{ scale: 1, opacity: 1 }}
+                                  exit={{ scale: 0.7, opacity: 0 }}
+                                  className={`shrink-0 flex flex-col items-center justify-center w-12 h-12 rounded-2xl border font-black ${colors.bg} ${colors.border} ${colors.text}`}
+                                >
+                                  <span className="text-[11px] leading-none">{LETTER_TO_POINT[letter as LetterGrade].toFixed(1)}</span>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+
+                            {/* Grade dropdown */}
+                            <GradeSelect id={subject.id} value={letter} onChange={handleGradeChange} />
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Non-academic subjects */}
+                {nonAcademicSubjects.length > 0 && (
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 mb-3 px-1">
+                      Non-Academic · Pass / Fail
+                    </p>
+                    <div className="space-y-2.5">
+                      {nonAcademicSubjects.map((subject, idx) => {
+                        const isPass = scores[subject.id] === "PASS";
+
+                        return (
+                          <motion.div
+                            key={subject.id}
+                            initial={{ opacity: 0, y: 16 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: idx * 0.04, duration: 0.3 }}
+                            className={`group bg-zinc-900/30 backdrop-blur-xl border rounded-[2rem] p-4 sm:p-5 flex items-center gap-4 transition-all duration-300 ${
+                              isPass
+                                ? "border-emerald-500/20 bg-emerald-500/5"
+                                : "border-white/5 hover:border-white/10"
+                            }`}
+                          >
+                            {/* Icon */}
+                            <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${
+                              isPass ? "bg-emerald-500/15 text-emerald-400" : "bg-zinc-800/60 text-zinc-600"
+                            }`}>
+                              {getSubjectIcon(subject.subject)}
+                            </div>
+
+                            {/* Subject name */}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-white font-bold text-sm sm:text-base truncate">{subject.subject}</p>
+                              <p className="text-zinc-600 text-[11px] font-medium mt-0.5">Pass / Fail</p>
+                            </div>
+
+                            {/* Pass toggle */}
+                            <button
+                              onClick={() => handlePassToggle(subject.id)}
+                              className={`shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-2xl border text-xs font-black transition-all ${
+                                isPass
+                                  ? "bg-emerald-500/15 border-emerald-500/30 text-emerald-400"
+                                  : "bg-zinc-900/60 border-white/10 text-zinc-600 hover:text-white hover:border-white/20"
+                              }`}
+                            >
+                              <CheckCircle2 size={13} />
+                              {isPass ? "PASS" : "—"}
+                            </button>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </motion.div>
             )}
           </AnimatePresence>
@@ -461,7 +563,6 @@ export default function GpaCalculatorPage() {
           className="w-full lg:w-[360px] shrink-0 sticky top-28"
         >
           <div className="bg-zinc-900/60 backdrop-blur-2xl rounded-[3rem] border border-white/10 p-8 sm:p-10 relative overflow-hidden">
-            {/* Glow */}
             <div className={`absolute top-0 right-0 w-56 h-56 blur-[80px] rounded-full opacity-20 transition-colors duration-700 ${ring.glow}`} />
 
             <div className="relative z-10 flex flex-col items-center">
@@ -473,7 +574,7 @@ export default function GpaCalculatorPage() {
                 {selectedGrade.startsWith("12") ? `G${selectedGrade}` : `${selectedGrade}학년`} 가중 평균
               </h2>
               <p className="text-zinc-600 text-[10px] font-medium mb-6">
-                {subjectsCount > 0 ? `${subjectsCount}과목 / ${earnedCredits}학점 입력됨` : "점수를 입력해 주세요"}
+                {subjectsCount > 0 ? `${subjectsCount}과목 / ${earnedCredits}학점 입력됨` : "학점을 선택해 주세요"}
               </p>
 
               {/* Ring */}
@@ -496,14 +597,13 @@ export default function GpaCalculatorPage() {
                 </div>
               </div>
 
-              {/* Label */}
               <div className={`px-5 py-1.5 rounded-full border text-xs font-black uppercase tracking-widest mb-6 transition-colors duration-500 ${
                 gpa > 0 ? `${ring.text} border-current/30 bg-current/5` : "text-zinc-700 border-zinc-800"
               }`}>
                 {getGpaLabel(gpa)}
               </div>
 
-              {/* Stats row */}
+              {/* Stats */}
               <div className="grid grid-cols-3 divide-x divide-white/5 w-full bg-black/20 border border-white/5 rounded-2xl">
                 {[
                   { label: "Scale", value: "4.5" },
@@ -519,7 +619,7 @@ export default function GpaCalculatorPage() {
             </div>
           </div>
 
-          {/* Grade distribution mini-list */}
+          {/* Grade distribution */}
           {subjectsCount > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 8 }}
@@ -530,11 +630,10 @@ export default function GpaCalculatorPage() {
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 mb-3">학점 분포</p>
               <div className="space-y-2">
                 {Object.entries(
-                  subjects.reduce<Record<string, number>>((acc, s) => {
-                    const raw = scores[s.id] ?? "";
-                    const result = scoreToGrade(raw !== "" ? Number(raw) : null);
-                    if (!result) return acc;
-                    acc[result.letter] = (acc[result.letter] ?? 0) + 1;
+                  academicSubjects.reduce<Record<string, number>>((acc, s) => {
+                    const letter = scores[s.id] ?? "";
+                    if (!letter) return acc;
+                    acc[letter] = (acc[letter] ?? 0) + 1;
                     return acc;
                   }, {})
                 )

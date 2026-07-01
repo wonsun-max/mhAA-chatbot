@@ -169,14 +169,15 @@ model ExamSchedule {
 }
 
 model SubjectCredit {
-  id        String   @id @default(cuid())
-  grade     String
-  subject   String
-  credits   Int
-  semester  String
-  year      Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(cuid())
+  grade      String
+  subject    String
+  credits    Int
+  semester   String
+  year       Int
+  isAcademic Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@unique([grade, subject, semester, year])
   @@index([grade, semester, year])
