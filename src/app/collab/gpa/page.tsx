@@ -90,6 +90,8 @@ const SUBJECT_ICONS: Record<string, React.ReactNode> = {
   "E.Lit.":     <BookOpen   size={18} />,
   "P.E.":       <Dumbbell   size={18} />,
   "정보":       <Cpu        size={18} />,
+  "Practical English": <Globe size={18} />,
+  "진로":       <GraduationCap size={18} />,
 };
 
 const getSubjectIcon = (name: string) => {

@@ -7,7 +7,7 @@ const YEAR = 2026;
 // These appear in every grade. credits = weekly periods / 2.
 const NON_ACADEMIC_COMMON = [
   { subject: "Chapel",                         credits: 1 }, // Worship Service
-  { subject: "Club Activity (Performing Arts)", credits: 1 }, // CA
+  { subject: "Club Activity",                  credits: 1 }, // CA
   { subject: "Self-governing & Volunteer Work", credits: 2 }, // 자율/봉사
 ];
 
@@ -105,11 +105,13 @@ const ACADEMIC: Record<string, SubjectRow[]> = {
     { subject: "Inter.Studies",           credits: 3 }, // International Studies
     { subject: "E.Lit.",                  credits: 3 }, // English Literature
     { subject: "E.P.",                    credits: 3 }, // English Practicum
+    { subject: "Practical English",       credits: 5 },
     { subject: "Rhetoric",                credits: 2 },
     { subject: "Writing",                 credits: 2 },
     { subject: "한국사",                  credits: 2 }, // Korean History
     { subject: "P.E.",                    credits: 2 },
     { subject: "정보",                    credits: 1 }, // Informatics
+    { subject: "진로",                    credits: 1 }, // Career Development
     { subject: "성경",                    credits: 1 },
   ],
   "12-2": [
@@ -119,11 +121,13 @@ const ACADEMIC: Record<string, SubjectRow[]> = {
     { subject: "Inter.Studies",           credits: 3 },
     { subject: "E.Lit.",                  credits: 3 },
     { subject: "E.P.",                    credits: 3 },
+    { subject: "Practical English",       credits: 5 },
     { subject: "Rhetoric",                credits: 2 },
     { subject: "Writing",                 credits: 2 },
     { subject: "한국사",                  credits: 2 },
     { subject: "P.E.",                    credits: 2 },
     { subject: "정보",                    credits: 1 },
+    { subject: "진로",                    credits: 1 },
     { subject: "성경",                    credits: 1 },
   ],
 };
