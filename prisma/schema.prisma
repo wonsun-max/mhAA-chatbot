@@ -151,6 +151,37 @@ model PostLike {
   @@index([postId])
 }
 
+model ExamSchedule {
+  id        String   @id @default(cuid())
+  examType  String
+  semester  String
+  year      Int
+  date      String
+  dayOfWeek String
+  period    Int
+  time      String
+  subject   String
+  grades    String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([examType, year, semester])
+}
+
+model SubjectCredit {
+  id        String   @id @default(cuid())
+  grade     String
+  subject   String
+  credits   Int
+  semester  String
+  year      Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([grade, subject, semester, year])
+  @@index([grade, semester, year])
+}
+
 enum UserRole {
   STUDENT
   TEACHER
@@ -161,21 +192,4 @@ enum UserStatus {
   PENDING
   APPROVED
   SUSPENDED
-}
-
-model ExamSchedule {
-  id        String   @id @default(cuid())
-  examType  String   // MIDTERM / FINALS
-  semester  String   // 1 / 2
-  year      Int
-  date      String   
-  dayOfWeek String   
-  period    Int
-  time      String   
-  subject   String
-  grades    String[] 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([examType, year, semester])
 }
