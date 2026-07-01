@@ -147,7 +147,7 @@ const GradeSelect = ({ id, value, onChange }: GradeSelectProps) => {
     if (btnRef.current) {
       const rect = btnRef.current.getBoundingClientRect();
       setDropPos({
-        top: rect.bottom + window.scrollY + 6,
+        top: rect.bottom + 6,
         right: window.innerWidth - rect.right,
       });
     }
