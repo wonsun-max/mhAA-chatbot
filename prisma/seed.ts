@@ -22,17 +22,17 @@ const ACADEMIC: Record<string, SubjectRow[]> = {
     { subject: "국어",     credits: 4 },
     { subject: "수학",     credits: 4 },
     { subject: "Science",  credits: 4 },
-    { subject: "E.P.",     credits: 2 }, // English Practicum
+    { subject: "E.P.",     credits: 3 }, // English Practicum
     { subject: "Filipino", credits: 2 },
     { subject: "Lit.",     credits: 3 }, // Literature
     { subject: "한문",     credits: 2 },
     { subject: "Grammar",  credits: 2 },
     { subject: "P.E.",     credits: 2 },
     { subject: "사회",     credits: 2 },
-    { subject: "WH",       credits: 2 }, // World History
+    { subject: "W.History", credits: 2 }, // World History
     { subject: "음악",     credits: 1 },
     { subject: "성경",     credits: 1 },
-    { subject: "실용영어", credits: 5 },
+    { subject: "ENGLISH",  credits: 5 },
   ],
   "8": [
     { subject: "국어",     credits: 4 },
@@ -48,7 +48,7 @@ const ACADEMIC: Record<string, SubjectRow[]> = {
     { subject: "음악",     credits: 1 },
     { subject: "Geo.",     credits: 2 }, // Geography
     { subject: "성경",     credits: 1 },
-    { subject: "실용영어", credits: 5 },
+    { subject: "ENGLISH",  credits: 5 },
   ],
   "9": [
     { subject: "국어",      credits: 4 },
@@ -64,20 +64,20 @@ const ACADEMIC: Record<string, SubjectRow[]> = {
     { subject: "성경",      credits: 1 },
     { subject: "미술",      credits: 2 },
     { subject: "음악",      credits: 1 },
-    { subject: "실용영어",  credits: 5 },
+    { subject: "ENGLISH",   credits: 5 },
   ],
   "10": [
-    { subject: "공동 국어",  credits: 4 },
-    { subject: "공동 수학",  credits: 4 },
+    { subject: "공통 국어",  credits: 4 },
+    { subject: "공통 수학",  credits: 4 },
     { subject: "Psychology", credits: 4 },
     { subject: "Biology",    credits: 3 },
-    { subject: "Lit.",       credits: 3 },
+    { subject: "W.Lit.",     credits: 3 }, // World Literature
     { subject: "Integ.Math", credits: 2 },
     { subject: "E.P.",       credits: 3 },
     { subject: "Grammar",    credits: 2 },
     { subject: "중국어",     credits: 2 },
     { subject: "성경",       credits: 1 },
-    { subject: "실용영어",   credits: 5 },
+    { subject: "ENGLISH",    credits: 5 },
     { subject: "P.E.",       credits: 1 },
     { subject: "음악",       credits: 1 },
     { subject: "미술",       credits: 2 },
@@ -86,16 +86,16 @@ const ACADEMIC: Record<string, SubjectRow[]> = {
     { subject: "E.P.",        credits: 4 },
     { subject: "대수",        credits: 4 },
     { subject: "Economics",   credits: 3 },
-    { subject: "화법과 언어", credits: 3 },
+    { subject: "화법과 언어", credits: 4 },
     { subject: "Writing",     credits: 3 },
     { subject: "Chemistry",   credits: 3 },
     { subject: "P.E.",        credits: 2 },
-    { subject: "Lit.",        credits: 3 },
+    { subject: "A.Lit.",      credits: 3 }, // Advanced Literature
     { subject: "Integ.Math",  credits: 2 },
     { subject: "미술",        credits: 2 },
     { subject: "성경",        credits: 1 },
     { subject: "음악",        credits: 1 },
-    { subject: "실용영어",    credits: 5 },
+    { subject: "ENGLISH",     credits: 5 },
   ],
   // G12-1 and G12-2 share the same academic subjects
   "12-1": [
@@ -105,13 +105,13 @@ const ACADEMIC: Record<string, SubjectRow[]> = {
     { subject: "Inter.Studies",           credits: 3 }, // International Studies
     { subject: "E.Lit.",                  credits: 3 }, // English Literature
     { subject: "E.P.",                    credits: 3 }, // English Practicum
-    { subject: "Practical English",       credits: 5 },
+    { subject: "ENGLISH",                 credits: 5 },
     { subject: "Rhetoric",                credits: 2 },
     { subject: "Writing",                 credits: 2 },
     { subject: "한국사",                  credits: 2 }, // Korean History
     { subject: "P.E.",                    credits: 2 },
     { subject: "정보",                    credits: 1 }, // Informatics
-    { subject: "진로",                    credits: 1 }, // Career Development
+    { subject: "진로와 직업",              credits: 1 }, // Career Development
     { subject: "성경",                    credits: 1 },
   ],
   "12-2": [
@@ -121,13 +121,13 @@ const ACADEMIC: Record<string, SubjectRow[]> = {
     { subject: "Inter.Studies",           credits: 3 },
     { subject: "E.Lit.",                  credits: 3 },
     { subject: "E.P.",                    credits: 3 },
-    { subject: "Practical English",       credits: 5 },
+    { subject: "ENGLISH",                 credits: 5 },
     { subject: "Rhetoric",                credits: 2 },
     { subject: "Writing",                 credits: 2 },
     { subject: "한국사",                  credits: 2 },
     { subject: "P.E.",                    credits: 2 },
     { subject: "정보",                    credits: 1 },
-    { subject: "진로",                    credits: 1 },
+    { subject: "진로와 직업",              credits: 1 },
     { subject: "성경",                    credits: 1 },
   ],
 };
