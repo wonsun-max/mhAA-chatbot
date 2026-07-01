@@ -132,7 +132,7 @@ export function NoticeManager() {
                             initial={{ scale: 0.95, opacity: 0, y: 20 }} 
                             animate={{ scale: 1, opacity: 1, y: 0 }} 
                             exit={{ scale: 0.95, opacity: 0, y: 20 }} 
-                            className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto bg-zinc-900 border border-white/10 rounded-[30px] md:rounded-[40px] p-6 md:p-10 shadow-2xl no-scrollbar"
+                            className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto bg-zinc-900 border border-white/10 rounded-[30px] md:rounded-[40px] p-6 md:p-10 shadow-2xl scrollbar-hide"
                         >
                             <button onClick={() => setShowModal(false)} className="absolute top-6 right-6 md:top-8 md:right-8 text-zinc-500 hover:text-white"><X size={20} /></button>
                             <h3 className="text-xl md:text-2xl font-light mb-6 md:mb-8">{editingNotice ? "공지사항 수정" : "새 공지사항"}</h3>

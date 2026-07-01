@@ -237,7 +237,7 @@ export default function TimetablePage() {
       </div>
 
       {/* Day Selector */}
-      <div className="flex p-1 bg-zinc-900/40 backdrop-blur-xl rounded-[1.5rem] border border-white/5 mb-12 overflow-x-auto no-scrollbar max-w-3xl">
+      <div className="flex p-1 bg-zinc-900/40 backdrop-blur-xl rounded-[1.5rem] border border-white/5 mb-12 overflow-x-auto scrollbar-hide max-w-3xl">
         {DAYS.map((day) => (
           <button
             key={day.key}
@@ -362,7 +362,7 @@ export default function TimetablePage() {
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.98 }}
-              className="bg-zinc-900/30 backdrop-blur-xl border border-white/5 rounded-[3rem] p-6 sm:p-10 overflow-x-auto no-scrollbar"
+              className="bg-zinc-900/30 backdrop-blur-xl border border-white/5 rounded-[3rem] p-6 sm:p-10 overflow-x-auto scrollbar-hide"
             >
                <table className="w-full min-w-[800px] border-separate border-spacing-3">
                   <thead>
