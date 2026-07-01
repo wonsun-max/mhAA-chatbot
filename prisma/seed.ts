@@ -6,16 +6,9 @@ const YEAR = 2026;
 // ─── Non-academic subjects (Pass/Fail, excluded from GPA) ─────────────────────
 // These appear in every grade. credits = weekly periods / 2.
 const NON_ACADEMIC_COMMON = [
-  { subject: "Worship Service",       credits: 1 }, // 채플
-  { subject: "CA (Club Activity)",    credits: 1 }, // 동아리
-  { subject: "전체 QT",               credits: 1 },
-  { subject: "Korean QT",             credits: 1 },
-  { subject: "English QT",            credits: 1 },
-  { subject: "창의적 체험활동(자율)", credits: 1 },
-];
-
-const NON_ACADEMIC_G12 = [
-  { subject: "진로와 직업", credits: 1 }, // Career Development (G12 only)
+  { subject: "Chapel",                         credits: 1 }, // Worship Service
+  { subject: "Club Activity (Performing Arts)", credits: 1 }, // CA
+  { subject: "Self-governing & Volunteer Work", credits: 2 }, // 자율/봉사
 ];
 
 // ─── Academic subjects per grade ──────────────────────────────────────────────
@@ -164,17 +157,6 @@ async function main() {
         upserted++;
       }
 
-      // Non-academic G12 only
-      if (grade === "12-1" || grade === "12-2") {
-        for (const row of NON_ACADEMIC_G12) {
-          await prisma.subjectCredit.upsert({
-            where: { grade_subject_semester_year: { grade, subject: row.subject, semester, year: YEAR } },
-            update: { credits: row.credits, isAcademic: false },
-            create: { grade, subject: row.subject, credits: row.credits, semester, year: YEAR, isAcademic: false },
-          });
-          upserted++;
-        }
-      }
     }
   }
 

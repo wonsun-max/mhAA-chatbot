@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
@@ -138,13 +138,27 @@ interface GradeSelectProps {
 
 const GradeSelect = ({ id, value, onChange }: GradeSelectProps) => {
   const [open, setOpen] = useState(false);
+  const [dropPos, setDropPos] = useState({ top: 0, right: 0 });
+  const btnRef = useRef<HTMLButtonElement>(null);
   const selected = value as LetterGrade | "";
   const colors = selected ? gradeColors[selected] : null;
 
+  const handleOpen = () => {
+    if (btnRef.current) {
+      const rect = btnRef.current.getBoundingClientRect();
+      setDropPos({
+        top: rect.bottom + window.scrollY + 6,
+        right: window.innerWidth - rect.right,
+      });
+    }
+    setOpen((v) => !v);
+  };
+
   return (
-    <div className="relative shrink-0">
+    <div className="shrink-0">
       <button
-        onClick={() => setOpen((v) => !v)}
+        ref={btnRef}
+        onClick={handleOpen}
         className={`w-24 h-11 rounded-2xl border text-sm font-black flex items-center justify-center gap-1.5 transition-all ${
           colors
             ? `${colors.bg} ${colors.border} ${colors.text}`
@@ -158,13 +172,14 @@ const GradeSelect = ({ id, value, onChange }: GradeSelectProps) => {
       <AnimatePresence>
         {open && (
           <>
-            <div className="fixed inset-0 z-30" onClick={() => setOpen(false)} />
+            <div className="fixed inset-0 z-[100]" onClick={() => setOpen(false)} />
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: -4 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -4 }}
               transition={{ duration: 0.12 }}
-              className="absolute right-0 top-13 z-40 mt-1 bg-zinc-900 border border-white/10 rounded-2xl p-1.5 shadow-2xl min-w-[7rem]"
+              style={{ position: "fixed", top: dropPos.top, right: dropPos.right }}
+              className="z-[101] bg-zinc-900 border border-white/10 rounded-2xl p-1.5 shadow-2xl min-w-[7rem]"
             >
               {/* Clear option */}
               <button
