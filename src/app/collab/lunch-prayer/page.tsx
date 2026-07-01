@@ -2,7 +2,8 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { BookOpen, Calendar, Users, Info, Star, ChevronRight, Sparkles, Clock, MapPin } from "lucide-react";
+import { BookOpen, Calendar, Users, Info, Star, ChevronRight, Sparkles, Clock, MapPin, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 import { lunchPrayerSchedule, getLunchPrayerByDate } from "@/lib/lunch-prayer";
 
 export default function LunchPrayerPage() {
@@ -17,6 +18,14 @@ export default function LunchPrayerPage() {
 
   return (
     <div className="min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+      <Link
+        href="/collab"
+        className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors mb-8 group"
+      >
+        <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+        <span className="text-sm font-bold">Back to Hub</span>
+      </Link>
+
       {/* Header Section */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}

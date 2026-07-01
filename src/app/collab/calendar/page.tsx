@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Calendar as CalendarIcon, Clock, Tag, Bell, Award, Sparkles, PartyPopper, ChevronRight } from "lucide-react";
+import { Calendar as CalendarIcon, Clock, Tag, Bell, Award, Sparkles, PartyPopper, ChevronRight, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 interface CalendarEvent {
   id: string;
@@ -109,8 +110,16 @@ export default function CalendarPage() {
 
   return (
     <div className="min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-zinc-300">
+      <Link
+        href="/collab"
+        className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors mb-8 group"
+      >
+        <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+        <span className="text-sm font-bold">Back to Hub</span>
+      </Link>
+
       {/* Header Section */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="mb-16 text-center"

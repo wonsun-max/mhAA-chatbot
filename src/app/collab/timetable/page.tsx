@@ -3,13 +3,14 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useSession } from "next-auth/react";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
-import { 
-  Clock, User, BookOpen, 
-  ChevronRight, LayoutGrid, List, Info, 
-  GraduationCap, Calculator, Globe, Languages, 
-  Microscope, Music, Palette, Trophy, 
-  CircleDot, Sparkles, Search
+import {
+  Clock, User, BookOpen,
+  ChevronRight, LayoutGrid, List, Info,
+  GraduationCap, Calculator, Globe, Languages,
+  Microscope, Music, Palette, Trophy,
+  CircleDot, Sparkles, Search, ArrowLeft
 } from "lucide-react";
+import Link from "next/link";
 import type { Session } from "next-auth";
 
 interface TimetableEntry {
@@ -175,6 +176,14 @@ export default function TimetablePage() {
 
   return (
     <div className="min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+      <Link
+        href="/collab"
+        className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors mb-8 group"
+      >
+        <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+        <span className="text-sm font-bold">Back to Hub</span>
+      </Link>
+
       {/* Header & Controls */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10 mb-16">
         <motion.div 
