@@ -138,7 +138,7 @@ interface GradeSelectProps {
 
 const GradeSelect = ({ id, value, onChange }: GradeSelectProps) => {
   const [open, setOpen] = useState(false);
-  const [dropPos, setDropPos] = useState({ top: 0, right: 0 });
+  const [dropPos, setDropPos] = useState({ top: 0, right: 0, left: 0 });
   const btnRef = useRef<HTMLButtonElement>(null);
   const selected = value as LetterGrade | "";
   const colors = selected ? gradeColors[selected] : null;
@@ -149,6 +149,7 @@ const GradeSelect = ({ id, value, onChange }: GradeSelectProps) => {
       setDropPos({
         top: rect.bottom + 6,
         right: window.innerWidth - rect.right,
+        left: rect.left,
       });
     }
     setOpen((v) => !v);
@@ -178,7 +179,7 @@ const GradeSelect = ({ id, value, onChange }: GradeSelectProps) => {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -4 }}
               transition={{ duration: 0.12 }}
-              style={{ position: "fixed", top: dropPos.top, right: dropPos.right }}
+              style={{ position: "fixed", top: dropPos.top, left: dropPos.left }}
               className="z-[101] bg-zinc-900 border border-white/10 rounded-2xl p-1.5 shadow-2xl min-w-[7rem]"
             >
               {/* Clear option */}
