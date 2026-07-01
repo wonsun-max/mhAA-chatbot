@@ -165,6 +165,26 @@ const SUBJECT_CREDITS: Array<{
   { grade: "11", subject: "음악 (Music)", credits: 2, semester: "2" },
   { grade: "11", subject: "Physical Education (체육)", credits: 3, semester: "2" },
   { grade: "11", subject: "E.P.", credits: 1, semester: "2" },
+
+  // ─── G12-1 & G12-2 (same subjects, credits based on Timetable weekly periods) ──
+  // Weekly periods → credits: divide by 2 (2 periods = 1 credit)
+  // 문학:8→4, 선택수학:8→4, E.P.:6→3, Inter.Studies:6→3, E.Lit.:6→3
+  // 한국사:4→2, Rhetoric:4→2, P.E.:4→2, Writing:4→2, 정보:2→1, 성경:2→1
+  ...["12-1", "12-2"].flatMap((grade) =>
+    (["1", "2"] as const).flatMap((semester) => [
+      { grade, subject: "문학",                      credits: 4, semester },
+      { grade, subject: "선택 수학(직무/미적분II)",    credits: 4, semester },
+      { grade, subject: "E.P.",                      credits: 3, semester },
+      { grade, subject: "Inter.Studies",             credits: 3, semester },
+      { grade, subject: "E.Lit.",                    credits: 3, semester },
+      { grade, subject: "한국사",                    credits: 2, semester },
+      { grade, subject: "Rhetoric",                  credits: 2, semester },
+      { grade, subject: "P.E.",                      credits: 2, semester },
+      { grade, subject: "Writing",                   credits: 2, semester },
+      { grade, subject: "정보",                      credits: 1, semester },
+      { grade, subject: "성경",                      credits: 1, semester },
+    ])
+  ),
 ];
 
 async function main() {

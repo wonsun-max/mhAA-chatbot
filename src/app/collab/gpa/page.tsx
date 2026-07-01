@@ -26,7 +26,7 @@ interface SubjectCredit {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const GRADES = ["7", "8", "9", "10", "11"] as const;
+const GRADES = ["7", "8", "9", "10", "11", "12-1", "12-2"] as const;
 type Grade = typeof GRADES[number];
 
 // Score → letter + GPA point
@@ -78,6 +78,14 @@ const SUBJECT_ICONS: Record<string, React.ReactNode> = {
   "역사":     <BookOpen   size={18} />,
   "사회":     <Globe      size={18} />,
   "E.P.":     <Cpu        size={18} />,
+  "Rhetoric":     <PenLine    size={18} />,
+  "문학":         <Languages  size={18} />,
+  "한국사":       <BookOpen   size={18} />,
+  "정보":         <Cpu        size={18} />,
+  "Inter.Studies":<Globe      size={18} />,
+  "E.Lit.":       <BookOpen   size={18} />,
+  "선택 수학":    <Calculator size={18} />,
+  "P.E.":         <Dumbbell   size={18} />,
 };
 
 const getSubjectIcon = (name: string) => {
@@ -259,7 +267,7 @@ export default function GpaCalculatorPage() {
                   transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
                 />
               )}
-              <span className="relative z-10">{g}학년</span>
+              <span className="relative z-10">{g.startsWith("12") ? `G${g}` : `${g}학년`}</span>
             </button>
           ))}
         </div>
@@ -361,7 +369,7 @@ export default function GpaCalculatorPage() {
               >
                 <GraduationCap className="w-10 h-10 text-zinc-700 mb-4" />
                 <p className="text-zinc-500 font-medium text-sm">
-                  {selectedGrade}학년 과목 데이터가 없습니다.
+                  {selectedGrade.startsWith("12") ? `G${selectedGrade}` : `${selectedGrade}학년`} 과목 데이터가 없습니다.
                 </p>
               </motion.div>
             ) : (
@@ -462,7 +470,7 @@ export default function GpaCalculatorPage() {
               </div>
 
               <h2 className="text-zinc-400 font-bold tracking-widest uppercase text-[10px] mb-1">
-                {selectedGrade}학년 가중 평균
+                {selectedGrade.startsWith("12") ? `G${selectedGrade}` : `${selectedGrade}학년`} 가중 평균
               </h2>
               <p className="text-zinc-600 text-[10px] font-medium mb-6">
                 {subjectsCount > 0 ? `${subjectsCount}과목 / ${earnedCredits}학점 입력됨` : "점수를 입력해 주세요"}
