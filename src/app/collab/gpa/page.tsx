@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
@@ -138,28 +138,13 @@ interface GradeSelectProps {
 
 const GradeSelect = ({ id, value, onChange }: GradeSelectProps) => {
   const [open, setOpen] = useState(false);
-  const [dropPos, setDropPos] = useState({ top: 0, right: 0, left: 0 });
-  const btnRef = useRef<HTMLButtonElement>(null);
   const selected = value as LetterGrade | "";
   const colors = selected ? gradeColors[selected] : null;
 
-  const handleOpen = () => {
-    if (btnRef.current) {
-      const rect = btnRef.current.getBoundingClientRect();
-      setDropPos({
-        top: rect.bottom + 6,
-        right: window.innerWidth - rect.right,
-        left: rect.left,
-      });
-    }
-    setOpen((v) => !v);
-  };
-
   return (
-    <div className="shrink-0">
+    <div className="shrink-0 relative">
       <button
-        ref={btnRef}
-        onClick={handleOpen}
+        onClick={() => setOpen((v) => !v)}
         className={`w-24 h-11 rounded-2xl border text-sm font-black flex items-center justify-center gap-1.5 transition-all ${
           colors
             ? `${colors.bg} ${colors.border} ${colors.text}`
@@ -173,16 +158,14 @@ const GradeSelect = ({ id, value, onChange }: GradeSelectProps) => {
       <AnimatePresence>
         {open && (
           <>
-            <div className="fixed inset-0 z-[100]" onClick={() => setOpen(false)} />
+            <div className="fixed inset-0 z-[50]" onClick={() => setOpen(false)} />
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: -4 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -4 }}
               transition={{ duration: 0.12 }}
-              style={{ position: "fixed", top: dropPos.top, left: dropPos.left }}
-              className="z-[101] bg-zinc-900 border border-white/10 rounded-2xl p-1.5 shadow-2xl min-w-[7rem]"
+              className="absolute right-0 top-[calc(100%+6px)] z-[51] bg-zinc-900 border border-white/10 rounded-2xl p-1.5 shadow-2xl min-w-[7rem]"
             >
-              {/* Clear option */}
               <button
                 onClick={() => { onChange(id, ""); setOpen(false); }}
                 className="w-full px-3 py-1.5 text-xs font-bold text-zinc-600 hover:text-zinc-400 rounded-xl transition-colors text-left"
@@ -472,7 +455,7 @@ export default function GpaCalculatorPage() {
                             initial={{ opacity: 0, y: 16 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: idx * 0.04, duration: 0.3 }}
-                            className={`group bg-zinc-900/30 backdrop-blur-xl border rounded-[2rem] p-4 sm:p-5 flex items-center gap-4 transition-all duration-300 ${
+                            className={`group bg-zinc-900/30 border rounded-[2rem] p-4 sm:p-5 flex items-center gap-4 transition-all duration-300 ${
                               colors ? `${colors.border} ${colors.bg}` : "border-white/5 hover:border-white/10"
                             }`}
                           >
@@ -529,7 +512,7 @@ export default function GpaCalculatorPage() {
                             initial={{ opacity: 0, y: 16 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: idx * 0.04, duration: 0.3 }}
-                            className={`group bg-zinc-900/30 backdrop-blur-xl border rounded-[2rem] p-4 sm:p-5 flex items-center gap-4 transition-all duration-300 ${
+                            className={`group bg-zinc-900/30 border rounded-[2rem] p-4 sm:p-5 flex items-center gap-4 transition-all duration-300 ${
                               isPass
                                 ? "border-emerald-500/20 bg-emerald-500/5"
                                 : "border-white/5 hover:border-white/10"
