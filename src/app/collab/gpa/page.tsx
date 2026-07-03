@@ -210,7 +210,8 @@ export default function GpaCalculatorPage() {
 
   useEffect(() => {
     if (session?.user?.grade) {
-      const g = simplifyGradeLabel(session.user.grade);
+      const raw = session.user.grade;
+      const g = (GRADES as readonly string[]).includes(raw) ? raw : simplifyGradeLabel(raw);
       if ((GRADES as readonly string[]).includes(g)) {
         setSelectedGrade(g as Grade);
       }
