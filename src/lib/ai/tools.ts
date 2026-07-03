@@ -23,6 +23,29 @@ function normalizeSubject(s?: string): string {
 }
 
 /**
+ * Maps free-form exam type input (FINAL, finals, 기말, mid-term, ...) to the
+ * stored enum values so a slightly-off model argument never breaks the query.
+ */
+function normalizeExamType(input?: string): "MIDTERM" | "FINALS" | undefined {
+    if (!input) return undefined;
+    const v = input.toLowerCase();
+    if (v.includes("mid") || v.includes("중간")) return "MIDTERM";
+    if (v.includes("fin") || v.includes("기말")) return "FINALS";
+    return undefined;
+}
+
+/**
+ * Converts stored exam dates ("7/2" or "2026-07-02") to ISO YYYY-MM-DD
+ * so the model can compare them against today's date reliably.
+ */
+function toIsoDate(year: number, date: string): string | null {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(date)) return date;
+    const md = date.match(/^(\d{1,2})\s*[/.]\s*(\d{1,2})$/);
+    if (!md) return null;
+    return `${year}-${md[1].padStart(2, "0")}-${md[2].padStart(2, "0")}`;
+}
+
+/**
  * Retrieval tools for the WITHUS AI Assistant.
  * Migrated from Airtable to Prisma/Neon for better performance and consistency.
  */
@@ -142,51 +165,33 @@ export const aiTools = {
             grade: z.string().optional().describe("Grade to filter for, e.g., '12', '12-1', or '12th grade'"),
             year: z.number().optional().describe("Academic year, e.g., 2026"),
             semester: z.string().optional().describe("Semester, '1' or '2'"),
-            examType: z.enum(["MIDTERM", "FINALS"]).optional(),
+            examType: z.string().optional().describe("Exam type: 'MIDTERM' (중간고사) or 'FINALS' (기말고사)"),
         })),
         execute: async ({ grade, year, semester, examType }) => {
-            const where: Prisma.ExamScheduleWhereInput = {};
-            const academicYear = year ?? getAcademicYear();
-            const academicSemester = semester ?? (year === undefined ? getAcademicSemester() : undefined);
+            const type = normalizeExamType(examType);
+            const baseWhere: Prisma.ExamScheduleWhereInput = type ? { examType: type } : {};
+            const requestedYear = year ?? getAcademicYear();
+            const requestedSemester = semester ?? getAcademicSemester();
 
-            where.year = academicYear;
-            if (academicSemester) where.semester = academicSemester;
-            if (examType) where.examType = examType;
-
+            // Relax filters progressively so an imprecise semester/year argument
+            // never turns an existing exam cycle into an empty answer.
             let records = await prisma.examSchedule.findMany({
-                where,
-                orderBy: [
-                    { date: 'asc' },
-                    { period: 'asc' }
-                ]
+                where: { ...baseWhere, year: requestedYear, semester: requestedSemester },
             });
-
-            if (records.length === 0 && year === undefined) {
-                const latestCycle = await prisma.examSchedule.findFirst({
-                    where: {
-                        ...(examType ? { examType } : {}),
-                        ...(semester ? { semester } : {}),
-                    },
-                    select: { year: true, semester: true },
-                    orderBy: [
-                        { year: 'desc' },
-                        { semester: 'desc' },
-                        { date: 'desc' },
-                        { period: 'desc' }
-                    ]
+            if (records.length === 0) {
+                records = await prisma.examSchedule.findMany({
+                    where: { ...baseWhere, year: requestedYear },
                 });
-
+            }
+            if (records.length === 0) {
+                const latestCycle = await prisma.examSchedule.findFirst({
+                    where: baseWhere,
+                    select: { year: true, semester: true },
+                    orderBy: [{ year: 'desc' }, { semester: 'desc' }],
+                });
                 if (latestCycle) {
                     records = await prisma.examSchedule.findMany({
-                        where: {
-                            year: latestCycle.year,
-                            semester: semester ?? latestCycle.semester,
-                            ...(examType ? { examType } : {}),
-                        },
-                        orderBy: [
-                            { date: 'asc' },
-                            { period: 'asc' }
-                        ]
+                        where: { ...baseWhere, year: latestCycle.year, semester: latestCycle.semester },
                     });
                 }
             }
@@ -195,7 +200,12 @@ export const aiTools = {
                 records = records.filter((record) => matchesExamGrade(grade, record.grades));
             }
 
-            return records;
+            // Attach ISO dates and sort chronologically (string sort breaks on "10/1" vs "4/24").
+            return records
+                .map((record) => ({ ...record, isoDate: toIsoDate(record.year, record.date) }))
+                .sort((a, b) =>
+                    (a.isoDate ?? a.date).localeCompare(b.isoDate ?? b.date) || a.period - b.period
+                );
         },
     }),
     searchSchoolInfo: tool({

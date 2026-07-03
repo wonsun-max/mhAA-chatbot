@@ -81,6 +81,14 @@ export async function POST(req: Request) {
             timeStyle: "short"
         }).format(new Date());
 
+        // en-CA formats as YYYY-MM-DD; matches the isoDate field on exam rows.
+        const todayISO = new Intl.DateTimeFormat("en-CA", {
+            timeZone: "Asia/Manila",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+        }).format(new Date());
+
         const { verse, word } = getDailyContent();
         const dailyContext = `
 Today's Scripture: "${verse.verse}" (${verse.ref})
@@ -115,6 +123,7 @@ ${lunchPrayerSchedule.map(s => {
 
         const systemPrompt = CHATBOT_SYSTEM_PROMPT
             .replace("{{currentTime}}", currentTime)
+            .replace("{{todayISO}}", todayISO)
             .replace("{{displayName}}", displayName)
             .replace("{{userGrade}}", userGradeText)
             .replace("{{mealOrder}}", mealOrderText)
