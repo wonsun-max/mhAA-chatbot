@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Utensils, CalendarDays, Clock, Lightbulb, BookOpen, AlertCircle, ChevronRight, Pencil, Calculator } from "lucide-react";
+import { Utensils, CalendarDays, Clock, Lightbulb, BookOpen, AlertCircle, ChevronRight, Pencil, Calculator, Clapperboard } from "lucide-react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
@@ -184,6 +184,29 @@ export default async function CollabPage() {
                 </p>
               </div>
               <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/20 group-hover:text-emerald-400 group-hover:border-emerald-500/30 transition-all">
+                <ChevronRight size={20} />
+              </div>
+            </div>
+          </div>
+        </Link>
+
+        {/* Broadcast VOD Card */}
+        <Link href="/collab/vod" className="group">
+          <div className="h-full bg-zinc-900/30 backdrop-blur-sm rounded-[2.5rem] p-8 border border-white/5 hover:border-red-500/30 transition-all duration-500 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 blur-[50px] rounded-full group-hover:bg-red-500/10 transition-colors" />
+
+            <div className="w-14 h-14 rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500">
+              <Clapperboard className="w-7 h-7 text-red-400" />
+            </div>
+
+            <div className="flex justify-between items-end">
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-2">방송부 VOD</h3>
+                <p className="text-zinc-500 font-medium text-sm leading-relaxed max-w-[240px]">
+                  학교 공식 채널의 채플·행사 영상 다시보기.
+                </p>
+              </div>
+              <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/20 group-hover:text-red-400 group-hover:border-red-500/30 transition-all">
                 <ChevronRight size={20} />
               </div>
             </div>
