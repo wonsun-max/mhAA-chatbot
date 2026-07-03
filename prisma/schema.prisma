@@ -1,10 +1,12 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [vector]
 }
 
 model User {
@@ -181,6 +183,21 @@ model SubjectCredit {
 
   @@unique([grade, subject, semester, year])
   @@index([grade, semester, year])
+}
+
+model KnowledgeChunk {
+  id         String                       @id
+  sourceType String
+  sourceId   String
+  chunkIndex Int
+  title      String
+  content    String
+  embedding  Unsupported("vector(1536)")?
+  createdAt  DateTime                     @default(now())
+  updatedAt  DateTime                     @updatedAt
+
+  @@unique([sourceType, sourceId, chunkIndex])
+  @@index([sourceType, sourceId])
 }
 
 enum UserRole {

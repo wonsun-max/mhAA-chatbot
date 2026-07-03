@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
 import { getAcademicSemester, getAcademicYear } from "@/lib/academic-calendar";
 import { matchesExamGrade } from "@/lib/exam-grade";
+import { searchKnowledge } from "@/lib/ai/knowledge";
 
 /**
  * Normalizes a date string to YYYY-MM-DD format.
@@ -195,6 +196,28 @@ export const aiTools = {
             }
 
             return records;
+        },
+    }),
+    searchSchoolInfo: tool({
+        description:
+            "Semantic search over official school notices/announcements (공지사항). " +
+            "Use for questions about announcements, rules, policies, deadlines, or school information " +
+            "not covered by the calendar, meal, timetable, or exam tools. " +
+            "Query in the user's language; returns the most relevant notice excerpts.",
+        inputSchema: zodSchema(z.object({
+            query: z.string().describe("Natural-language search query, e.g., '기숙사 규정' or 'uniform policy'"),
+        })),
+        execute: async ({ query }) => {
+            try {
+                const results = await searchKnowledge(query, 5);
+                if (results.length === 0) {
+                    return { results: [], note: "No matching notices found. Tell the user you could not find related announcements." };
+                }
+                return { results };
+            } catch (error) {
+                console.error("[searchSchoolInfo] Search failed:", error);
+                return { results: [], note: "Search is temporarily unavailable." };
+            }
         },
     }),
 };

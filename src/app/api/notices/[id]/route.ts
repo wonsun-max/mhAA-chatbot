@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { indexSource, removeFromIndex } from "@/lib/ai/knowledge";
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
@@ -46,6 +47,17 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
             },
         });
 
+        // Keep the RAG index in sync; hidden notices are removed from search.
+        try {
+            if (notice.isVisible) {
+                await indexSource("NOTICE", notice.id, notice.title, notice.content);
+            } else {
+                await removeFromIndex("NOTICE", notice.id);
+            }
+        } catch (indexError) {
+            console.error("[Knowledge] Failed to reindex notice:", indexError);
+        }
+
         return NextResponse.json(notice);
     } catch (error) {
         console.error("Failed to update notice:", error);
@@ -64,6 +76,12 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
         await prisma.notice.delete({
             where: { id },
         });
+
+        try {
+            await removeFromIndex("NOTICE", id);
+        } catch (indexError) {
+            console.error("[Knowledge] Failed to remove notice from index:", indexError);
+        }
 
         return NextResponse.json({ success: true });
     } catch (error) {

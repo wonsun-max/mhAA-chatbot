@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { indexSource } from "@/lib/ai/knowledge";
 
 export async function GET(req: Request) {
     try {
@@ -56,6 +57,13 @@ export async function POST(req: Request) {
                 authorId: session.user.id,
             },
         });
+
+        // Index for chatbot RAG search; failure must not fail notice creation.
+        try {
+            await indexSource("NOTICE", notice.id, notice.title, notice.content);
+        } catch (indexError) {
+            console.error("[Knowledge] Failed to index notice:", indexError);
+        }
 
         return NextResponse.json(notice);
     } catch (error) {
