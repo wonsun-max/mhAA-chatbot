@@ -201,7 +201,7 @@ export default async function CollabPage() {
 
             <div className="flex justify-between items-end">
               <div>
-                <h3 className="text-2xl font-bold text-white mb-2">방송부 VOD</h3>
+                <h3 className="text-2xl font-bold text-white mb-2">VOD</h3>
                 <p className="text-zinc-500 font-medium text-sm leading-relaxed max-w-[240px]">
                   학교 공식 채널의 채플·행사 영상 다시보기.
                 </p>
