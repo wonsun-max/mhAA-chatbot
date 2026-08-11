@@ -114,13 +114,14 @@ export default function TimetablePage() {
   }, []);
 
   const isCurrentPeriod = (timeRange: string, dayKey: string) => {
-    if (!timeRange || !timeRange.includes(" - ")) return false;
+    if (!timeRange) return false;
 
     const today = new Date().getDay();
     const dayMap: Record<number, string> = { 1: "MON", 2: "TUE", 3: "WED", 4: "THU", 5: "FRI" };
     if (dayMap[today] !== dayKey) return false;
 
-    const parts = timeRange.split(" - ");
+    const separator = timeRange.includes(" - ") ? " - " : "-";
+    const parts = timeRange.split(separator);
     if (parts.length < 2) return false;
     
     const [start, end] = parts;
@@ -140,9 +141,10 @@ export default function TimetablePage() {
   };
 
   const getProgress = (timeRange: string) => {
-    if (!timeRange || !timeRange.includes(" - ")) return 0;
+    if (!timeRange) return 0;
 
-    const parts = timeRange.split(" - ");
+    const separator = timeRange.includes(" - ") ? " - " : "-";
+    const parts = timeRange.split(separator);
     if (parts.length < 2) return 0;
 
     const [start, end] = parts;
