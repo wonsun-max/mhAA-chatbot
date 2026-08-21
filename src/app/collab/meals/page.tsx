@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Calendar, Utensils, ChevronRight, Clock, Info, Sparkles, ArrowLeft, Download, Plus } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Calendar, Utensils, Clock, Info, Sparkles, ArrowLeft, Plus, X, Check, Copy, ExternalLink, Download } from "lucide-react";
 import Link from "next/link";
 import { getMealOrder } from "@/lib/meal-utils";
 import { getGoogleCalendarEventUrl, generateIcsContent, downloadIcsFile } from "@/lib/calendar-export";
@@ -18,6 +18,8 @@ export default function MealsPage() {
   const [meals, setMeals] = useState<Meal[]>([]);
   const [loading, setLoading] = useState(true);
   const [todayMeal, setTodayMeal] = useState<Meal | null>(null);
+  const [syncModalOpen, setSyncModalOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const today = new Date();
   const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
@@ -31,7 +33,6 @@ export default function MealsPage() {
         if (data.meals) {
           const sortedMeals = data.meals.sort((a: Meal, b: Meal) => a.date.localeCompare(b.date));
           setMeals(sortedMeals);
-
           const foundToday = sortedMeals.find((m: Meal) => m.date === todayStr);
           setTodayMeal(foundToday || null);
         }
@@ -46,18 +47,31 @@ export default function MealsPage() {
 
   const mealOrder = getMealOrder(today);
 
-  const handleExportMonthMeals = () => {
+  const feedUrl = typeof window !== "undefined"
+    ? `${window.location.origin}/api/collab/meals/feed`
+    : "https://mhawithus.shop/api/collab/meals/feed";
+
+  const handleCopyFeed = () => {
+    navigator.clipboard.writeText(feedUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleGoogleCalendarWebSub = () => {
+    const webcalUrl = feedUrl.replace(/^https?:\/\//, "webcal://");
+    window.open(`https://calendar.google.com/calendar/r?cid=${encodeURIComponent(webcalUrl)}`, "_blank");
+  };
+
+  const handleDownloadIcs = () => {
     const currentMonth = String(today.getMonth() + 1).padStart(2, "0");
     const monthMeals = meals.filter(m => m.date.startsWith(`${today.getFullYear()}-${currentMonth}`));
-
     const items = (monthMeals.length > 0 ? monthMeals : meals).map(m => ({
       id: m.id,
-      title: `[MHA 급식] ${m.menu.split(',')[0]} 외`,
+      title: `[MHA 급식] ${m.menu.split(',')[0].trim()} 외`,
       startDate: m.date,
-      description: `오늘의 학교 급식 메뉴:\n${m.menu.split(',').join('\n')}\nhttps://mhawithus.shop/collab/meals`,
+      description: `📍 마닐라한국아카데미 급식\n\n${m.menu.split(',').map((item: string) => `• ${item.trim()}`).join('\n')}\n\nhttps://mhawithus.shop/collab/meals`,
       location: "마닐라한국아카데미 급식실",
     }));
-
     const icsContent = generateIcsContent(`MHA ${today.getMonth() + 1}월 급식표`, items);
     downloadIcsFile(`mha-meals-${today.getFullYear()}-${currentMonth}.ics`, icsContent);
   };
@@ -72,6 +86,7 @@ export default function MealsPage() {
 
   return (
     <div className="min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+      {/* Top Nav */}
       <div className="flex items-center justify-between mb-8">
         <Link
           href="/collab"
@@ -82,11 +97,11 @@ export default function MealsPage() {
         </Link>
 
         <button
-          onClick={handleExportMonthMeals}
+          onClick={() => setSyncModalOpen(true)}
           className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white transition-all text-xs font-bold shadow-lg shadow-emerald-500/5 active:scale-95"
         >
-          <Download size={14} />
-          <span>이번 달 급식 캘린더 (.ics)</span>
+          <Utensils size={14} />
+          <span>Google 캘린더 연동 / 내보내기</span>
         </button>
       </div>
 
@@ -120,7 +135,7 @@ export default function MealsPage() {
         >
           <div className="h-full bg-zinc-900/30 backdrop-blur-xl border border-white/5 rounded-[3rem] p-8 sm:p-12 relative overflow-hidden transition-all duration-500 hover:border-white/10">
             <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 blur-[100px] rounded-full group-hover:bg-emerald-500/10 transition-colors" />
-            
+
             <div className="relative z-10">
               <div className="flex items-center justify-between mb-10">
                 <div className="flex items-center gap-4">
@@ -132,16 +147,15 @@ export default function MealsPage() {
                     <p className="text-zinc-500 text-xs font-mono uppercase tracking-widest">{todayStr} • {new Date().toLocaleDateString('ko-KR', { weekday: 'long' })}</p>
                   </div>
                 </div>
-
                 {todayMeal && !isWeekend && (
                   <button
                     onClick={() => window.open(getGoogleCalendarEventUrl({
-                      title: `[MHA 급식] ${todayMeal.menu.split(',')[0]} 외`,
+                      title: `[MHA 급식] ${todayMeal.menu.split(',')[0].trim()} 외`,
                       startDate: todayMeal.date,
-                      description: `오늘의 학교 급식 메뉴:\n${todayMeal.menu}`,
+                      description: `📍 마닐라한국아카데미 급식\n\n${todayMeal.menu.split(',').map((i: string) => `• ${i.trim()}`).join('\n')}`,
                       location: "마닐라한국아카데미 급식실"
                     }), "_blank")}
-                    className="p-3 rounded-2xl bg-zinc-900 border border-white/10 hover:border-emerald-500/40 hover:bg-emerald-500/10 text-zinc-400 hover:text-emerald-400 transition-all text-xs font-bold flex items-center gap-1.5"
+                    className="p-3 rounded-2xl bg-zinc-900 border border-white/10 hover:border-emerald-500/40 hover:bg-emerald-500/10 text-zinc-400 hover:text-emerald-400 transition-all flex items-center gap-1.5 text-xs font-bold"
                     title="Google 캘린더에 추가"
                   >
                     <Plus size={16} />
@@ -189,7 +203,7 @@ export default function MealsPage() {
         >
           <div className="h-full bg-zinc-900/30 backdrop-blur-xl border border-white/5 rounded-[3rem] p-8 sm:p-10 relative overflow-hidden flex flex-col justify-between transition-all duration-500 hover:border-white/10">
             <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-blue-500/5 blur-[80px] rounded-full group-hover:bg-blue-500/10 transition-colors" />
-            
+
             <div className="relative z-10">
               <div className="flex items-center gap-4 mb-10">
                 <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center text-blue-400">
@@ -210,7 +224,6 @@ export default function MealsPage() {
                       {mealOrder.firstGroup} <span className="text-zinc-600 font-medium text-sm">학년</span>
                     </p>
                   </div>
-
                   <div className="relative pl-6 border-l border-white/5">
                     <div className="absolute -left-[3.5px] top-0 w-1.5 h-1.5 rounded-full bg-zinc-700" />
                     <p className="text-zinc-600 text-[10px] font-black uppercase tracking-widest mb-1">12:10 Entry</p>
@@ -278,9 +291,9 @@ export default function MealsPage() {
                   </div>
                   <button
                     onClick={() => window.open(getGoogleCalendarEventUrl({
-                      title: `[MHA 급식] ${meal.menu.split(',')[0]} 외`,
+                      title: `[MHA 급식] ${meal.menu.split(',')[0].trim()} 외`,
                       startDate: meal.date,
-                      description: `학교 급식 메뉴:\n${meal.menu}`,
+                      description: `📍 마닐라한국아카데미 급식\n\n${meal.menu.split(',').map((i: string) => `• ${i.trim()}`).join('\n')}`,
                       location: "마닐라한국아카데미 급식실"
                     }), "_blank")}
                     className="w-8 h-8 rounded-full bg-white/5 hover:bg-emerald-500/20 hover:text-emerald-400 flex items-center justify-center text-zinc-500 transition-all"
@@ -311,11 +324,98 @@ export default function MealsPage() {
         <div className="flex-1 text-center md:text-left">
           <h4 className="text-white font-bold mb-1">식단 안내 및 주의사항</h4>
           <p className="text-xs text-zinc-500 leading-relaxed font-medium">
-            식단은 시장 및 학교 상황에 따라 변경될 수 있습니다. 
+            식단은 시장 및 학교 상황에 따라 변경될 수 있습니다.
             알레르기 유발 식품이 포함되어 있을 수 있으니 식품 알레르기가 있는 학생은 급식 시 각별히 주의하시기 바랍니다.
           </p>
         </div>
       </motion.div>
+
+      {/* Sync & Export Modal */}
+      <AnimatePresence>
+        {syncModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="w-full max-w-lg bg-zinc-900 border border-zinc-800 rounded-3xl p-6 md:p-8 shadow-2xl space-y-6 relative overflow-hidden"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                    <Utensils size={20} />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-white">급식표 캘린더 연동</h3>
+                    <p className="text-xs text-zinc-500">Google / Apple / Outlook 캘린더에 연동하세요</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setSyncModalOpen(false)}
+                  className="p-2 text-zinc-500 hover:text-white rounded-xl hover:bg-white/5 transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                {/* Option 1: Live Sync */}
+                <div className="p-5 bg-zinc-950/60 border border-emerald-500/20 rounded-2xl space-y-3 relative overflow-hidden">
+                  <div className="flex items-center justify-between">
+                    <span className="px-2 py-0.5 rounded-md bg-emerald-500 text-[10px] font-black text-white uppercase tracking-wider">추천 방식</span>
+                    <span className="text-xs text-zinc-500 font-medium">실시간 자동 동기화</span>
+                  </div>
+                  <h4 className="text-sm font-bold text-white">Google 캘린더 실시간 구독</h4>
+                  <p className="text-xs text-zinc-400 leading-relaxed">
+                    급식표를 한 번만 등록해두면 매달 새로운 식단이 내 구글 캘린더에 자동으로 업데이트됩니다.
+                  </p>
+                  <button
+                    onClick={handleGoogleCalendarWebSub}
+                    className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/10"
+                  >
+                    <ExternalLink size={14} />
+                    <span>Google 캘린더에 바로 구독 등록</span>
+                  </button>
+                </div>
+
+                {/* Option 2: Download .ics */}
+                <div className="p-4 bg-zinc-950/40 border border-zinc-800 rounded-2xl space-y-2">
+                  <h4 className="text-xs font-bold text-white flex items-center gap-2">
+                    <Download size={14} className="text-zinc-400" />
+                    <span>이번 달 급식 .ics 파일 다운로드</span>
+                  </h4>
+                  <p className="text-xs text-zinc-500">
+                    애플 캘린더, 갤럭시 캘린더, 아웃룩 등에 가져오기 할 수 있습니다.
+                  </p>
+                  <button
+                    onClick={handleDownloadIcs}
+                    className="w-full mt-2 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-bold transition-all"
+                  >
+                    {today.getMonth() + 1}월 급식 캘린더 다운로드
+                  </button>
+                </div>
+
+                {/* Option 3: Copy iCal URL */}
+                <div className="p-4 bg-zinc-950/40 border border-zinc-800 rounded-2xl space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-bold text-white">직접 iCal URL 구독</h4>
+                    <button
+                      onClick={handleCopyFeed}
+                      className="text-xs text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1"
+                    >
+                      {copied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
+                      <span>{copied ? "복사됨!" : "URL 복사"}</span>
+                    </button>
+                  </div>
+                  <div className="p-2.5 bg-black rounded-xl border border-zinc-800 font-mono text-[10px] text-zinc-400 truncate">
+                    {feedUrl}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
