@@ -21,7 +21,7 @@ function StatCard({ label, value, icon: Icon, color }: { label: string, value: n
         <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="p-8 rounded-[32px] bg-zinc-900/10 border border-white/5 hover:border-white/10 transition-all relative overflow-hidden group"
+            className="p-8 rounded-4xl bg-zinc-900/10 border border-white/5 hover:border-white/10 transition-all relative overflow-hidden group"
         >
             <div className={`absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 group-hover:opacity-10 transition-all ${color}`}>
                 <Icon size={120} />
@@ -56,7 +56,7 @@ function Overview({ stats }: { stats: Stats | null }) {
             </div>
 
             <div className="p-12 rounded-[40px] border border-white/5 bg-zinc-900/10 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-linear-to-tr from-blue-500/5 to-transparent pointer-events-none" />
                 <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
                     <div className="space-y-2 text-center md:text-left">
                         <h3 className="text-xl font-light tracking-tight italic">&ldquo;이스라엘아 들으라 우리 하나님 여호와는 오직 유일한 여호와이시니 너는 마음을 다하고 뜻을 다하고 힘을 다하여 네 하나님 여호와를 사랑하라.&rdquo;</h3>

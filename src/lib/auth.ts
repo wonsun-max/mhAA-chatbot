@@ -1,5 +1,6 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import { prisma } from "./prisma";
 import bcrypt from "bcryptjs";
 
@@ -8,6 +9,11 @@ export const authOptions: NextAuthOptions = {
     secret: process.env.NEXTAUTH_SECRET,
 
     providers: [
+        GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID || "",
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+            allowDangerousEmailAccountLinking: true,
+        }),
         CredentialsProvider({
             name: "WITHUS Account",
             credentials: {
@@ -53,6 +59,48 @@ export const authOptions: NextAuthOptions = {
         }),
     ],
     callbacks: {
+        async signIn({ user, account, profile }) {
+            if (account?.provider === "google") {
+                const email = profile?.email || user.email;
+                if (!email) return false;
+
+                // Search for existing user with this email in Neon DB
+                let dbUser = await prisma.user.findUnique({
+                    where: { email }
+                });
+
+                if (dbUser) {
+                    if (dbUser.status === "SUSPENDED") {
+                        throw new Error("계정이 정지된 상태입니다.");
+                    }
+                    // Attach DB fields to NextAuth user object for JWT token initialization
+                    user.id = dbUser.id;
+                    user.role = dbUser.role;
+                    user.status = dbUser.status;
+                    user.grade = dbUser.grade;
+                    user.nickname = dbUser.nickname;
+                    user.qtGroup = dbUser.qtGroup;
+                } else {
+                    // Create new user automatically via Google login
+                    dbUser = await prisma.user.create({
+                        data: {
+                            email,
+                            name: profile?.name || user.name || "Google User",
+                            status: "APPROVED",
+                            role: "STUDENT"
+                        }
+                    });
+
+                    user.id = dbUser.id;
+                    user.role = dbUser.role;
+                    user.status = dbUser.status;
+                    user.grade = dbUser.grade;
+                    user.nickname = dbUser.nickname;
+                    user.qtGroup = dbUser.qtGroup;
+                }
+            }
+            return true;
+        },
         async jwt({ token, user, trigger, session }) {
             if (user) {
                 token.id = user.id;

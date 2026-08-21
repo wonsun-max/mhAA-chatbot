@@ -6,6 +6,7 @@ import { AuthProvider } from "@/components/providers/AuthProvider";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { PromotionModal } from "@/components/modals/PromotionModal";
+import { OnboardingModal } from "@/components/modals/OnboardingModal";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GoogleAnalytics } from "@next/third-parties/google";
@@ -125,6 +126,7 @@ export default function RootLayout({
           </main>
           <Footer />
           <PromotionModal />
+          <OnboardingModal />
           <Analytics />
           <SpeedInsights />
           <GoogleAnalytics gaId="G-NRSBWWTND4" />
