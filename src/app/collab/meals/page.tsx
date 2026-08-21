@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Calendar, Utensils, ChevronRight, Clock, Info, Sparkles, ArrowLeft } from "lucide-react";
+import { Calendar, Utensils, ChevronRight, Clock, Info, Sparkles, ArrowLeft, Download, Plus } from "lucide-react";
 import Link from "next/link";
-
 import { getMealOrder } from "@/lib/meal-utils";
+import { getGoogleCalendarEventUrl, generateIcsContent, downloadIcsFile } from "@/lib/calendar-export";
 
 interface Meal {
   id: string;
@@ -46,6 +46,22 @@ export default function MealsPage() {
 
   const mealOrder = getMealOrder(today);
 
+  const handleExportMonthMeals = () => {
+    const currentMonth = String(today.getMonth() + 1).padStart(2, "0");
+    const monthMeals = meals.filter(m => m.date.startsWith(`${today.getFullYear()}-${currentMonth}`));
+
+    const items = (monthMeals.length > 0 ? monthMeals : meals).map(m => ({
+      id: m.id,
+      title: `[MHA 급식] ${m.menu.split(',')[0]} 외`,
+      startDate: m.date,
+      description: `오늘의 학교 급식 메뉴:\n${m.menu.split(',').join('\n')}\nhttps://mhawithus.shop/collab/meals`,
+      location: "마닐라한국아카데미 급식실",
+    }));
+
+    const icsContent = generateIcsContent(`MHA ${today.getMonth() + 1}월 급식표`, items);
+    downloadIcsFile(`mha-meals-${today.getFullYear()}-${currentMonth}.ics`, icsContent);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black">
@@ -56,13 +72,23 @@ export default function MealsPage() {
 
   return (
     <div className="min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
-      <Link
-        href="/collab"
-        className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors mb-8 group"
-      >
-        <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-        <span className="text-sm font-bold">Back to Hub</span>
-      </Link>
+      <div className="flex items-center justify-between mb-8">
+        <Link
+          href="/collab"
+          className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors group"
+        >
+          <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+          <span className="text-sm font-bold">Back to Hub</span>
+        </Link>
+
+        <button
+          onClick={handleExportMonthMeals}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white transition-all text-xs font-bold shadow-lg shadow-emerald-500/5 active:scale-95"
+        >
+          <Download size={14} />
+          <span>이번 달 급식 캘린더 (.ics)</span>
+        </button>
+      </div>
 
       {/* Header Section */}
       <motion.div
@@ -96,14 +122,32 @@ export default function MealsPage() {
             <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 blur-[100px] rounded-full group-hover:bg-emerald-500/10 transition-colors" />
             
             <div className="relative z-10">
-              <div className="flex items-center gap-4 mb-10">
-                <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center text-emerald-400">
-                  <Calendar size={20} />
+              <div className="flex items-center justify-between mb-10">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center text-emerald-400">
+                    <Calendar size={20} />
+                  </div>
+                  <div>
+                    <h2 className="text-white font-bold text-xl">오늘의 식단</h2>
+                    <p className="text-zinc-500 text-xs font-mono uppercase tracking-widest">{todayStr} • {new Date().toLocaleDateString('ko-KR', { weekday: 'long' })}</p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-white font-bold text-xl">오늘의 식단</h2>
-                  <p className="text-zinc-500 text-xs font-mono uppercase tracking-widest">{todayStr} • {new Date().toLocaleDateString('ko-KR', { weekday: 'long' })}</p>
-                </div>
+
+                {todayMeal && !isWeekend && (
+                  <button
+                    onClick={() => window.open(getGoogleCalendarEventUrl({
+                      title: `[MHA 급식] ${todayMeal.menu.split(',')[0]} 외`,
+                      startDate: todayMeal.date,
+                      description: `오늘의 학교 급식 메뉴:\n${todayMeal.menu}`,
+                      location: "마닐라한국아카데미 급식실"
+                    }), "_blank")}
+                    className="p-3 rounded-2xl bg-zinc-900 border border-white/10 hover:border-emerald-500/40 hover:bg-emerald-500/10 text-zinc-400 hover:text-emerald-400 transition-all text-xs font-bold flex items-center gap-1.5"
+                    title="Google 캘린더에 추가"
+                  >
+                    <Plus size={16} />
+                    <span className="hidden sm:inline">Google 캘린더</span>
+                  </button>
+                )}
               </div>
 
               {todayMeal && !isWeekend ? (
@@ -232,9 +276,18 @@ export default function MealsPage() {
                     <span className="text-[10px] font-black font-mono text-zinc-600 tracking-wider mb-1 block uppercase">{meal.date}</span>
                     <h4 className="text-white font-bold text-lg">{meal.dayOfWeek}</h4>
                   </div>
-                  <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-zinc-700 group-hover:text-white group-hover:border-white/20 transition-all">
-                    <ChevronRight size={16} />
-                  </div>
+                  <button
+                    onClick={() => window.open(getGoogleCalendarEventUrl({
+                      title: `[MHA 급식] ${meal.menu.split(',')[0]} 외`,
+                      startDate: meal.date,
+                      description: `학교 급식 메뉴:\n${meal.menu}`,
+                      location: "마닐라한국아카데미 급식실"
+                    }), "_blank")}
+                    className="w-8 h-8 rounded-full bg-white/5 hover:bg-emerald-500/20 hover:text-emerald-400 flex items-center justify-center text-zinc-500 transition-all"
+                    title="Google 캘린더에 추가"
+                  >
+                    <Plus size={16} />
+                  </button>
                 </div>
                 <p className="text-zinc-500 text-sm font-medium leading-relaxed line-clamp-4 group-hover:text-zinc-300 transition-colors">
                   {meal.menu}
@@ -259,7 +312,7 @@ export default function MealsPage() {
           <h4 className="text-white font-bold mb-1">식단 안내 및 주의사항</h4>
           <p className="text-xs text-zinc-500 leading-relaxed font-medium">
             식단은 시장 및 학교 상황에 따라 변경될 수 있습니다. 
-            알레르기 유발 식품(난류, 우유, 메밀, 땅콩, 대두, 밀, 고등어, 게, 새우, 돼지고기, 복숭아, 토마토, 아황산염, 호두, 닭고기, 쇠고기, 오징어, 조개류 등)이 포함되어 있을 수 있으니 식품 알레르기가 있는 학생은 급식 시 각별히 주의하시기 바랍니다.
+            알레르기 유발 식품이 포함되어 있을 수 있으니 식품 알레르기가 있는 학생은 급식 시 각별히 주의하시기 바랍니다.
           </p>
         </div>
       </motion.div>

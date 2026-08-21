@@ -2,8 +2,12 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Calendar as CalendarIcon, Clock, Tag, Bell, Award, Sparkles, PartyPopper, ChevronRight, ArrowLeft } from "lucide-react";
+import { 
+  Calendar as CalendarIcon, Clock, Tag, Bell, Award, Sparkles, 
+  PartyPopper, ArrowLeft, Plus, Download, ExternalLink, Check, Copy, X
+} from "lucide-react";
 import Link from "next/link";
+import { getGoogleCalendarEventUrl, generateIcsContent, downloadIcsFile } from "@/lib/calendar-export";
 
 interface CalendarEvent {
   id: string;
@@ -25,6 +29,8 @@ export default function CalendarPage() {
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("all");
   const [activeMonth, setActiveMonth] = useState<string>("upcoming");
+  const [syncModalOpen, setSyncModalOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -100,23 +106,63 @@ export default function CalendarPage() {
     return `D-${diffDays}`;
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
-        <div className="w-8 h-8 border-4 border-white/10 border-t-white rounded-full animate-spin" />
-      </div>
-    );
-  }
+  const handleDownloadIcs = (onlyMonth = false) => {
+    const targetEvents = onlyMonth && activeMonth !== "upcoming" 
+      ? events.filter(e => parseInt(e.startDate.split("-")[1]).toString() === activeMonth)
+      : events;
+
+    const items = targetEvents.map(e => ({
+      id: e.id,
+      title: `[${e.eventType || "학사일정"}] ${e.name}`,
+      startDate: e.startDate,
+      endDate: e.endDate,
+      description: `마닐라한국아카데미 학사일정: ${e.name}\n일정 구분: ${e.eventType}`,
+      location: "마닐라한국아카데미",
+    }));
+
+    const filename = onlyMonth && activeMonth !== "upcoming"
+      ? `mha-calendar-${activeMonth}월.ics`
+      : "mha-academic-calendar.ics";
+
+    const icsContent = generateIcsContent("MHA 학사일정 (WITHUS)", items);
+    downloadIcsFile(filename, icsContent);
+  };
+
+  const feedUrl = typeof window !== "undefined" 
+    ? `${window.location.origin}/api/collab/calendar/feed` 
+    : "https://mhawithus.shop/api/collab/calendar/feed";
+
+  const handleCopyFeed = () => {
+    navigator.clipboard.writeText(feedUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleGoogleCalendarWebSub = () => {
+    // Google Calendar web subscription URL with cid
+    const webcalUrl = feedUrl.replace(/^https?:\/\//, "webcal://");
+    window.open(`https://calendar.google.com/calendar/r?cid=${encodeURIComponent(webcalUrl)}`, "_blank");
+  };
 
   return (
-    <div className="min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-zinc-300">
-      <Link
-        href="/collab"
-        className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors mb-8 group"
-      >
-        <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-        <span className="text-sm font-bold">Back to Hub</span>
-      </Link>
+    <div className="min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+      <div className="flex items-center justify-between mb-8">
+        <Link
+          href="/collab"
+          className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors group"
+        >
+          <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+          <span className="text-sm font-bold">Back to Hub</span>
+        </Link>
+
+        <button
+          onClick={() => setSyncModalOpen(true)}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white transition-all text-xs font-bold shadow-lg shadow-blue-500/5 active:scale-95"
+        >
+          <CalendarIcon size={14} />
+          <span>Google 캘린더 연동 / 내보내기</span>
+        </button>
+      </div>
 
       {/* Header Section */}
       <motion.div
@@ -165,13 +211,27 @@ export default function CalendarPage() {
                   </div>
                </div>
 
-               <div className="relative z-10">
-                  <div className="bg-white text-black rounded-[2.5rem] px-12 py-8 flex flex-col items-center shadow-2xl shadow-white/10 active:scale-95 transition-transform">
+               <div className="relative z-10 flex flex-col sm:flex-row items-center gap-4">
+                  <div className="bg-white text-black rounded-[2.5rem] px-12 py-8 flex flex-col items-center shadow-2xl shadow-white/10">
                     <span className="text-[10px] font-black uppercase tracking-[0.2em] mb-1 opacity-50">Countdown</span>
                     <span className="text-5xl font-black tracking-tighter">
                       {getDDay(nearestEvent.startDate)}
                     </span>
                   </div>
+
+                  <button
+                    onClick={() => window.open(getGoogleCalendarEventUrl({
+                      title: `[${nearestEvent.eventType}] ${nearestEvent.name}`,
+                      startDate: nearestEvent.startDate,
+                      endDate: nearestEvent.endDate,
+                      description: `마닐라한국아카데미 학사일정: ${nearestEvent.name} (${nearestEvent.eventType})`,
+                      location: "마닐라한국아카데미"
+                    }), "_blank")}
+                    className="p-4 rounded-2xl bg-zinc-800 border border-white/10 hover:bg-blue-500 hover:text-white transition-all text-zinc-400 flex items-center justify-center"
+                    title="Google 캘린더에 바로 추가"
+                  >
+                    <Plus size={20} />
+                  </button>
                </div>
             </div>
           </motion.div>
@@ -291,16 +351,29 @@ export default function CalendarPage() {
                          </div>
                       </div>
 
-                      <div className="flex items-center justify-between sm:justify-end gap-6">
+                      <div className="flex items-center justify-between sm:justify-end gap-4">
                          {event.startDate >= todayStr && (
-                            <div className="text-right">
+                            <div className="text-right mr-2">
                                <div className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-0.5">D-Day</div>
                                <div className="text-lg font-black text-white tracking-tight">{getDDay(event.startDate)}</div>
                             </div>
                          )}
-                         <div className="w-10 h-10 rounded-full border border-white/5 flex items-center justify-center text-zinc-700 group-hover:text-white group-hover:border-white/20 transition-all">
-                            <ChevronRight size={18} />
-                         </div>
+
+                         {/* Add to Google Calendar Button */}
+                         <button
+                           onClick={() => window.open(getGoogleCalendarEventUrl({
+                             title: `[${event.eventType}] ${event.name}`,
+                             startDate: event.startDate,
+                             endDate: event.endDate,
+                             description: `마닐라한국아카데미 학사일정: ${event.name} (${event.eventType})\n기간: ${event.startDate} ~ ${event.endDate}`,
+                             location: "마닐라한국아카데미"
+                           }), "_blank")}
+                           className="px-3.5 py-2 rounded-xl bg-zinc-900 border border-white/10 hover:border-blue-500/40 hover:bg-blue-500/10 text-zinc-400 hover:text-blue-400 transition-all text-xs font-bold flex items-center gap-1.5"
+                           title="내 Google 캘린더에 일정 추가"
+                         >
+                           <Plus size={14} />
+                           <span className="hidden sm:inline">Google 추가</span>
+                         </button>
                       </div>
                   </div>
                 </motion.div>
@@ -331,6 +404,103 @@ export default function CalendarPage() {
         </AnimatePresence>
       </div>
 
+      {/* Sync & Export Modal */}
+      <AnimatePresence>
+        {syncModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="w-full max-w-lg bg-zinc-900 border border-zinc-800 rounded-3xl p-6 md:p-8 shadow-2xl space-y-6 relative overflow-hidden"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                    <CalendarIcon size={20} />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-white">학사일정 캘린더 연동</h3>
+                    <p className="text-xs text-zinc-500">Google / Apple / Outlook 캘린더에 연동하세요</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setSyncModalOpen(false)}
+                  className="p-2 text-zinc-500 hover:text-white rounded-xl hover:bg-white/5 transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                {/* Option 1: Live Sync */}
+                <div className="p-5 bg-zinc-950/60 border border-blue-500/20 rounded-2xl space-y-3 relative overflow-hidden">
+                  <div className="flex items-center justify-between">
+                    <span className="px-2 py-0.5 rounded-md bg-blue-500 text-[10px] font-black text-white uppercase tracking-wider">추천 방식</span>
+                    <span className="text-xs text-zinc-500 font-medium">실시간 자동 동기화</span>
+                  </div>
+                  <h4 className="text-sm font-bold text-white">Google 캘린더 실시간 구독</h4>
+                  <p className="text-xs text-zinc-400 leading-relaxed">
+                    학교 캘린더를 한 번만 등록해두면 새로운 일정이나 변경 사항이 내 구글 캘린더에 자동으로 실시간 반영됩니다.
+                  </p>
+                  <button
+                    onClick={handleGoogleCalendarWebSub}
+                    className="w-full py-3 rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-bold text-xs transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/10"
+                  >
+                    <ExternalLink size={14} />
+                    <span>Google 캘린더에 바로 구독 등록</span>
+                  </button>
+                </div>
+
+                {/* Option 2: Download .ics file */}
+                <div className="p-4 bg-zinc-950/40 border border-zinc-800 rounded-2xl space-y-2">
+                  <h4 className="text-xs font-bold text-white flex items-center gap-2">
+                    <Download size={14} className="text-zinc-400" />
+                    <span>.ics 캘린더 파일 다운로드</span>
+                  </h4>
+                  <p className="text-xs text-zinc-500">
+                    애플 캘린더, 갤럭시 캘린더, 아웃룩 등 원하는 캘린더 앱에 일괄 가져오기 할 수 있습니다.
+                  </p>
+                  <div className="flex gap-2 pt-2">
+                    <button
+                      onClick={() => handleDownloadIcs(false)}
+                      className="flex-1 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-bold transition-all"
+                    >
+                      전체 일정 다운로드
+                    </button>
+                    {activeMonth !== "upcoming" && (
+                      <button
+                        onClick={() => handleDownloadIcs(true)}
+                        className="flex-1 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-bold transition-all"
+                      >
+                        {activeMonth}월 일정만 다운로드
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Option 3: Copy iCal URL */}
+                <div className="p-4 bg-zinc-950/40 border border-zinc-800 rounded-2xl space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-bold text-white">직접 iCal URL 구독</h4>
+                    <button
+                      onClick={handleCopyFeed}
+                      className="text-xs text-blue-400 hover:text-blue-300 font-bold flex items-center gap-1"
+                    >
+                      {copied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
+                      <span>{copied ? "복사됨!" : "URL 복사"}</span>
+                    </button>
+                  </div>
+                  <div className="p-2.5 bg-black rounded-xl border border-zinc-800 font-mono text-[10px] text-zinc-400 truncate">
+                    {feedUrl}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* Footer Info */}
       <motion.div 
         initial={{ opacity: 0 }}
@@ -345,8 +515,7 @@ export default function CalendarPage() {
            <h4 className="text-white font-bold text-xl mb-2">학사 일정 안내</h4>
            <p className="text-sm text-zinc-500 leading-relaxed font-medium">
               모든 학사 일정은 학교 사정에 따라 변경될 수 있습니다. 
-              주요 시험 및 행사는 일주일 전 푸시 알림으로 안내해 드리니 정기적으로 확인해 주세요. 
-              자세한 사항은 담임 선생님 또는 학교 홈페이지를 참고하시기 바랍니다.
+              상단의 **Google 캘린더 연동**을 등록해두시면 휴대폰 캘린더 위젯으로 학교 일정을 실시간으로 편리하게 확인하실 수 있습니다.
            </p>
         </div>
       </motion.div>
