@@ -24,6 +24,8 @@ function extractTitleFromCaption(caption: string): string {
 export async function POST(req: Request) {
     try {
         const body = await req.json().catch(() => ({}));
+        console.log("[Instagram Sync Received Payload]:", JSON.stringify(body));
+
         const authHeader = req.headers.get("x-sync-secret") || req.headers.get("authorization")?.replace("Bearer ", "");
         const providedSecret = authHeader || body.secret;
 
@@ -31,23 +33,15 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Unauthorized: Invalid sync secret" }, { status: 401 });
         }
 
-        const {
-            caption = "",
-            imageUrl,
-            mediaUrl,
-            permalink,
-            url,
-            isPinned = true,
-        } = body;
+        // Support multiple parameter names from different Make / Zapier modules
+        const rawCaption = body.caption || body.text || body.message || body.title || body.description || body.content || "";
+        const rawImageUrl = body.imageUrl || body.image_url || body.mediaUrl || body.media_url || body.thumbnailUrl || body.thumbnail_url || body.display_url || null;
+        const rawPermalink = body.permalink || body.link || body.postUrl || body.post_url || body.url || "https://www.instagram.com/mha_withus";
+        const isPinned = body.isPinned !== undefined ? Boolean(body.isPinned) : true;
 
-        const effectiveImageUrl = imageUrl || mediaUrl || null;
-        const effectivePermalink = permalink || url || "https://www.instagram.com/mha_withus";
-
-        if (!caption.trim() && !effectiveImageUrl) {
-            return NextResponse.json({ error: "Caption or image URL is required" }, { status: 400 });
-        }
-
-        const title = extractTitleFromCaption(caption);
+        const effectiveCaption = typeof rawCaption === "string" ? rawCaption.trim() : "";
+        const effectiveImageUrl = typeof rawImageUrl === "string" && rawImageUrl.startsWith("http") ? rawImageUrl.trim() : null;
+        const effectivePermalink = typeof rawPermalink === "string" && rawPermalink.startsWith("http") ? rawPermalink.trim() : "https://www.instagram.com/mha_withus";
 
         // Check if this Instagram post has already been synced
         if (effectivePermalink && effectivePermalink !== "https://www.instagram.com/mha_withus") {
@@ -68,8 +62,10 @@ export async function POST(req: Request) {
             }
         }
 
+        const title = extractTitleFromCaption(effectiveCaption);
+
         // Format clean notice content
-        let formattedContent = caption.trim();
+        let formattedContent = effectiveCaption || "WITHUS 인스타그램 새 소식이 등록되었습니다.";
         if (effectiveImageUrl) {
             formattedContent += `\n\n![Instagram Image](${effectiveImageUrl})`;
         }
@@ -83,7 +79,7 @@ export async function POST(req: Request) {
                 title,
                 content: formattedContent,
                 category: "Instagram",
-                isPinned: Boolean(isPinned),
+                isPinned,
                 isVisible: true,
             },
         });
