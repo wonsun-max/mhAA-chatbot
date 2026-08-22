@@ -36,7 +36,7 @@ export function HeroSection() {
 
       {/* Brand */}
       <div className="absolute bottom-8 left-8 hidden md:block">
-        <p className="text-[9px] uppercase tracking-[0.3em] text-white/20">WITHUS Intelligence</p>
+        <p className="text-[9px] uppercase tracking-[0.3em] text-white/20">WITHUS MHA · withusmha</p>
       </div>
     </section>
   )

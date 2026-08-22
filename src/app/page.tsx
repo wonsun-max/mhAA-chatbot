@@ -70,9 +70,9 @@ export default function Home() {
         {/* Footer Minimal */}
         <footer className="py-24 space-y-8">
           <div className="space-y-2">
-            <p className="text-[9px] uppercase tracking-[0.5em] text-white/10 font-bold">WITHUS HUB</p>
+            <p className="text-[9px] uppercase tracking-[0.5em] text-white/10 font-bold">WITHUS MHA (withusmha)</p>
             <p className="text-[9px] text-white/10 font-light max-w-xs leading-loose">
-              본 플랫폼은 학생들의 학교 생활 편의와 지능형 소통 지원을 위해 운영됩니다.
+              마닐라한국아카데미(MHA) 학생들의 학교 생활 편의와 지능형 소통 지원을 위해 운영됩니다.
             </p>
           </div>
 

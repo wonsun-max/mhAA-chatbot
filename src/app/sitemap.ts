@@ -1,45 +1,63 @@
-import { MetadataRoute } from 'next'
+import { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://mhawithus.shop'
-  const lastModified = new Date('2026-03-30')
-  
+  const baseUrl = "https://mhawithus.shop";
+  const now = new Date();
+
   return [
     {
       url: baseUrl,
-      lastModified,
-      changeFrequency: 'daily',
-      priority: 1,
-    },
-    {
-      url: `${baseUrl}/signup`,
-      lastModified,
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/login`,
-      lastModified,
-      changeFrequency: 'monthly',
-      priority: 0.8,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 1.0,
     },
     {
       url: `${baseUrl}/notices`,
-      lastModified,
-      changeFrequency: 'weekly',
+      lastModified: now,
+      changeFrequency: "daily",
       priority: 0.9,
     },
     {
+      url: `${baseUrl}/collab/calendar`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/collab/meals`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/collab/timetable`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/signup`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/login`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
       url: `${baseUrl}/privacy`,
-      lastModified,
-      changeFrequency: 'yearly',
+      lastModified: now,
+      changeFrequency: "yearly",
       priority: 0.3,
     },
     {
       url: `${baseUrl}/terms`,
-      lastModified,
-      changeFrequency: 'yearly',
+      lastModified: now,
+      changeFrequency: "yearly",
       priority: 0.3,
     },
-  ]
+  ];
 }

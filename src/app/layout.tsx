@@ -17,21 +17,26 @@ const outfit = Outfit({
   display: "swap",
 });
 
-// 1. Metadata setup
 export const metadata: Metadata = {
   metadataBase: new URL("https://mhawithus.shop"),
   title: {
-    default: "마닐라한국아카데미 통합 캠퍼스 라이프 플랫폼 WITHUS",
-    template: "%s | WITHUS",
+    default: "WITHUS MHA | 마닐라한국아카데미 통합 캠퍼스 플랫폼 (withusmha)",
+    template: "%s | WITHUS MHA (withusmha)",
   },
-  description: "마닐라한국아카데미(MHA) 학생과 교사를 위한 통합 캠퍼스 라이프 플랫폼. 공지사항, 시간표, 급식표, 커뮤니티 및 AI 도우미 서비스 제공.",
+  description:
+    "WITHUS MHA (withusmha / mhawithus) - 마닐라한국아카데미(Manila Hankuk Academy) 학생과 교사를 위한 통합 스마트 캠퍼스 라이프 플랫폼. 공지사항, 시간표, 급식표, 학사일정, 커뮤니티 및 AI 도우미 서비스.",
   keywords: [
+    "withusmha",
+    "withus mha",
+    "withusmha.shop",
+    "mhawithus",
     "mhawithus.shop",
     "MHA withus",
+    "withus",
     "mha",
-    "withus mha",
     "Manila Hankuk Academy",
     "마닐라한국아카데미",
+    "마닐라 한국 아카데미",
     "위더스",
     "마한아",
     "필리핀 한국학교",
@@ -39,18 +44,33 @@ export const metadata: Metadata = {
     "MHA 교사",
     "MHA 선생님",
     "MHA 학생 커뮤니티",
-    "MHA 입시"
+    "MHA 입시",
+    "마닐라 한인 학교",
+    "필리핀 한인 학교",
   ],
-  applicationName: "WITHUS",
+  applicationName: "WITHUS MHA",
   appleWebApp: {
-    title: "WITHUS",
+    title: "WITHUS MHA",
     statusBarStyle: "default",
     capable: true,
   },
-
+  alternates: {
+    canonical: "https://mhawithus.shop",
+  },
   openGraph: {
-    title: "마닐라한국아카데미 통합 캠퍼스 라이프 플랫폼 WITHUS",
-    siteName: "WITHUS",
+    title: "WITHUS MHA | 마닐라한국아카데미 통합 캠퍼스 플랫폼 (withusmha)",
+    description:
+      "WITHUS MHA (withusmha / mhawithus) - 마닐라한국아카데미 학생과 교사를 위한 통합 캠퍼스 라이프 플랫폼.",
+    siteName: "WITHUS MHA (withusmha)",
+    url: "https://mhawithus.shop",
+    type: "website",
+    locale: "ko_KR",
+  },
+  twitter: {
+    card: "summary",
+    title: "WITHUS MHA | 마닐라한국아카데미 (withusmha)",
+    description:
+      "WITHUS MHA (withusmha / mhawithus) - MHA 학생 및 교사를 위한 통합 캠퍼스 플랫폼.",
   },
   verification: {
     google: "UgMH0SGAU1AonBchOM9OurUhEyGX1S7nRT2NwYFa688",
@@ -58,6 +78,12 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 };
 
@@ -79,7 +105,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <html lang="ko">
       <head>
@@ -90,33 +115,42 @@ export default function RootLayout({
               {
                 "@context": "https://schema.org",
                 "@type": "WebSite",
-                "name": "WITHUS",
+                "name": "WITHUS MHA",
+                "alternateName": [
+                  "withusmha",
+                  "withus mha",
+                  "mhawithus",
+                  "mhawithus.shop",
+                  "WITHUS",
+                  "마닐라한국아카데미 위더스",
+                  "Manila Hankuk Academy"
+                ],
                 "url": "https://mhawithus.shop",
-                "alternateName": "마닐라한국아카데미 위더스",
+                "description": "마닐라한국아카데미(MHA) 통합 스마트 캠퍼스 라이프 플랫폼 WITHUS MHA (withusmha)",
               },
               {
                 "@context": "https://schema.org",
                 "@type": "Organization",
-                "name": "WITHUS",
+                "name": "WITHUS MHA",
                 "alternateName": [
+                  "withusmha",
+                  "withus mha",
+                  "mhawithus",
                   "마닐라한국아카데미 위더스",
-                  "MHA WithUs"
+                  "MHA WithUs",
+                  "마닐라한국아카데미"
                 ],
                 "url": "https://mhawithus.shop",
                 "logo": "https://mhawithus.shop/images/site-logo.png",
-                "description": "마닐라한국아카데미(MHA) 학생과 교사를 위한 통합 스마트 캠퍼스 라이프 플랫폼 WITHUS",
-                "sameAs": [
-
-
-                ]
-              }
+                "description": "마닐라한국아카데미(MHA) 학생과 교사를 위한 통합 스마트 캠퍼스 라이프 플랫폼 WITHUS (withusmha)",
+              },
             ]),
           }}
         />
       </head>
       <body className={`${outfit.variable} min-h-screen bg-black text-white font-sans selection:bg-blue-500/30`}>
         <AuthProvider>
-          {/* 3. Background Component */}
+          {/* Background Component */}
           <Background />
 
           {/* Layout Content */}
