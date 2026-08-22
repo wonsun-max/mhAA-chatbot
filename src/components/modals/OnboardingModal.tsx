@@ -5,6 +5,10 @@ import { useSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { User, GraduationCap, Sparkles, Loader2 } from "lucide-react";
 
+/**
+ * Mandatory Onboarding Modal for completing required profile information
+ * when users sign in via Google OAuth or are missing mandatory fields.
+ */
 export function OnboardingModal() {
     const { data: session, status, update } = useSession();
     const [open, setOpen] = useState(false);
@@ -24,12 +28,32 @@ export function OnboardingModal() {
 
     useEffect(() => {
         if (status === "authenticated" && session?.user) {
-            // Show modal if any required field is missing
-            const isMissingDetails =
-                !session.user.name ||
-                !session.user.nickname ||
-                !session.user.grade;
-            setOpen(isMissingDetails);
+            const user = session.user;
+            const isStudent = user.role !== "TEACHER";
+            
+            // Check if mandatory details are missing based on role
+            const isMissing =
+                !user.name ||
+                !user.nickname ||
+                (isStudent && !user.grade);
+
+            if (isMissing) {
+                setOpen(true);
+                if (user.name && !name) {
+                    setName(user.name);
+                }
+                if (user.nickname && !nickname) {
+                    setNickname(user.nickname);
+                }
+                if (user.grade && !grade) {
+                    setGrade(user.grade);
+                }
+                if (user.role === "TEACHER" || user.role === "STUDENT") {
+                    setRole(user.role);
+                }
+            } else {
+                setOpen(false);
+            }
         } else {
             setOpen(false);
         }
@@ -42,8 +66,8 @@ export function OnboardingModal() {
         if (loading) return;
 
         // Validate required fields per role
-        if (!name.trim()) {
-            setError("성명을 입력해주세요.");
+        if (!name.trim() || name.trim().length < 2) {
+            setError("성명을 2글자 이상 입력해주세요.");
             return;
         }
         if (!nickname.trim() || nickname.trim().length < 2) {
@@ -113,8 +137,7 @@ export function OnboardingModal() {
                         </div>
                         <h2 className="text-2xl font-bold text-white tracking-tight">프로필 설정이 필요합니다</h2>
                         <p className="text-xs text-zinc-400 leading-relaxed">
-                            Google 계정으로 처음 가입하셨습니다.<br />
-                            서비스 이용을 위해 아래 정보를 모두 입력해 주세요.
+                            서비스 이용을 위해 아래 필수 정보를 모두 입력해 주세요.
                         </p>
                     </div>
 
