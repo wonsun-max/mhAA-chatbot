@@ -70,8 +70,13 @@ export const authOptions: NextAuthOptions = {
                 });
 
                 if (dbUser) {
+                    // Block suspended accounts
                     if (dbUser.status === "SUSPENDED") {
                         throw new Error("계정이 정지된 상태입니다.");
+                    }
+                    // Block pending accounts — same as credentials provider
+                    if (dbUser.status === "PENDING") {
+                        throw new Error("계정이 아직 승인되지 않았습니다. 관리자 승인 후 이용 가능합니다.");
                     }
                     // Attach DB fields to NextAuth user object for JWT token initialization
                     user.id = dbUser.id;
@@ -81,12 +86,12 @@ export const authOptions: NextAuthOptions = {
                     user.nickname = dbUser.nickname;
                     user.qtGroup = dbUser.qtGroup;
                 } else {
-                    // Create new user automatically via Google login
+                    // Create new user with PENDING status — admin must approve before access
                     dbUser = await prisma.user.create({
                         data: {
                             email,
-                            name: profile?.name || user.name || "Google User",
-                            status: "APPROVED",
+                            name: profile?.name || user.name || null,
+                            status: "PENDING",
                             role: "STUDENT"
                         }
                     });
@@ -97,6 +102,9 @@ export const authOptions: NextAuthOptions = {
                     user.grade = dbUser.grade;
                     user.nickname = dbUser.nickname;
                     user.qtGroup = dbUser.qtGroup;
+
+                    // Redirect to login with a pending message instead of letting them in
+                    throw new Error("회원가입이 완료되었습니다. 관리자 승인 후 로그인이 가능합니다.");
                 }
             }
             return true;

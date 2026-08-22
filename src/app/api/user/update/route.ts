@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { UserRole } from "@prisma/client";
 
 const VALID_QT_GROUPS = new Set(["1", "2", "3", "4", "5", "6", "7", "8"]);
 const VALID_GRADES = new Set(["7", "8", "9", "10", "11", "12-1", "12-2"]);
@@ -24,7 +25,7 @@ export async function PATCH(req: Request) {
             nickname?: string;
             qtGroup?: string | null;
             grade?: string | null;
-            role?: string;
+            role?: UserRole;
         } = {};
 
         // --- name ---
@@ -62,7 +63,7 @@ export async function PATCH(req: Request) {
             if (!VALID_ROLES.has(role)) {
                 return NextResponse.json({ error: "유효하지 않은 역할입니다." }, { status: 400 });
             }
-            updateData.role = role;
+            updateData.role = role as UserRole;
         }
 
         // --- grade ---
