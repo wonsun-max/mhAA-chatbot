@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { ChevronRight, Bell, Search, Plus, Trash2, X, Loader2, Instagram, Check, Copy, KeyRound, Sparkles } from "lucide-react"
+import { ChevronRight, Bell, Search, Plus, Trash2, X, Loader2, Instagram } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useSession } from "next-auth/react"
 
@@ -23,10 +23,7 @@ export default function NoticesPage() {
     const [notices, setNotices] = useState<Notice[]>([])
     const [loading, setLoading] = useState(true)
     const [showAddModal, setShowAddModal] = useState(false)
-    const [showInstaModal, setShowInstaModal] = useState(false)
     const [searchQuery, setSearchQuery] = useState("")
-    const [copiedKey, setCopiedKey] = useState(false)
-    const [copiedUrl, setCopiedUrl] = useState(false)
 
     // Form State
     const [newNotice, setNewNotice] = useState({ title: "", content: "", category: "Notice", isPinned: false })
@@ -84,23 +81,6 @@ export default function NoticesPage() {
         }
     }
 
-    const webhookUrl = typeof window !== "undefined" 
-        ? `${window.location.origin}/api/notices/sync-instagram` 
-        : "https://mhawithus.shop/api/notices/sync-instagram";
-
-    const secretKey = "withus_insta_sync_2026";
-
-    const copyToClipboard = (text: string, type: "url" | "key") => {
-        navigator.clipboard.writeText(text);
-        if (type === "url") {
-            setCopiedUrl(true);
-            setTimeout(() => setCopiedUrl(false), 2000);
-        } else {
-            setCopiedKey(true);
-            setTimeout(() => setCopiedKey(false), 2000);
-        }
-    };
-
     const filteredNotices = notices.filter(n =>
         n.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         n.content.toLowerCase().includes(searchQuery.toLowerCase())
@@ -131,7 +111,7 @@ export default function NoticesPage() {
                     </div>
 
                     <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
-                        <div className="relative w-full sm:w-60 group">
+                        <div className="relative w-full sm:w-64 group">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-blue-500 transition-colors" size={16} />
                             <input
                                 type="text"
@@ -143,24 +123,13 @@ export default function NoticesPage() {
                         </div>
 
                         {isAdmin && (
-                            <div className="flex items-center gap-2 w-full sm:w-auto">
-                                <button
-                                    onClick={() => setShowInstaModal(true)}
-                                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-3 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-orange-500/20 border border-pink-500/30 text-pink-300 rounded-xl font-bold text-xs hover:border-pink-500/60 transition-all"
-                                    title="인스타그램 자동 연동 설정"
-                                >
-                                    <Instagram size={14} />
-                                    <span>인스타 자동연동</span>
-                                </button>
-
-                                <button
-                                    onClick={() => setShowAddModal(true)}
-                                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-3 bg-white text-black rounded-xl font-bold text-xs hover:bg-zinc-200 transition-all active:scale-[0.98]"
-                                >
-                                    <Plus size={16} />
-                                    <span>새 공지</span>
-                                </button>
-                            </div>
+                            <button
+                                onClick={() => setShowAddModal(true)}
+                                className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-6 py-3 bg-white text-black rounded-xl font-bold text-xs hover:bg-zinc-200 transition-all active:scale-[0.98]"
+                            >
+                                <Plus size={16} />
+                                <span>새 공지</span>
+                            </button>
                         )}
                     </div>
                 </div>
@@ -318,90 +287,6 @@ export default function NoticesPage() {
                     </div>
                 )}
             </main>
-
-            {/* Instagram Auto-Sync Guide Modal */}
-            <AnimatePresence>
-                {showInstaModal && (
-                    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl overflow-y-auto">
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="w-full max-w-lg bg-zinc-900 border border-zinc-800 rounded-3xl p-6 md:p-8 shadow-2xl space-y-6 relative overflow-y-auto max-h-[90vh] my-auto"
-                        >
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-purple-500/20 via-pink-500/20 to-orange-500/20 border border-pink-500/30 flex items-center justify-center text-pink-400">
-                                        <Instagram size={20} />
-                                    </div>
-                                    <div>
-                                        <h3 className="text-lg font-bold text-white">인스타그램 자동 연동</h3>
-                                        <p className="text-xs text-zinc-500">인스타에 올리면 공지사항 자동 등록 (무료 100%)</p>
-                                    </div>
-                                </div>
-                                <button
-                                    onClick={() => setShowInstaModal(false)}
-                                    className="p-2 text-zinc-500 hover:text-white rounded-xl hover:bg-white/5 transition-colors"
-                                >
-                                    <X size={20} />
-                                </button>
-                            </div>
-
-                            <div className="space-y-4">
-                                <div className="p-4 bg-zinc-950/60 border border-zinc-800 rounded-2xl space-y-3">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-xs font-bold text-white">1. Webhook 수신 URL (Make.com에 입력)</span>
-                                        <button
-                                            onClick={() => copyToClipboard(webhookUrl, "url")}
-                                            className="text-xs text-pink-400 hover:text-pink-300 font-bold flex items-center gap-1"
-                                        >
-                                            {copiedUrl ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
-                                            <span>{copiedUrl ? "복사됨!" : "URL 복사"}</span>
-                                        </button>
-                                    </div>
-                                    <div className="p-3 bg-black rounded-xl border border-zinc-800 font-mono text-[11px] text-zinc-300 break-all select-all">
-                                        {webhookUrl}
-                                    </div>
-                                </div>
-
-                                <div className="p-4 bg-zinc-950/60 border border-zinc-800 rounded-2xl space-y-3">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-xs font-bold text-white">2. 보안 Secret Key</span>
-                                        <button
-                                            onClick={() => copyToClipboard(secretKey, "key")}
-                                            className="text-xs text-pink-400 hover:text-pink-300 font-bold flex items-center gap-1"
-                                        >
-                                            {copiedKey ? <Check size={12} className="text-emerald-400" /> : <KeyRound size={12} />}
-                                            <span>{copiedKey ? "복사됨!" : "Key 복사"}</span>
-                                        </button>
-                                    </div>
-                                    <div className="p-3 bg-black rounded-xl border border-zinc-800 font-mono text-xs text-zinc-300 select-all">
-                                        {secretKey}
-                                    </div>
-                                </div>
-
-                                <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-2">
-                                    <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
-                                        <Sparkles size={14} className="text-pink-400" />
-                                        <span>초간단 설정 방법 (2분 소요)</span>
-                                    </h4>
-                                    <ol className="text-xs text-zinc-400 space-y-1.5 list-decimal list-inside leading-relaxed">
-                                        <li><strong className="text-white">Make.com</strong> 무료 가입 (월 1,000회 무료)</li>
-                                        <li>새 Scenario 생성 → <strong className="text-pink-400">Instagram for Business (Watch Media)</strong> 선택</li>
-                                        <li>두 번째 모듈로 <strong className="text-blue-400">HTTP (Make a request)</strong> 추가</li>
-                                        <li>URL에 위의 <strong className="text-white">Webhook URL</strong> 입력, Method: <strong className="text-emerald-400">POST</strong></li>
-                                        <li>Body type: <strong className="text-white">JSON</strong> 후 아래 내용 매핑:
-                                            <div className="mt-1 p-2 bg-black rounded-lg text-[10px] font-mono text-zinc-300">
-                                                {`{"secret": "${secretKey}", "caption": caption, "imageUrl": media_url, "permalink": permalink}`}
-                                            </div>
-                                        </li>
-                                    </ol>
-                                </div>
-                            </div>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
 
             {/* Regular Add Notice Modal */}
             <AnimatePresence>
