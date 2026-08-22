@@ -2,7 +2,7 @@
 
 import { useState, useEffect, use } from "react"
 import Link from "next/link"
-import { ArrowLeft, Calendar, Loader2, Sparkles } from "lucide-react"
+import { ArrowLeft, Calendar, Loader2, Sparkles, Instagram, ExternalLink } from "lucide-react"
 import { motion } from "framer-motion"
 
 interface Notice {
@@ -62,6 +62,23 @@ export default function NoticeDetailPage({ params }: { params: Promise<{ id: str
         )
     }
 
+    // Extract Instagram link & image URLs if present
+    const isInstagram = notice.category.toLowerCase() === "instagram" || notice.content.includes("instagram.com");
+    
+    // Find image markdown ![...](url)
+    const imageMatch = notice.content.match(/!\[.*?\]\((https?:\/\/[^\s)]+)\)/);
+    const imageUrl = imageMatch ? imageMatch[1] : null;
+
+    // Find Instagram permalink
+    const instaLinkMatch = notice.content.match(/https?:\/\/(www\.)?instagram\.com\/p\/[a-zA-Z0-9_-]+/);
+    const instagramPermalink = instaLinkMatch ? instaLinkMatch[0] : null;
+
+    // Clean text without raw markdown tags
+    const cleanContent = notice.content
+        .replace(/!\[.*?\]\((https?:\/\/[^\s)]+)\)/g, "")
+        .replace(/\[.*?\]\(https?:\/\/[^\s)]+\)/g, "")
+        .trim();
+
     return (
         <div className="min-h-screen bg-black text-white selection:bg-blue-500/30 overflow-x-hidden">
             {/* Texture Overlay */}
@@ -85,16 +102,23 @@ export default function NoticeDetailPage({ params }: { params: Promise<{ id: str
 
                         <div className="space-y-6">
                             <div className="flex flex-wrap items-center gap-4">
-                                <span className="px-3 py-1 rounded-full text-[9px] uppercase tracking-widest font-black bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                                    {notice.category === "Notice" ? "공지사항" : notice.category === "Mission" ? "미션" : notice.category === "Event" ? "이벤트" : notice.category === "Bible" ? "주제 말씀" : notice.category}
-                                </span>
+                                {isInstagram ? (
+                                    <span className="px-3.5 py-1.5 rounded-full text-[10px] uppercase tracking-widest font-bold bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-orange-500/20 text-pink-300 border border-pink-500/30 flex items-center gap-1.5 shadow-lg shadow-pink-500/10">
+                                        <Instagram size={12} />
+                                        <span>Instagram</span>
+                                    </span>
+                                ) : (
+                                    <span className="px-3 py-1 rounded-full text-[9px] uppercase tracking-widest font-black bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                                        {notice.category === "Notice" ? "공지사항" : notice.category === "Mission" ? "미션" : notice.category === "Event" ? "이벤트" : notice.category === "Bible" ? "주제 말씀" : notice.category}
+                                    </span>
+                                )}
                                 <div className="flex items-center gap-2 text-[10px] text-white/20 font-mono uppercase tracking-widest">
                                     <Calendar size={12} />
                                     {new Date(notice.createdAt).toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" })}
                                 </div>
                             </div>
 
-                            <h1 className="text-4xl md:text-6xl font-extralight tracking-tight leading-[1.1] text-white/90">
+                            <h1 className="text-3xl md:text-5xl font-extralight tracking-tight leading-[1.15] text-white/90">
                                 {notice.title}
                             </h1>
                         </div>
@@ -102,15 +126,42 @@ export default function NoticeDetailPage({ params }: { params: Promise<{ id: str
 
                     <div className="w-full h-px bg-gradient-to-r from-white/10 via-white/5 to-transparent" />
 
+                    {/* Image Embed if available */}
+                    {imageUrl && (
+                        <div className="rounded-3xl overflow-hidden border border-white/10 bg-zinc-900/40 shadow-2xl max-w-lg mx-auto">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                                src={imageUrl}
+                                alt={notice.title}
+                                className="w-full h-auto object-cover"
+                            />
+                        </div>
+                    )}
+
                     {/* Content */}
                     <div className="relative group">
-                        {/* Glass Box Container */}
                         <div className="absolute -inset-8 bg-gradient-to-b from-white/[0.03] to-transparent rounded-[40px] opacity-0 group-hover:opacity-100 transition-opacity duration-1000 blur-2xl" />
 
-                        <div className="relative p-0 md:p-4">
-                            <div className="text-lg md:text-xl font-light text-white/60 leading-relaxed whitespace-pre-wrap selection:bg-blue-500/30 tracking-tight">
-                                {notice.content}
+                        <div className="relative p-0 md:p-4 space-y-6">
+                            <div className="text-base md:text-lg font-light text-white/70 leading-relaxed whitespace-pre-wrap selection:bg-blue-500/30 tracking-tight">
+                                {cleanContent || notice.content}
                             </div>
+
+                            {/* Instagram Link CTA */}
+                            {instagramPermalink && (
+                                <div className="pt-4">
+                                    <a
+                                        href={instagramPermalink}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 hover:from-purple-500 hover:via-pink-500 hover:to-orange-400 text-white text-xs font-bold transition-all shadow-xl shadow-pink-500/20 active:scale-95"
+                                    >
+                                        <Instagram size={16} />
+                                        <span>Instagram 원본 게시물 보기</span>
+                                        <ExternalLink size={14} className="opacity-70" />
+                                    </a>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -119,19 +170,12 @@ export default function NoticeDetailPage({ params }: { params: Promise<{ id: str
                             <Sparkles size={16} />
                             <span className="text-[10px] uppercase tracking-[0.5em] font-bold">WITHUS HUB INSIGHT</span>
                         </div>
-                        <Link
-                            href="/notices"
-                            className="px-8 py-3 bg-white text-black text-[10px] uppercase tracking-[0.2em] font-black hover:bg-zinc-200 transition-all active:scale-95"
-                        >
-                            목록으로
+                        <Link href="/notices" className="text-[10px] uppercase tracking-[0.2em] text-white/30 hover:text-white transition-colors">
+                            Back to Notices
                         </Link>
                     </div>
                 </motion.div>
             </main>
-
-            <footer className="py-24 border-t border-white/5 text-center bg-transparent opacity-30">
-                <p className="text-[9px] uppercase tracking-[0.5em] text-white/10 font-bold">WITHUS MISSION PLATFORM</p>
-            </footer>
         </div>
     )
 }

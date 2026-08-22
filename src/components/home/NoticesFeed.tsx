@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Bell, Loader2 } from "lucide-react"
+import { Bell, Loader2, Instagram } from "lucide-react"
 
 interface Notice {
   id: string
@@ -65,21 +65,31 @@ export function NoticesFeed() {
               <div className="h-px flex-1 bg-blue-500/20" />
             </div>
             <div className="space-y-6">
-              {pinnedNotices.map((notice) => (
-                <Link key={notice.id} href={`/notices/${notice.id}`} className="block group">
-                  <div className="space-y-3">
-                    <span className="text-[9px] uppercase tracking-widest text-blue-400 font-medium bg-blue-400/10 px-2 py-0.5 rounded-full inline-block">
-                      {notice.category}
-                    </span>
-                    <h4 className="text-xl font-light text-white group-hover:text-blue-400 transition-colors leading-snug tracking-tight">
-                      {notice.title}
-                    </h4>
-                    <p className="text-[10px] font-mono text-white/20">
-                      {new Date(notice.createdAt).toLocaleDateString("ko-KR")}
-                    </p>
-                  </div>
-                </Link>
-              ))}
+              {pinnedNotices.map((notice) => {
+                const isInsta = notice.category.toLowerCase() === "instagram";
+                return (
+                  <Link key={notice.id} href={`/notices/${notice.id}`} className="block group">
+                    <div className="space-y-3">
+                      {isInsta ? (
+                        <span className="text-[9px] uppercase tracking-widest text-pink-300 font-bold bg-pink-500/20 border border-pink-500/30 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">
+                          <Instagram size={10} />
+                          <span>Instagram</span>
+                        </span>
+                      ) : (
+                        <span className="text-[9px] uppercase tracking-widest text-blue-400 font-medium bg-blue-400/10 px-2 py-0.5 rounded-full inline-block">
+                          {notice.category}
+                        </span>
+                      )}
+                      <h4 className={`text-xl font-light text-white transition-colors leading-snug tracking-tight ${isInsta ? 'group-hover:text-pink-300' : 'group-hover:text-blue-400'}`}>
+                        {notice.title}
+                      </h4>
+                      <p className="text-[10px] font-mono text-white/20">
+                        {new Date(notice.createdAt).toLocaleDateString("ko-KR")}
+                      </p>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         )}
@@ -95,19 +105,29 @@ export function NoticesFeed() {
           
           <div className="divide-y divide-white/5">
             {normalNotices.length > 0 ? (
-              normalNotices.map((notice) => (
-                <Link key={notice.id} href={`/notices/${notice.id}`} className="block py-6 first:pt-0 group">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div className="space-y-1">
-                      <span className="text-[9px] uppercase tracking-widest text-white/30 font-medium">{notice.category}</span>
-                      <h4 className="text-base font-light text-white/70 group-hover:text-white transition-colors tracking-tight">{notice.title}</h4>
+              normalNotices.map((notice) => {
+                const isInsta = notice.category.toLowerCase() === "instagram";
+                return (
+                  <Link key={notice.id} href={`/notices/${notice.id}`} className="block py-6 first:pt-0 group">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div className="space-y-1">
+                        {isInsta ? (
+                          <span className="text-[9px] uppercase tracking-widest text-pink-400 font-medium inline-flex items-center gap-1">
+                            <Instagram size={10} />
+                            <span>Instagram</span>
+                          </span>
+                        ) : (
+                          <span className="text-[9px] uppercase tracking-widest text-white/30 font-medium">{notice.category}</span>
+                        )}
+                        <h4 className="text-base font-light text-white/70 group-hover:text-white transition-colors tracking-tight">{notice.title}</h4>
+                      </div>
+                      <span className="text-[10px] font-mono text-white/20 whitespace-nowrap">
+                        {new Date(notice.createdAt).toLocaleDateString("ko-KR")}
+                      </span>
                     </div>
-                    <span className="text-[10px] font-mono text-white/20 whitespace-nowrap">
-                      {new Date(notice.createdAt).toLocaleDateString("ko-KR")}
-                    </span>
-                  </div>
-                </Link>
-              ))
+                  </Link>
+                );
+              })
             ) : (
               !hasPinned && <p className="text-sm text-white/20 py-12 text-center italic">등록된 공지사항이 없습니다.</p>
             )}
