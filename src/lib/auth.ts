@@ -64,21 +64,15 @@ export const authOptions: NextAuthOptions = {
                 const email = profile?.email || user.email;
                 if (!email) return false;
 
-                // Search for existing user with this email in Neon DB
-                let dbUser = await prisma.user.findUnique({
-                    where: { email }
-                });
+                let dbUser = await prisma.user.findUnique({ where: { email } });
 
                 if (dbUser) {
-                    // Block suspended accounts
+                    // Block only suspended accounts
                     if (dbUser.status === "SUSPENDED") {
                         throw new Error("계정이 정지된 상태입니다.");
                     }
-                    // Block pending accounts — same as credentials provider
-                    if (dbUser.status === "PENDING") {
-                        throw new Error("계정이 아직 승인되지 않았습니다. 관리자 승인 후 이용 가능합니다.");
-                    }
-                    // Attach DB fields to NextAuth user object for JWT token initialization
+                    // PENDING users are allowed to get a session so they can
+                    // fill in OnboardingModal info and see the approval-pending page
                     user.id = dbUser.id;
                     user.role = dbUser.role;
                     user.status = dbUser.status;
@@ -86,13 +80,14 @@ export const authOptions: NextAuthOptions = {
                     user.nickname = dbUser.nickname;
                     user.qtGroup = dbUser.qtGroup;
                 } else {
-                    // Create new user with PENDING status — admin must approve before access
+                    // New Google user → create with PENDING, let them sign in
+                    // so OnboardingModal can collect their info first
                     dbUser = await prisma.user.create({
                         data: {
                             email,
                             name: profile?.name || user.name || null,
                             status: "PENDING",
-                            role: "STUDENT"
+                            role: "STUDENT",
                         }
                     });
 
@@ -102,9 +97,6 @@ export const authOptions: NextAuthOptions = {
                     user.grade = dbUser.grade;
                     user.nickname = dbUser.nickname;
                     user.qtGroup = dbUser.qtGroup;
-
-                    // Redirect to login with a pending message instead of letting them in
-                    throw new Error("회원가입이 완료되었습니다. 관리자 승인 후 로그인이 가능합니다.");
                 }
             }
             return true;
@@ -118,11 +110,14 @@ export const authOptions: NextAuthOptions = {
                 token.nickname = user.nickname;
                 token.qtGroup = user.qtGroup;
             }
-            // Support updating token values if needed
+            // Support updating token values via useSession update()
             if (trigger === "update") {
+                if (session?.name !== undefined) token.name = session.name;
                 if (session?.nickname !== undefined) token.nickname = session.nickname;
                 if (session?.qtGroup !== undefined) token.qtGroup = session.qtGroup;
                 if (session?.grade !== undefined) token.grade = session.grade;
+                if (session?.role !== undefined) token.role = session.role;
+                if (session?.status !== undefined) token.status = session.status;
             }
             return token;
         },

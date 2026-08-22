@@ -6,7 +6,12 @@ export default withAuth(
     const { pathname } = req.nextUrl;
     const token = req.nextauth.token;
 
-    // 1. Role-based Authorization for Admin
+    // 1. Block PENDING users from accessing protected routes
+    if (token?.status === "PENDING" && pathname !== "/pending") {
+      return NextResponse.redirect(new URL("/pending", req.url));
+    }
+
+    // 2. Role-based Authorization for Admin
     if (pathname.startsWith("/admin") && token?.role !== "ADMIN") {
       return NextResponse.redirect(new URL("/", req.url));
     }
