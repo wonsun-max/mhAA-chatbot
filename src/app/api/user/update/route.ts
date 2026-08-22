@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 
 const VALID_QT_GROUPS = new Set(["1", "2", "3", "4", "5", "6", "7", "8"]);
 const VALID_GRADES = new Set(["7", "8", "9", "10", "11", "12-1", "12-2"]);
+const VALID_ROLES = new Set(["STUDENT", "TEACHER"]);
 
 export async function PATCH(req: Request) {
     try {
@@ -15,15 +16,27 @@ export async function PATCH(req: Request) {
         }
 
         const body = await req.json();
-        const { nickname, qtGroup, grade } = body;
+        const { name, nickname, qtGroup, grade, role } = body;
         const userId = session.user.id;
 
         const updateData: {
+            name?: string;
             nickname?: string;
             qtGroup?: string | null;
             grade?: string | null;
+            role?: string;
         } = {};
 
+        // --- name ---
+        if (name !== undefined) {
+            const safeName = typeof name === "string" ? name.trim() : "";
+            if (safeName.length < 2) {
+                return NextResponse.json({ error: "성명은 최소 2글자 이상이어야 합니다." }, { status: 400 });
+            }
+            updateData.name = safeName;
+        }
+
+        // --- nickname ---
         if (nickname !== undefined) {
             const safeNickname = typeof nickname === "string" ? nickname.trim() : "";
             if (safeNickname.length < 2) {
@@ -44,18 +57,28 @@ export async function PATCH(req: Request) {
             updateData.nickname = safeNickname;
         }
 
-        if (qtGroup !== undefined) {
-            if (qtGroup !== null && (!VALID_QT_GROUPS.has(qtGroup))) {
-                return NextResponse.json({ error: "유효하지 않은 QT조입니다." }, { status: 400 });
+        // --- role ---
+        if (role !== undefined) {
+            if (!VALID_ROLES.has(role)) {
+                return NextResponse.json({ error: "유효하지 않은 역할입니다." }, { status: 400 });
             }
-            updateData.qtGroup = qtGroup;
+            updateData.role = role;
         }
 
+        // --- grade ---
         if (grade !== undefined) {
             if (grade !== null && !VALID_GRADES.has(grade)) {
                 return NextResponse.json({ error: "유효하지 않은 학년/반입니다." }, { status: 400 });
             }
             updateData.grade = grade;
+        }
+
+        // --- qtGroup ---
+        if (qtGroup !== undefined) {
+            if (qtGroup !== null && !VALID_QT_GROUPS.has(qtGroup)) {
+                return NextResponse.json({ error: "유효하지 않은 QT조입니다." }, { status: 400 });
+            }
+            updateData.qtGroup = qtGroup;
         }
 
         if (Object.keys(updateData).length === 0) {
@@ -68,12 +91,14 @@ export async function PATCH(req: Request) {
             data: updateData
         });
 
-        return NextResponse.json({ 
+        return NextResponse.json({
             message: "프로필이 성공적으로 변경되었습니다.",
             user: {
+                name: updatedUser.name,
                 nickname: updatedUser.nickname,
                 qtGroup: updatedUser.qtGroup,
-                grade: updatedUser.grade
+                grade: updatedUser.grade,
+                role: updatedUser.role,
             }
         });
     } catch (error) {
