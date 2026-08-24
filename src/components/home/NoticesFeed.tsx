@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Instagram, Loader2, ExternalLink } from "lucide-react"
+import { InstagramCardGraphic } from "@/components/notices/InstagramCardGraphic"
 
 interface Notice {
   id: string
@@ -91,34 +92,19 @@ export function NoticesFeed() {
                 className="group rounded-3xl bg-zinc-900/40 border border-white/10 hover:border-pink-500/30 overflow-hidden shadow-lg transition-all flex flex-col justify-between"
               >
                 <Link href={`/notices/${notice.id}`} className="block">
-                  {imgUrl ? (
-                    <div className="relative aspect-square w-full bg-zinc-950 overflow-hidden">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={imgUrl}
-                        alt={notice.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-50" />
-                    </div>
-                  ) : (
-                    <div className="relative aspect-[4/3] w-full bg-gradient-to-br from-amber-500/20 via-pink-500/10 to-purple-900/20 p-5 flex flex-col justify-between border-b border-white/5">
-                      <Instagram size={14} className="text-pink-400" />
-                      <h4 className="text-base font-bold text-white tracking-tight line-clamp-2">
-                        {notice.title}
-                      </h4>
-                    </div>
-                  )}
+                  <InstagramCardGraphic
+                    title={notice.title}
+                    imageUrl={imgUrl}
+                    aspectRatio="square"
+                  />
 
-                  <div className="p-5 space-y-2">
+                  <div className="p-5 space-y-1.5">
                     <p className="text-[9px] font-mono text-zinc-500">
                       {new Date(notice.createdAt).toLocaleDateString("ko-KR")}
                     </p>
-                    {imgUrl && (
-                      <h4 className="text-sm font-bold text-white group-hover:text-pink-300 transition-colors line-clamp-1">
-                        {notice.title}
-                      </h4>
-                    )}
+                    <h4 className="text-sm font-bold text-white group-hover:text-pink-300 transition-colors line-clamp-1">
+                      {notice.title}
+                    </h4>
                   </div>
                 </Link>
 
