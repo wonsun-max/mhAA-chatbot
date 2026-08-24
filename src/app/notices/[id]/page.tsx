@@ -125,11 +125,12 @@ export default function NoticeDetailPage({ params }: { params: Promise<{ id: str
                                 <iframe
                                     src={`https://www.instagram.com/p/${shortcode}/embed/`}
                                     width="100%"
-                                    height="580"
+                                    height="620"
                                     frameBorder="0"
                                     scrolling="no"
                                     allowTransparency={true}
-                                    className="w-full rounded-2xl"
+                                    allow="fullscreen; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                                    className="w-full rounded-2xl bg-black"
                                 />
                             </div>
                             <p className="text-[11px] text-zinc-500 mt-2 text-center">
