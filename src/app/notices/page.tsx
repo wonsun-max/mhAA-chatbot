@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Search, Trash2, Loader2, Instagram, ExternalLink, Sparkles, Plus, RefreshCw, X } from "lucide-react"
+import { Search, Trash2, Loader2, Instagram, ExternalLink, Sparkles, Plus, RefreshCw, X, Rss, CheckCircle2 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useSession } from "next-auth/react"
 import { InstagramCardGraphic } from "@/components/notices/InstagramCardGraphic"
@@ -23,6 +23,15 @@ export default function NoticesPage() {
     const [notices, setNotices] = useState<Notice[]>([])
     const [loading, setLoading] = useState(true)
     const [searchQuery, setSearchQuery] = useState("")
+    
+    // RSS Sync Modal State
+    const [showRssModal, setShowRssModal] = useState(false)
+    const [rssUrl, setRssUrl] = useState("")
+    const [isSyncing, setIsSyncing] = useState(false)
+    const [syncMessage, setSyncMessage] = useState("")
+    const [syncError, setSyncError] = useState("")
+
+    // Quick Add Modal State
     const [showQuickAddModal, setShowQuickAddModal] = useState(false)
     const [quickTitle, setQuickTitle] = useState("")
     const [quickContent, setQuickContent] = useState("")
@@ -47,20 +56,51 @@ export default function NoticesPage() {
 
     useEffect(() => {
         fetchNotices()
+        // Load cached RSS URL if stored
+        if (typeof window !== "undefined") {
+            const cached = localStorage.getItem("withus_instagram_rss_url")
+            if (cached) setRssUrl(cached)
+        }
     }, [])
 
-    const handleCleanupAndSeed = async () => {
-        if (!confirm("더미/오류 공지들을 정리하고 공식 인스타그램 게시물로 피드를 동기화하시겠습니까?")) return
-        setLoading(true)
+    const handleRssSync = async (e: React.FormEvent) => {
+        e.preventDefault()
+        if (!rssUrl.trim()) {
+            setSyncError("RSS 피드 URL을 입력해 주세요.")
+            return
+        }
+
+        setIsSyncing(true)
+        setSyncMessage("")
+        setSyncError("")
+
         try {
-            const res = await fetch("/api/admin/notices/cleanup-and-seed", { method: "POST" })
-            if (res.ok) {
-                fetchNotices()
+            if (typeof window !== "undefined") {
+                localStorage.setItem("withus_instagram_rss_url", rssUrl.trim())
             }
-        } catch (err) {
-            console.error("Failed to cleanup notices:", err)
+
+            const res = await fetch("/api/cron/sync-instagram", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ url: rssUrl.trim() }),
+            })
+
+            const data = await res.json()
+
+            if (!res.ok) {
+                setSyncError(data.error || "동기화에 실패했습니다.")
+            } else {
+                setSyncMessage(`성공! 총 ${data.totalFound}개 게시물 확인 (${data.insertedCount}개 신규 등록, ${data.updatedCount}개 업데이트)`)
+                fetchNotices()
+                setTimeout(() => {
+                    setShowRssModal(false)
+                    setSyncMessage("")
+                }, 2000)
+            }
+        } catch (err: any) {
+            setSyncError("서버 통신 중 오류가 발생했습니다.")
         } finally {
-            setLoading(false)
+            setIsSyncing(false)
         }
     }
 
@@ -179,12 +219,12 @@ export default function NoticesPage() {
                             {isAdmin && (
                                 <>
                                     <button
-                                        onClick={handleCleanupAndSeed}
-                                        className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold text-xs border border-white/10 transition-all"
-                                        title="더미 공지 삭제 및 인스타그램 공식 피드로 리셋"
+                                        onClick={() => setShowRssModal(true)}
+                                        className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl bg-gradient-to-r from-orange-500/20 to-pink-500/20 hover:from-orange-500/30 hover:to-pink-500/30 text-pink-300 font-bold text-xs border border-pink-500/30 transition-all shadow-lg"
+                                        title="인스타그램 RSS 피드 동기화"
                                     >
-                                        <RefreshCw size={14} />
-                                        <span>피드 정리 / 리셋</span>
+                                        <Rss size={14} />
+                                        <span>RSS 피드 동기화</span>
                                     </button>
 
                                     <button
@@ -192,7 +232,7 @@ export default function NoticesPage() {
                                         className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-white text-black hover:bg-zinc-200 font-bold text-xs transition-all shadow-lg"
                                     >
                                         <Plus size={15} />
-                                        <span>인스타 소식 등록</span>
+                                        <span>소식 직접 등록</span>
                                     </button>
                                 </>
                             )}
@@ -314,16 +354,93 @@ export default function NoticesPage() {
                             <p className="text-zinc-400 font-bold text-sm">등록된 인스타그램 소식이 없습니다.</p>
                             {isAdmin && (
                                 <button
-                                    onClick={handleCleanupAndSeed}
+                                    onClick={() => setShowRssModal(true)}
                                     className="px-6 py-2.5 rounded-xl bg-pink-500/10 border border-pink-500/20 text-pink-400 text-xs font-bold hover:bg-pink-500/20 transition-all"
                                 >
-                                    기본 인스타그램 소식 채워넣기
+                                    인스타그램 RSS 피드 동기화 시작하기
                                 </button>
                             )}
                         </div>
                     </div>
                 )}
             </main>
+
+            {/* Admin RSS Sync Modal */}
+            <AnimatePresence>
+                {showRssModal && (
+                    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl overflow-y-auto">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="w-full max-w-lg bg-zinc-900 border border-zinc-800 rounded-3xl p-6 md:p-8 shadow-2xl space-y-6 relative overflow-y-auto max-h-[90vh] my-auto"
+                        >
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400">
+                                        <Rss size={20} />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-lg font-bold text-white">인스타그램 RSS 실시간 동기화</h3>
+                                        <p className="text-xs text-zinc-500">과거 게시물 및 신규 게시물을 일괄 가져옵니다</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setShowRssModal(false)}
+                                    className="p-2 text-zinc-500 hover:text-white rounded-xl hover:bg-white/5 transition-colors"
+                                >
+                                    <X size={20} />
+                                </button>
+                            </div>
+
+                            <form onSubmit={handleRssSync} className="space-y-4">
+                                {syncMessage && (
+                                    <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-xs text-emerald-400 flex items-center gap-2">
+                                        <CheckCircle2 size={16} />
+                                        <span>{syncMessage}</span>
+                                    </div>
+                                )}
+
+                                {syncError && (
+                                    <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-2xl text-xs text-red-400">
+                                        {syncError}
+                                    </div>
+                                )}
+
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-medium text-zinc-400 ml-1">RSS.app 피드 URL</label>
+                                    <input
+                                        type="url"
+                                        required
+                                        value={rssUrl}
+                                        onChange={(e) => setRssUrl(e.target.value)}
+                                        placeholder="https://rss.app/feeds/..."
+                                        className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl py-3.5 px-4 text-xs font-mono text-white focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 outline-none"
+                                    />
+                                    <p className="text-[11px] text-zinc-500 leading-relaxed pt-1">
+                                        <a href="https://rss.app" target="_blank" rel="noopener noreferrer" className="text-pink-400 underline font-bold">RSS.app</a>에서 <code>https://www.instagram.com/mha_withus/</code>를 입력하고 생성된 피드 URL을 넣으시면 됩니다.
+                                    </p>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    disabled={isSyncing || !rssUrl.trim()}
+                                    className="w-full font-bold py-3.5 rounded-2xl bg-gradient-to-r from-orange-500 via-pink-600 to-purple-600 text-white hover:opacity-90 transition-all flex items-center justify-center disabled:opacity-50 mt-2"
+                                >
+                                    {isSyncing ? (
+                                        <div className="flex items-center gap-2">
+                                            <Loader2 className="animate-spin" size={18} />
+                                            <span>피드 수집 및 DB 동기화 중...</span>
+                                        </div>
+                                    ) : (
+                                        <span>지금 즉시 전체 동기화 실행</span>
+                                    )}
+                                </button>
+                            </form>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
 
             {/* Admin Quick Add Modal */}
             <AnimatePresence>
@@ -341,7 +458,7 @@ export default function NoticesPage() {
                                         <Instagram size={20} />
                                     </div>
                                     <div>
-                                        <h3 className="text-lg font-bold text-white">인스타 소식 즉시 등록</h3>
+                                        <h3 className="text-lg font-bold text-white">소식 직접 등록</h3>
                                         <p className="text-xs text-zinc-500">인스타에 올린 소식을 웹사이트에 바로 추가합니다</p>
                                     </div>
                                 </div>
