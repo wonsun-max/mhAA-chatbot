@@ -145,9 +145,9 @@ export default function CalendarPage() {
   };
 
   const handleGoogleCalendarWebSub = () => {
-    // Google Calendar web subscription URL with cid
-    const webcalUrl = feedUrl.replace(/^https?:\/\//, "webcal://");
-    window.open(`https://calendar.google.com/calendar/r?cid=${encodeURIComponent(webcalUrl)}`, "_blank");
+    // Direct Google Calendar Web subscription with HTTPS feed URL
+    const googleSubUrl = `https://calendar.google.com/calendar/render?cid=${encodeURIComponent(feedUrl)}`;
+    window.open(googleSubUrl, "_blank");
   };
 
   return (
