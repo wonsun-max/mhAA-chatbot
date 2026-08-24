@@ -3,6 +3,10 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { indexSource } from "@/lib/ai/knowledge";
+import { syncInstagramFromRss } from "@/lib/instagram-rss";
+
+let lastAutoSyncTime = 0;
+const SYNC_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 
 export async function GET(req: Request) {
     try {
@@ -11,6 +15,16 @@ export async function GET(req: Request) {
         const parsedLimit = searchParams.get("limit");
         const limit = parsedLimit ? Number.parseInt(parsedLimit, 10) : undefined;
         const safeLimit = limit && limit > 0 ? limit : undefined;
+
+        // Auto-sync in background if 5 minutes elapsed (Zero manual work)
+        const now = Date.now();
+        if (now - lastAutoSyncTime > SYNC_INTERVAL_MS) {
+            lastAutoSyncTime = now;
+            // Run sync in non-blocking manner so request is instantaneous
+            syncInstagramFromRss().catch((err) => {
+                console.error("[Auto Instagram Sync Error]:", err);
+            });
+        }
 
         const notices = await prisma.notice.findMany({
             where: {
@@ -58,7 +72,6 @@ export async function POST(req: Request) {
             },
         });
 
-        // Index for chatbot RAG search; failure must not fail notice creation.
         try {
             await indexSource("NOTICE", notice.id, notice.title, notice.content);
         } catch (indexError) {
