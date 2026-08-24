@@ -118,27 +118,27 @@ export default function NoticeDetailPage({ params }: { params: Promise<{ id: str
 
                     <div className="w-full h-px bg-gradient-to-r from-white/10 via-white/5 to-transparent" />
 
-                    {/* Interactive Instagram Embed Viewer (Allows swiping ALL slides!) */}
+                    {/* Interactive Instagram Embed Viewer (Expanded height for 4:5 vertical 카드뉴스) */}
                     {shortcode ? (
                         <div className="flex flex-col items-center justify-center my-8">
-                            <div className="w-full max-w-lg rounded-3xl overflow-hidden border border-white/10 bg-zinc-950 shadow-2xl p-2">
+                            <div className="w-full max-w-[480px] sm:max-w-[520px] rounded-3xl overflow-hidden border border-white/10 bg-zinc-950 shadow-2xl p-1.5 sm:p-2">
                                 <iframe
                                     src={`https://www.instagram.com/p/${shortcode}/embed/`}
                                     width="100%"
-                                    height="620"
+                                    height="740"
                                     frameBorder="0"
                                     scrolling="no"
                                     allowTransparency={true}
                                     allow="fullscreen; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                                    className="w-full rounded-2xl bg-black"
+                                    className="w-full min-h-[700px] sm:min-h-[740px] rounded-2xl bg-black"
                                 />
                             </div>
-                            <p className="text-[11px] text-zinc-500 mt-2 text-center">
-                                💡 인스타그램 카드뉴스 슬라이드를 넘겨서 모든 사진을 확인하실 수 있습니다.
+                            <p className="text-[11px] text-zinc-500 mt-3 text-center">
+                                💡 좌우 화살표를 눌러 모든 카드뉴스 슬라이드 사진을 확인하실 수 있습니다.
                             </p>
                         </div>
                     ) : coverImageUrl ? (
-                        <div className="relative max-w-lg mx-auto rounded-3xl overflow-hidden border border-white/10 bg-zinc-950 shadow-2xl aspect-square">
+                        <div className="relative max-w-[480px] sm:max-w-[520px] mx-auto rounded-3xl overflow-hidden border border-white/10 bg-zinc-950 shadow-2xl aspect-[4/5]">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={coverImageUrl} alt={notice.title} className="w-full h-full object-cover" />
                         </div>
