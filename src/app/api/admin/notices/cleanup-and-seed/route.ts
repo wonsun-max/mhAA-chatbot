@@ -6,11 +6,11 @@ export const dynamic = "force-dynamic";
 
 export async function POST() {
     try {
-        // 1. Delete broken dummy test notices
+        // 1. Delete all mock / legacy test notices
         await prisma.notice.deleteMany({
             where: {
                 OR: [
-                    { title: { contains: "1.caption" } },
+                    { content: { not: { contains: "https://www.instagram.com/p/" } } },
                     { content: { contains: "1.caption" } },
                     { title: { contains: "WITHUS 인스타그램 새 소식" } },
                     { title: { contains: "26_03_09" } },

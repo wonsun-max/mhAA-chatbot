@@ -2,8 +2,8 @@
 
 import { useState, useEffect, use } from "react"
 import Link from "next/link"
-import { ArrowLeft, Calendar, Loader2, Sparkles, Instagram, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+import { ArrowLeft, Calendar, Loader2, Sparkles, Instagram, ExternalLink } from "lucide-react"
+import { motion } from "framer-motion"
 
 interface Notice {
     id: string
@@ -17,7 +17,6 @@ export default function NoticeDetailPage({ params }: { params: Promise<{ id: str
     const { id } = use(params)
     const [notice, setNotice] = useState<Notice | null>(null)
     const [loading, setLoading] = useState(true)
-    const [activeSlide, setActiveSlide] = useState(0)
 
     useEffect(() => {
         async function fetchNotice() {
@@ -63,13 +62,17 @@ export default function NoticeDetailPage({ params }: { params: Promise<{ id: str
         )
     }
 
-    // Extract ALL image URLs from notice content
-    const imageMatches = Array.from(notice.content.matchAll(/!\[.*?\]\((https?:\/\/[^\s)]+)\)/g));
-    const imageUrls = imageMatches.map(m => m[1]);
+    // Extract Instagram shortcode (e.g. DV6EgqwktZE from /p/DV6EgqwktZE)
+    const shortcodeMatch = notice.content.match(/\/p\/([a-zA-Z0-9_-]+)/);
+    const shortcode = shortcodeMatch ? shortcodeMatch[1] : null;
 
     // Extract Instagram permalink
     const instaLinkMatch = notice.content.match(/https?:\/\/(www\.)?instagram\.com\/p\/[a-zA-Z0-9_-]+/);
-    const instagramPermalink = instaLinkMatch ? instaLinkMatch[0] : "https://www.instagram.com/mha_withus";
+    const instagramPermalink = instaLinkMatch ? instaLinkMatch[0] : (shortcode ? `https://www.instagram.com/p/${shortcode}` : "https://www.instagram.com/mha_withus");
+
+    // Extract cover image
+    const imageMatch = notice.content.match(/!\[.*?\]\((https?:\/\/[^\s)]+)\)/);
+    const coverImageUrl = imageMatch ? imageMatch[1] : null;
 
     // Clean text without markdown image/link tags
     const cleanContent = notice.content
@@ -115,86 +118,50 @@ export default function NoticeDetailPage({ params }: { params: Promise<{ id: str
 
                     <div className="w-full h-px bg-gradient-to-r from-white/10 via-white/5 to-transparent" />
 
-                    {/* Instagram Carousel Slider */}
-                    {imageUrls.length > 0 && (
-                        <div className="relative max-w-xl mx-auto rounded-3xl overflow-hidden border border-white/10 bg-zinc-950 shadow-2xl group">
-                            {/* Slide Counter Indicator */}
-                            {imageUrls.length > 1 && (
-                                <div className="absolute top-4 right-4 z-20 px-3 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/10 text-xs font-mono font-bold text-white">
-                                    {activeSlide + 1} / {imageUrls.length}
-                                </div>
-                            )}
-
-                            {/* Main Slide Image */}
-                            <div className="relative aspect-square w-full bg-black flex items-center justify-center overflow-hidden">
-                                <AnimatePresence mode="wait">
-                                    <motion.img
-                                        key={activeSlide}
-                                        src={imageUrls[activeSlide]}
-                                        alt={`${notice.title} - Slide ${activeSlide + 1}`}
-                                        initial={{ opacity: 0, x: 20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: -20 }}
-                                        transition={{ duration: 0.25 }}
-                                        className="w-full h-full object-cover"
-                                    />
-                                </AnimatePresence>
+                    {/* Interactive Instagram Embed Viewer (Allows swiping ALL slides!) */}
+                    {shortcode ? (
+                        <div className="flex flex-col items-center justify-center my-8">
+                            <div className="w-full max-w-lg rounded-3xl overflow-hidden border border-white/10 bg-zinc-950 shadow-2xl p-2">
+                                <iframe
+                                    src={`https://www.instagram.com/p/${shortcode}/embed/`}
+                                    width="100%"
+                                    height="580"
+                                    frameBorder="0"
+                                    scrolling="no"
+                                    allowTransparency={true}
+                                    className="w-full rounded-2xl"
+                                />
                             </div>
-
-                            {/* Left/Right Carousel Controls */}
-                            {imageUrls.length > 1 && (
-                                <>
-                                    <button
-                                        onClick={() => setActiveSlide((prev) => (prev > 0 ? prev - 1 : imageUrls.length - 1))}
-                                        className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/60 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:bg-black/90 transition-all opacity-80 hover:opacity-100"
-                                        title="이전 슬라이드"
-                                    >
-                                        <ChevronLeft size={20} />
-                                    </button>
-                                    <button
-                                        onClick={() => setActiveSlide((prev) => (prev < imageUrls.length - 1 ? prev + 1 : 0))}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/60 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:bg-black/90 transition-all opacity-80 hover:opacity-100"
-                                        title="다음 슬라이드"
-                                    >
-                                        <ChevronRight size={20} />
-                                    </button>
-
-                                    {/* Carousel Dots */}
-                                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 p-1.5 rounded-full bg-black/50 backdrop-blur-md">
-                                        {imageUrls.map((_, idx) => (
-                                            <button
-                                                key={idx}
-                                                onClick={() => setActiveSlide(idx)}
-                                                className={`h-2 rounded-full transition-all ${
-                                                    activeSlide === idx ? "w-5 bg-pink-500" : "w-2 bg-white/40 hover:bg-white/70"
-                                                }`}
-                                            />
-                                        ))}
-                                    </div>
-                                </>
-                            )}
+                            <p className="text-[11px] text-zinc-500 mt-2 text-center">
+                                💡 인스타그램 카드뉴스 슬라이드를 넘겨서 모든 사진을 확인하실 수 있습니다.
+                            </p>
                         </div>
-                    )}
+                    ) : coverImageUrl ? (
+                        <div className="relative max-w-lg mx-auto rounded-3xl overflow-hidden border border-white/10 bg-zinc-950 shadow-2xl aspect-square">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={coverImageUrl} alt={notice.title} className="w-full h-full object-cover" />
+                        </div>
+                    ) : null}
 
-                    {/* Content */}
-                    <div className="relative group">
-                        <div className="relative p-0 md:p-4 space-y-6">
-                            <div className="text-base md:text-lg font-light text-white/70 leading-relaxed whitespace-pre-wrap selection:bg-pink-500/30 tracking-tight">
+                    {/* Full Text Content */}
+                    <div className="relative group max-w-2xl mx-auto">
+                        <div className="relative p-4 md:p-6 rounded-3xl bg-zinc-900/40 border border-white/5 space-y-6">
+                            <div className="text-base md:text-lg font-light text-white/80 leading-relaxed whitespace-pre-wrap selection:bg-pink-500/30 tracking-tight">
                                 {cleanContent || notice.content}
                             </div>
 
-                            {/* Instagram Link CTA */}
+                            {/* Direct Instagram Link CTA */}
                             {instagramPermalink && (
-                                <div className="pt-6">
+                                <div className="pt-4 border-t border-white/5 flex items-center justify-between">
                                     <a
                                         href={instagramPermalink}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 hover:from-purple-500 hover:via-pink-500 hover:to-orange-400 text-white text-xs font-bold transition-all shadow-xl shadow-pink-500/20 active:scale-95"
+                                        className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 hover:from-purple-500 hover:via-pink-500 hover:to-orange-400 text-white text-xs font-bold transition-all shadow-xl shadow-pink-500/20 active:scale-95"
                                     >
-                                        <Instagram size={16} />
-                                        <span>Instagram 원본 게시물 보기</span>
-                                        <ExternalLink size={14} className="opacity-70" />
+                                        <Instagram size={15} />
+                                        <span>인스타그램 앱에서 열기</span>
+                                        <ExternalLink size={13} className="opacity-70" />
                                     </a>
                                 </div>
                             )}
