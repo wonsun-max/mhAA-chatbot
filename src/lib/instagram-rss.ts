@@ -9,6 +9,8 @@ export interface ParsedRssItem {
     pubDate: Date;
 }
 
+export const DEFAULT_INSTAGRAM_FEED_URL = "https://rss.app/feeds/v1.1/TKmaaZRoN7kWXrVJ.json";
+
 /**
  * Parses XML RSS feed string into structured Instagram post items.
  * Extracts ALL carousel slide images (not just the first thumbnail) from enclosures, media tags, and description.
@@ -19,41 +21,33 @@ export function parseInstagramRssXml(xmlText: string): ParsedRssItem[] {
     const itemMatches = xmlText.match(itemRegex) || [];
 
     for (const itemXml of itemMatches) {
-        // 1. Link / Guid
         const linkMatch = itemXml.match(/<link>(https?:\/\/[^<]+)<\/link>/i);
         const guidMatch = itemXml.match(/<guid[^>]*>(https?:\/\/[^<]+)<\/guid>/i);
         const link = (linkMatch ? linkMatch[1] : (guidMatch ? guidMatch[1] : "")).trim() || "https://www.instagram.com/mha_withus";
         const guid = (guidMatch ? guidMatch[1] : link).trim();
 
-        // 2. Title
         const titleMatch = itemXml.match(/<title><!\[CDATA\[([\s\S]*?)\]\]><\/title>/i) || itemXml.match(/<title>([\s\S]*?)<\/title>/i);
         let rawTitle = titleMatch ? titleMatch[1].trim() : "WITHUS 인스타그램 소식";
         rawTitle = rawTitle.replace(/<[^>]+>/g, "").replace(/#[^\s#]+/g, "").trim();
         const title = rawTitle.length > 3 ? rawTitle.slice(0, 60) : "WITHUS 인스타그램 소식";
 
-        // 3. Description / Caption
         const descMatch = itemXml.match(/<description><!\[CDATA\[([\s\S]*?)\]\]><\/description>/i) 
             || itemXml.match(/<content:encoded><!\[CDATA\[([\s\S]*?)\]\]><\/content:encoded>/i)
             || itemXml.match(/<description>([\s\S]*?)<\/description>/i);
         
         const rawDesc = descMatch ? descMatch[1] : "";
-        
-        // 4. Extract ALL Images (Enclosure, Media Content, and all <img> in description)
         const imageUrlsSet = new Set<string>();
 
-        // Check <enclosure>
         const enclosureMatches = itemXml.matchAll(/<enclosure[^>]+url=["'](https?:\/\/[^"']+)["']/gi);
         for (const m of enclosureMatches) {
             if (m[1]) imageUrlsSet.add(m[1].trim());
         }
 
-        // Check <media:content>
         const mediaMatches = itemXml.matchAll(/<media:content[^>]+url=["'](https?:\/\/[^"']+)["']/gi);
         for (const m of mediaMatches) {
             if (m[1]) imageUrlsSet.add(m[1].trim());
         }
 
-        // Check all <img> tags inside description
         const imgTagMatches = rawDesc.matchAll(/<img[^>]+src=["'](https?:\/\/[^"']+)["']/gi);
         for (const m of imgTagMatches) {
             if (m[1] && !m[1].includes("emoji") && !m[1].includes("icon")) {
@@ -63,7 +57,6 @@ export function parseInstagramRssXml(xmlText: string): ParsedRssItem[] {
 
         const imageUrls = Array.from(imageUrlsSet);
 
-        // Clean HTML tags from description while preserving text line breaks
         const cleanDescription = rawDesc
             .replace(/<br\s*\/?>/gi, "\n")
             .replace(/<\/p>/gi, "\n\n")
@@ -75,7 +68,6 @@ export function parseInstagramRssXml(xmlText: string): ParsedRssItem[] {
             .replace(/&#39;/g, "'")
             .trim();
 
-        // 5. PubDate
         const pubDateMatch = itemXml.match(/<pubDate>([\s\S]*?)<\/pubDate>/i);
         let pubDate = new Date();
         if (pubDateMatch) {
@@ -101,12 +93,10 @@ export function parseInstagramRssXml(xmlText: string): ParsedRssItem[] {
 /**
  * Synchronizes Instagram posts with full multi-image carousel support.
  */
-export async function syncInstagramFromRss(rssUrl: string) {
-    if (!rssUrl || !rssUrl.startsWith("http")) {
-        throw new Error("Invalid RSS Feed URL");
-    }
+export async function syncInstagramFromRss(rssUrl = DEFAULT_INSTAGRAM_FEED_URL) {
+    const targetUrl = rssUrl || process.env.INSTAGRAM_RSS_URL || DEFAULT_INSTAGRAM_FEED_URL;
 
-    const response = await fetch(rssUrl, {
+    const response = await fetch(targetUrl, {
         headers: {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) WITHUS/1.0",
             "Accept": "application/rss+xml, application/xml, text/xml, application/json, */*",
@@ -140,7 +130,7 @@ export async function syncInstagramFromRss(rssUrl: string) {
                 }
                 return {
                     guid: it.id || it.url || it.link || `insta_${Date.now()}_${Math.random()}`,
-                    title: (it.title || it.content_text || "").replace(/#[^\s#]+/g, "").trim().slice(0, 60) || "WITHUS 인스타그램 소식",
+                    title: (it.title || it.content_text || "").split("\n")[0]?.replace(/#[^\s#]+/g, "").trim().slice(0, 60) || "WITHUS 인스타그램 소식",
                     description: it.content_text || it.summary || it.title || "",
                     imageUrls: Array.from(new Set(images)),
                     link: it.url || it.link || "https://www.instagram.com/mha_withus",
@@ -190,10 +180,12 @@ export async function syncInstagramFromRss(rssUrl: string) {
             });
             insertedCount++;
         } else {
-            // Update if image was missing or updated
             await prisma.notice.update({
                 where: { id: existingNotice.id },
-                data: { content: formattedContent },
+                data: {
+                    title: item.title,
+                    content: formattedContent,
+                },
             });
             updatedCount++;
         }
