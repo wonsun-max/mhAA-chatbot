@@ -138,6 +138,12 @@ export default function CalendarPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleAppleCalendarWebSub = () => {
+    // webcal:// protocol automatically triggers native iOS/macOS Apple Calendar subscription sheet
+    const webcalUrl = feedUrl.replace(/^https?:\/\//, "webcal://");
+    window.location.href = webcalUrl;
+  };
+
   const handleGoogleCalendarWebSub = () => {
     // Google Calendar web subscription URL with cid
     const webcalUrl = feedUrl.replace(/^https?:\/\//, "webcal://");
@@ -160,7 +166,7 @@ export default function CalendarPage() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white transition-all text-xs font-bold shadow-lg shadow-blue-500/5 active:scale-95"
         >
           <CalendarIcon size={14} />
-          <span>Google 캘린더 연동 / 내보내기</span>
+          <span>캘린더 실시간 연동 (iPhone / Android)</span>
         </button>
       </div>
 
@@ -433,54 +439,82 @@ export default function CalendarPage() {
               </div>
 
               <div className="space-y-4">
-                {/* Option 1: Live Sync */}
-                <div className="p-5 bg-zinc-950/60 border border-blue-500/20 rounded-2xl space-y-3 relative overflow-hidden">
-                  <div className="flex items-center justify-between">
-                    <span className="px-2 py-0.5 rounded-md bg-blue-500 text-[10px] font-black text-white uppercase tracking-wider">추천 방식</span>
-                    <span className="text-xs text-zinc-500 font-medium">실시간 자동 동기화</span>
-                  </div>
-                  <h4 className="text-sm font-bold text-white">Google 캘린더 실시간 구독</h4>
-                  <p className="text-xs text-zinc-400 leading-relaxed">
-                    학교 캘린더를 한 번만 등록해두면 새로운 일정이나 변경 사항이 내 구글 캘린더에 자동으로 실시간 반영됩니다.
-                  </p>
+                {/* 1-Click Dual Live Sync Options: Apple (iPhone/Mac) vs Google (Android/PC) */}
+                <div className="space-y-2.5">
+                  <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider pl-1">원클릭 실시간 자동 동기화</p>
+                  
+                  {/* Apple Calendar Button (iPhone / iPad / Mac) */}
                   <button
-                    onClick={handleGoogleCalendarWebSub}
-                    className="w-full py-3 rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-bold text-xs transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/10"
+                    type="button"
+                    onClick={handleAppleCalendarWebSub}
+                    className="w-full p-4 rounded-2xl bg-zinc-950/80 border border-white/10 hover:border-white/30 text-left transition-all group flex items-center justify-between shadow-lg"
                   >
-                    <ExternalLink size={14} />
-                    <span>Google 캘린더에 바로 구독 등록</span>
+                    <div className="flex items-center gap-3.5">
+                      <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-white group-hover:scale-105 transition-transform">
+                        <CalendarIcon size={18} />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-xs font-bold text-white">Apple 캘린더에 추가</h4>
+                          <span className="px-2 py-0.5 rounded-full bg-white/10 text-[9px] font-bold text-white tracking-wide">iPhone / Mac</span>
+                        </div>
+                        <p className="text-[11px] text-zinc-400 mt-0.5">아이폰 기본 캘린더 앱에서 1초 만에 실시간 구독</p>
+                      </div>
+                    </div>
+                    <ExternalLink size={14} className="text-zinc-500 group-hover:text-white transition-colors mr-1" />
+                  </button>
+
+                  {/* Google Calendar Button (Android / PC) */}
+                  <button
+                    type="button"
+                    onClick={handleGoogleCalendarWebSub}
+                    className="w-full p-4 rounded-2xl bg-zinc-950/80 border border-blue-500/20 hover:border-blue-500/40 text-left transition-all group flex items-center justify-between shadow-lg"
+                  >
+                    <div className="flex items-center gap-3.5">
+                      <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-105 transition-transform">
+                        <CalendarIcon size={18} />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-xs font-bold text-white">Google 캘린더에 추가</h4>
+                          <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-[9px] font-bold text-blue-300 tracking-wide">Android / PC</span>
+                        </div>
+                        <p className="text-[11px] text-zinc-400 mt-0.5">구글 캘린더 계정에 1클릭 실시간 동기화</p>
+                      </div>
+                    </div>
+                    <ExternalLink size={14} className="text-blue-400 group-hover:translate-x-0.5 transition-all mr-1" />
                   </button>
                 </div>
 
                 {/* Option 2: Download .ics file */}
-                <div className="p-4 bg-zinc-950/40 border border-zinc-800 rounded-2xl space-y-2">
+                <div className="p-4 bg-zinc-950/40 border border-zinc-800/80 rounded-2xl space-y-2">
                   <h4 className="text-xs font-bold text-white flex items-center gap-2">
-                    <Download size={14} className="text-zinc-400" />
+                    <Download size={13} className="text-zinc-400" />
                     <span>.ics 캘린더 파일 다운로드</span>
                   </h4>
-                  <p className="text-xs text-zinc-500">
-                    애플 캘린더, 갤럭시 캘린더, 아웃룩 등 원하는 캘린더 앱에 일괄 가져오기 할 수 있습니다.
+                  <p className="text-[11px] text-zinc-500">
+                    갤럭시 캘린더, 아웃룩 등 원하는 캘린더 앱에 파일로 가져오기 할 수 있습니다.
                   </p>
-                  <div className="flex gap-2 pt-2">
+                  <div className="flex gap-2 pt-1">
                     <button
                       onClick={() => handleDownloadIcs(false)}
-                      className="flex-1 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-bold transition-all"
+                      className="flex-1 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-bold transition-all"
                     >
-                      전체 일정 다운로드
+                      전체 일정 파일 (.ics)
                     </button>
                     {activeMonth !== "upcoming" && (
                       <button
                         onClick={() => handleDownloadIcs(true)}
-                        className="flex-1 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-bold transition-all"
+                        className="flex-1 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-bold transition-all"
                       >
-                        {activeMonth}월 일정만 다운로드
+                        {activeMonth}월 일정 파일
                       </button>
                     )}
                   </div>
                 </div>
 
                 {/* Option 3: Copy iCal URL */}
-                <div className="p-4 bg-zinc-950/40 border border-zinc-800 rounded-2xl space-y-2">
+                <div className="p-4 bg-zinc-950/40 border border-zinc-800/80 rounded-2xl space-y-2">
                   <div className="flex items-center justify-between">
                     <h4 className="text-xs font-bold text-white">직접 iCal URL 구독</h4>
                     <button
