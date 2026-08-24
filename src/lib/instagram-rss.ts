@@ -4,14 +4,14 @@ export interface ParsedRssItem {
     guid: string;
     title: string;
     description: string;
-    imageUrl: string | null;
+    imageUrls: string[];
     link: string;
     pubDate: Date;
 }
 
 /**
  * Parses XML RSS feed string into structured Instagram post items.
- * Handles both RSS 2.0, Atom, and RSS.app / FetchRSS formats with media enclosures.
+ * Extracts ALL carousel slide images (not just the first thumbnail) from enclosures, media tags, and description.
  */
 export function parseInstagramRssXml(xmlText: string): ParsedRssItem[] {
     const items: ParsedRssItem[] = [];
@@ -28,7 +28,6 @@ export function parseInstagramRssXml(xmlText: string): ParsedRssItem[] {
         // 2. Title
         const titleMatch = itemXml.match(/<title><!\[CDATA\[([\s\S]*?)\]\]><\/title>/i) || itemXml.match(/<title>([\s\S]*?)<\/title>/i);
         let rawTitle = titleMatch ? titleMatch[1].trim() : "WITHUS 인스타그램 소식";
-        // Clean title
         rawTitle = rawTitle.replace(/<[^>]+>/g, "").replace(/#[^\s#]+/g, "").trim();
         const title = rawTitle.length > 3 ? rawTitle.slice(0, 60) : "WITHUS 인스타그램 소식";
 
@@ -37,21 +36,32 @@ export function parseInstagramRssXml(xmlText: string): ParsedRssItem[] {
             || itemXml.match(/<content:encoded><!\[CDATA\[([\s\S]*?)\]\]><\/content:encoded>/i)
             || itemXml.match(/<description>([\s\S]*?)<\/description>/i);
         
-        let rawDesc = descMatch ? descMatch[1] : "";
+        const rawDesc = descMatch ? descMatch[1] : "";
         
-        // 4. Image Extraction (Enclosure, Media Content, or <img> tag)
-        let imageUrl: string | null = null;
-        const enclosureMatch = itemXml.match(/<enclosure[^>]+url=["'](https?:\/\/[^"']+)["']/i);
-        const mediaMatch = itemXml.match(/<media:content[^>]+url=["'](https?:\/\/[^"']+)["']/i);
-        const imgTagMatch = rawDesc.match(/<img[^>]+src=["'](https?:\/\/[^"']+)["']/i);
+        // 4. Extract ALL Images (Enclosure, Media Content, and all <img> in description)
+        const imageUrlsSet = new Set<string>();
 
-        if (enclosureMatch) {
-            imageUrl = enclosureMatch[1];
-        } else if (mediaMatch) {
-            imageUrl = mediaMatch[1];
-        } else if (imgTagMatch) {
-            imageUrl = imgTagMatch[1];
+        // Check <enclosure>
+        const enclosureMatches = itemXml.matchAll(/<enclosure[^>]+url=["'](https?:\/\/[^"']+)["']/gi);
+        for (const m of enclosureMatches) {
+            if (m[1]) imageUrlsSet.add(m[1].trim());
         }
+
+        // Check <media:content>
+        const mediaMatches = itemXml.matchAll(/<media:content[^>]+url=["'](https?:\/\/[^"']+)["']/gi);
+        for (const m of mediaMatches) {
+            if (m[1]) imageUrlsSet.add(m[1].trim());
+        }
+
+        // Check all <img> tags inside description
+        const imgTagMatches = rawDesc.matchAll(/<img[^>]+src=["'](https?:\/\/[^"']+)["']/gi);
+        for (const m of imgTagMatches) {
+            if (m[1] && !m[1].includes("emoji") && !m[1].includes("icon")) {
+                imageUrlsSet.add(m[1].trim());
+            }
+        }
+
+        const imageUrls = Array.from(imageUrlsSet);
 
         // Clean HTML tags from description while preserving text line breaks
         const cleanDescription = rawDesc
@@ -79,7 +89,7 @@ export function parseInstagramRssXml(xmlText: string): ParsedRssItem[] {
             guid,
             title: cleanDescription.split("\n")[0]?.replace(/#[^\s#]+/g, "").trim().slice(0, 60) || title,
             description: cleanDescription,
-            imageUrl,
+            imageUrls,
             link,
             pubDate,
         });
@@ -89,8 +99,7 @@ export function parseInstagramRssXml(xmlText: string): ParsedRssItem[] {
 }
 
 /**
- * Synchronizes Instagram posts from an RSS Feed into the Prisma Notice database.
- * Prevents duplicates, embeds high-res images and direct links.
+ * Synchronizes Instagram posts with full multi-image carousel support.
  */
 export async function syncInstagramFromRss(rssUrl: string) {
     if (!rssUrl || !rssUrl.startsWith("http")) {
@@ -112,19 +121,32 @@ export async function syncInstagramFromRss(rssUrl: string) {
     const text = await response.text();
     let parsedItems: ParsedRssItem[] = [];
 
-    // Support JSON Feed format if provided by RSS.app
+    // Support JSON Feed format
     if (text.trim().startsWith("{")) {
         try {
             const jsonData = JSON.parse(text);
             const rawItems = jsonData.items || jsonData.entries || [];
-            parsedItems = rawItems.map((it: any) => ({
-                guid: it.id || it.url || it.link || `insta_${Date.now()}_${Math.random()}`,
-                title: (it.title || it.content_text || "").replace(/#[^\s#]+/g, "").trim().slice(0, 60) || "WITHUS 인스타그램 소식",
-                description: it.content_text || it.summary || it.title || "",
-                imageUrl: it.image || it.image_url || it.banner_image || (it.attachments && it.attachments[0]?.url) || null,
-                link: it.url || it.link || "https://www.instagram.com/mha_withus",
-                pubDate: it.date_published ? new Date(it.date_published) : new Date(),
-            }));
+            parsedItems = rawItems.map((it: any) => {
+                const images: string[] = [];
+                if (it.image) images.push(it.image);
+                if (it.image_url) images.push(it.image_url);
+                if (it.banner_image) images.push(it.banner_image);
+                if (Array.isArray(it.attachments)) {
+                    it.attachments.forEach((att: any) => {
+                        if (att.url && (att.mime_type?.startsWith("image") || att.url.match(/\.(jpeg|jpg|png|webp)/i))) {
+                            images.push(att.url);
+                        }
+                    });
+                }
+                return {
+                    guid: it.id || it.url || it.link || `insta_${Date.now()}_${Math.random()}`,
+                    title: (it.title || it.content_text || "").replace(/#[^\s#]+/g, "").trim().slice(0, 60) || "WITHUS 인스타그램 소식",
+                    description: it.content_text || it.summary || it.title || "",
+                    imageUrls: Array.from(new Set(images)),
+                    link: it.url || it.link || "https://www.instagram.com/mha_withus",
+                    pubDate: it.date_published ? new Date(it.date_published) : new Date(),
+                };
+            });
         } catch {
             parsedItems = parseInstagramRssXml(text);
         }
@@ -146,10 +168,12 @@ export async function syncInstagramFromRss(rssUrl: string) {
             },
         });
 
-        // Format clean notice content
+        // Format clean notice content with ALL slide images embedded
         let formattedContent = item.description || item.title;
-        if (item.imageUrl) {
-            formattedContent += `\n\n![Instagram Image](${item.imageUrl})`;
+        if (item.imageUrls.length > 0) {
+            item.imageUrls.forEach((img, idx) => {
+                formattedContent += `\n\n![Instagram Slide ${idx + 1}](${img})`;
+            });
         }
         formattedContent += `\n\n[Instagram 원본 게시물 보기](${item.link})`;
 
@@ -166,14 +190,12 @@ export async function syncInstagramFromRss(rssUrl: string) {
             });
             insertedCount++;
         } else {
-            // Update if image or content was missing
-            if (!existingNotice.content.includes("![Instagram Image]") && item.imageUrl) {
-                await prisma.notice.update({
-                    where: { id: existingNotice.id },
-                    data: { content: formattedContent },
-                });
-                updatedCount++;
-            }
+            // Update if image was missing or updated
+            await prisma.notice.update({
+                where: { id: existingNotice.id },
+                data: { content: formattedContent },
+            });
+            updatedCount++;
         }
     }
 
