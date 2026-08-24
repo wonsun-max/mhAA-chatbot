@@ -2,8 +2,7 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { X, Sparkles, Bug, Lightbulb, Loader2, CheckCircle2, Send } from "lucide-react"
-import { useSession } from "next-auth/react"
+import { X, Bug, Lightbulb, Loader2, CheckCircle2, ArrowRight } from "lucide-react"
 
 interface FeedbackModalProps {
     isOpen: boolean
@@ -12,10 +11,8 @@ interface FeedbackModalProps {
 }
 
 export function FeedbackModal({ isOpen, onClose, initialType = "IDEA" }: FeedbackModalProps) {
-    const { data: session } = useSession()
     const [type, setType] = useState<"IDEA" | "BUG">(initialType)
     const [content, setContent] = useState("")
-    const [contact, setContact] = useState("")
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isSubmitted, setIsSubmitted] = useState(false)
     const [error, setError] = useState("")
@@ -37,7 +34,6 @@ export function FeedbackModal({ isOpen, onClose, initialType = "IDEA" }: Feedbac
                 body: JSON.stringify({
                     type,
                     content: content.trim(),
-                    contact: contact.trim() || undefined,
                 }),
             })
 
@@ -49,7 +45,7 @@ export function FeedbackModal({ isOpen, onClose, initialType = "IDEA" }: Feedbac
                 setIsSubmitted(true)
                 setTimeout(() => {
                     handleClose()
-                }, 2000)
+                }, 1800)
             }
         } catch {
             setError("서버 통신 중 오류가 발생했습니다.")
@@ -61,7 +57,6 @@ export function FeedbackModal({ isOpen, onClose, initialType = "IDEA" }: Feedbac
     const handleClose = () => {
         setIsSubmitted(false)
         setContent("")
-        setContact("")
         setError("")
         onClose()
     }
@@ -69,40 +64,33 @@ export function FeedbackModal({ isOpen, onClose, initialType = "IDEA" }: Feedbac
     return (
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl overflow-y-auto">
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        className="w-full max-w-md bg-zinc-900/90 border border-white/10 rounded-[2.5rem] p-6 sm:p-8 shadow-2xl space-y-6 relative overflow-hidden backdrop-blur-2xl"
-                    >
-                        {/* Background Glow */}
-                        <div className={`absolute top-0 right-0 w-72 h-72 ${type === "IDEA" ? "bg-amber-500/10" : "bg-red-500/10"} blur-3xl pointer-events-none transition-colors duration-500`} />
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
+                    {/* Backdrop click to dismiss */}
+                    <div className="fixed inset-0" onClick={handleClose} />
 
-                        {/* Modal Header */}
-                        <div className="flex items-center justify-between relative z-10">
-                            <div className="flex items-center gap-3">
-                                <div className={`w-10 h-10 rounded-2xl flex items-center justify-center border transition-colors ${
-                                    type === "IDEA" 
-                                        ? "bg-amber-500/10 border-amber-500/30 text-amber-400" 
-                                        : "bg-red-500/10 border-red-500/30 text-red-400"
-                                }`}>
-                                    {type === "IDEA" ? <Lightbulb size={20} /> : <Bug size={20} />}
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-bold text-white tracking-tight">
-                                        {type === "IDEA" ? "아이디어 제안" : "버그 / 오류 제보"}
-                                    </h3>
-                                    <p className="text-xs text-zinc-400 font-light">
-                                        WITHUS를 더 좋게 만들기 위한 의견을 남겨주세요
-                                    </p>
-                                </div>
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.96, y: 12 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.96, y: 12 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        className="w-full max-w-lg bg-zinc-950/95 border border-white/10 rounded-3xl p-6 sm:p-8 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] relative z-10 backdrop-blur-2xl space-y-6"
+                    >
+                        {/* Header */}
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h3 className="text-xl font-bold text-white tracking-tight">
+                                    {type === "IDEA" ? "아이디어 제안" : "버그 / 불편 제보"}
+                                </h3>
+                                <p className="text-xs text-zinc-400 mt-0.5">
+                                    남겨주신 의견은 관리자에게 안전하게 전달됩니다
+                                </p>
                             </div>
                             <button
+                                type="button"
                                 onClick={handleClose}
                                 className="p-2 text-zinc-500 hover:text-white rounded-xl hover:bg-white/5 transition-colors"
                             >
-                                <X size={20} />
+                                <X size={18} />
                             </button>
                         </div>
 
@@ -112,106 +100,91 @@ export function FeedbackModal({ isOpen, onClose, initialType = "IDEA" }: Feedbac
                                 animate={{ opacity: 1, scale: 1 }}
                                 className="py-12 flex flex-col items-center justify-center text-center space-y-3"
                             >
-                                <div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-                                    <CheckCircle2 size={32} />
+                                <div className="w-14 h-14 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                                    <CheckCircle2 size={28} />
                                 </div>
-                                <h4 className="text-lg font-bold text-white">소중한 의견이 접수되었습니다!</h4>
+                                <h4 className="text-base font-bold text-white">접수가 완료되었습니다</h4>
                                 <p className="text-xs text-zinc-400 max-w-xs leading-relaxed">
-                                    보내주신 내용은 관리자가 확인 후 플랫폼 개선에 적극 반영하겠습니다. 감사합니다!
+                                    소중한 의견 감사합니다. 플랫폼 개선에 적극 반영하겠습니다.
                                 </p>
                             </motion.div>
                         ) : (
-                            <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
-                                {/* Type Selector Pills */}
-                                <div className="grid grid-cols-2 gap-2 p-1 rounded-2xl bg-zinc-950 border border-white/5">
+                            <form onSubmit={handleSubmit} className="space-y-5">
+                                {/* Segmented Type Switcher */}
+                                <div className="grid grid-cols-2 p-1 rounded-2xl bg-zinc-900/80 border border-white/5 gap-1">
                                     <button
                                         type="button"
                                         onClick={() => setType("IDEA")}
-                                        className={`flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                                        className={`flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                                             type === "IDEA"
-                                                ? "bg-amber-500/20 text-amber-300 border border-amber-500/30 shadow-md"
+                                                ? "bg-white/10 text-white shadow-sm border border-white/10"
                                                 : "text-zinc-500 hover:text-zinc-300"
                                         }`}
                                     >
-                                        <Lightbulb size={14} />
-                                        <span>💡 아이디어 제안</span>
+                                        <Lightbulb size={14} className={type === "IDEA" ? "text-amber-400" : ""} />
+                                        <span>아이디어 제안</span>
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => setType("BUG")}
-                                        className={`flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                                        className={`flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                                             type === "BUG"
-                                                ? "bg-red-500/20 text-red-300 border border-red-500/30 shadow-md"
+                                                ? "bg-white/10 text-white shadow-sm border border-white/10"
                                                 : "text-zinc-500 hover:text-zinc-300"
                                         }`}
                                     >
-                                        <Bug size={14} />
-                                        <span>🐛 버그 / 불편한 점</span>
+                                        <Bug size={14} className={type === "BUG" ? "text-red-400" : ""} />
+                                        <span>버그 / 오류 제보</span>
                                     </button>
                                 </div>
 
                                 {error && (
-                                    <div className="p-3 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
+                                    <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
                                         {error}
                                     </div>
                                 )}
 
-                                {/* Content Field */}
-                                <div className="space-y-1.5">
-                                    <label className="text-xs font-medium text-zinc-400 ml-1">
-                                        {type === "IDEA" ? "어떤 기능이 추가되면 좋을까요? *" : "어떤 오류나 불편한 점이 발생했나요? *"}
-                                    </label>
+                                {/* Single Pure Textarea */}
+                                <div className="space-y-2">
                                     <textarea
                                         required
-                                        rows={4}
+                                        autoFocus
+                                        rows={5}
                                         value={content}
                                         onChange={(e) => setContent(e.target.value)}
                                         placeholder={
                                             type === "IDEA"
-                                                ? "예: 매점 실시간 재고나 도서관 책 목록도 볼 수 있으면 좋겠어요!"
-                                                : "예: 시간표 페이지에서 3교시 클릭 시 화면이 멈춰요."
+                                                ? "어떤 기능이나 아이디어가 추가되면 좋을까요?"
+                                                : "어떤 화면에서 어떤 문제가 발생했나요?"
                                         }
-                                        className="w-full bg-zinc-950 border border-white/10 rounded-2xl py-3.5 px-4 text-sm text-white focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500/50 outline-none transition-all resize-none placeholder:text-zinc-600"
+                                        className="w-full bg-zinc-900/50 border border-white/10 focus:border-white/30 rounded-2xl p-4 text-sm text-white placeholder:text-zinc-600 focus:outline-none transition-colors resize-none leading-relaxed"
                                     />
                                 </div>
 
-                                {/* Optional Contact Field (Auto-filled hint if logged in) */}
-                                <div className="space-y-1.5">
-                                    <label className="text-xs font-medium text-zinc-400 ml-1">
-                                        연락처 / 닉네임 <span className="text-zinc-600 font-normal">(선택)</span>
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={contact}
-                                        onChange={(e) => setContact(e.target.value)}
-                                        placeholder={
-                                            session?.user?.email 
-                                                ? `${session.user.name || session.user.nickname || "내 계정"} (${session.user.email})으로 자동 등록`
-                                                : "답변을 받고 싶으시다면 이메일이나 이름을 남겨주세요"
-                                        }
-                                        className="w-full bg-zinc-950 border border-white/10 rounded-2xl py-3 px-4 text-xs text-white focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500/50 outline-none transition-all placeholder:text-zinc-600"
-                                    />
+                                {/* Footer Action Buttons */}
+                                <div className="flex items-center justify-end gap-3 pt-2">
+                                    <button
+                                        type="button"
+                                        onClick={handleClose}
+                                        className="px-5 py-2.5 rounded-xl text-xs font-medium text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
+                                    >
+                                        취소
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={isSubmitting || !content.trim()}
+                                        className="px-6 py-2.5 rounded-xl text-xs font-bold text-black bg-white hover:bg-zinc-200 transition-all flex items-center gap-2 disabled:opacity-40 disabled:hover:bg-white shadow-lg shadow-white/5"
+                                    >
+                                        {isSubmitting ? (
+                                            <Loader2 className="animate-spin" size={14} />
+                                        ) : (
+                                            <>
+                                                <span>보내기</span>
+                                                <ArrowRight size={14} />
+                                            </>
+                                        )}
+                                    </button>
                                 </div>
-
-                                {/* Submit Button */}
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting || !content.trim()}
-                                    className={`w-full font-bold py-3.5 rounded-2xl text-white flex items-center justify-center gap-2 transition-all shadow-xl disabled:opacity-50 mt-3 ${
-                                        type === "IDEA"
-                                            ? "bg-gradient-to-r from-amber-600 to-orange-500 hover:from-amber-500 hover:to-orange-400 shadow-amber-500/20"
-                                            : "bg-gradient-to-r from-red-600 to-rose-500 hover:from-red-500 hover:to-rose-400 shadow-red-500/20"
-                                    }`}
-                                >
-                                    {isSubmitting ? (
-                                        <Loader2 className="animate-spin" size={18} />
-                                    ) : (
-                                        <>
-                                            <Send size={15} />
-                                            <span>의견 보내기</span>
-                                        </>
-                                    )}
-                                </button>
                             </form>
                         )}
                     </motion.div>
