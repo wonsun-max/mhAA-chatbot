@@ -7,8 +7,8 @@
             "schedule": "0 0 * * *"
         },
         {
-            "path": "/api/cron/sync-instagram",
-            "schedule": "*/30 * * * *"
+            "path": "/api/instagram/sync",
+            "schedule": "0 1 * * *"
         }
     ]
 }
