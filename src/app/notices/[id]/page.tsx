@@ -118,19 +118,19 @@ export default function NoticeDetailPage({ params }: { params: Promise<{ id: str
 
                     <div className="w-full h-px bg-gradient-to-r from-white/10 via-white/5 to-transparent" />
 
-                    {/* Interactive Instagram Embed Viewer (Expanded height for 4:5 vertical 카드뉴스) */}
+                    {/* Clean Instagram Embed Card with Perfect Full-Height Finish */}
                     {shortcode ? (
-                        <div className="flex flex-col items-center justify-center my-8">
-                            <div className="w-full max-w-[480px] sm:max-w-[520px] rounded-3xl overflow-hidden border border-white/10 bg-zinc-950 shadow-2xl p-1.5 sm:p-2">
+                        <div className="flex flex-col items-center justify-center my-6">
+                            <div className="w-full max-w-[480px] sm:max-w-[500px] rounded-[2rem] overflow-hidden border border-white/10 bg-zinc-950 shadow-2xl p-2 sm:p-3">
                                 <iframe
                                     src={`https://www.instagram.com/p/${shortcode}/embed/`}
                                     width="100%"
-                                    height="740"
+                                    height="800"
                                     frameBorder="0"
                                     scrolling="no"
                                     allowTransparency={true}
                                     allow="fullscreen; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                                    className="w-full min-h-[700px] sm:min-h-[740px] rounded-2xl bg-black"
+                                    className="w-full min-h-[760px] sm:min-h-[800px] rounded-2xl bg-black"
                                 />
                             </div>
                             <p className="text-[11px] text-zinc-500 mt-3 text-center">
@@ -138,7 +138,7 @@ export default function NoticeDetailPage({ params }: { params: Promise<{ id: str
                             </p>
                         </div>
                     ) : coverImageUrl ? (
-                        <div className="relative max-w-[480px] sm:max-w-[520px] mx-auto rounded-3xl overflow-hidden border border-white/10 bg-zinc-950 shadow-2xl aspect-[4/5]">
+                        <div className="relative max-w-[480px] sm:max-w-[500px] mx-auto rounded-[2rem] overflow-hidden border border-white/10 bg-zinc-950 shadow-2xl aspect-[4/5]">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={coverImageUrl} alt={notice.title} className="w-full h-full object-cover" />
                         </div>
@@ -146,7 +146,7 @@ export default function NoticeDetailPage({ params }: { params: Promise<{ id: str
 
                     {/* Full Text Content */}
                     <div className="relative group max-w-2xl mx-auto">
-                        <div className="relative p-4 md:p-6 rounded-3xl bg-zinc-900/40 border border-white/5 space-y-6">
+                        <div className="relative p-6 md:p-8 rounded-[2rem] bg-zinc-900/40 border border-white/5 space-y-6">
                             <div className="text-base md:text-lg font-light text-white/80 leading-relaxed whitespace-pre-wrap selection:bg-pink-500/30 tracking-tight">
                                 {cleanContent || notice.content}
                             </div>
@@ -158,7 +158,7 @@ export default function NoticeDetailPage({ params }: { params: Promise<{ id: str
                                         href={instagramPermalink}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 hover:from-purple-500 hover:via-pink-500 hover:to-orange-400 text-white text-xs font-bold transition-all shadow-xl shadow-pink-500/20 active:scale-95"
+                                        className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 hover:from-purple-500 hover:via-pink-500 hover:to-orange-400 text-white text-xs font-bold transition-all shadow-xl shadow-pink-500/20 active:scale-95"
                                     >
                                         <Instagram size={15} />
                                         <span>인스타그램 앱에서 열기</span>
