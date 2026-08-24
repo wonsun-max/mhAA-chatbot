@@ -1,0 +1,15 @@
+name: Instagram Auto Sync Cron
+
+on:
+  schedule:
+    # Runs every 15 minutes (UTC) - 100% Free via GitHub Actions
+    - cron: '*/15 * * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger WITHUS Instagram Sync
+        run: |
+          curl -s -X POST https://mhawithus.shop/api/admin/notices/cleanup-and-seed || true
