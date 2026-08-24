@@ -2,18 +2,21 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { Loader2, Users, Bell, ShieldCheck, type LucideIcon } from "lucide-react"
+import { Loader2, Users, Bell, ShieldCheck, MessageSquare, type LucideIcon } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { AdminLayout } from "@/components/admin/AdminLayout"
 import { UserManager } from "@/components/admin/UserManager"
 import { NoticeManager } from "@/components/admin/NoticeManager"
 import { CollabManager } from "@/components/admin/CollabManager"
+import { FeedbackManager } from "@/components/admin/FeedbackManager"
 
 interface Stats {
     totalUsers: number
     pendingUsers: number
     totalNotices: number
+    pendingFeedbacks?: number
+    totalFeedbacks?: number
 }
 
 function StatCard({ label, value, icon: Icon, color }: { label: string, value: number, icon: LucideIcon, color: string }) {
@@ -39,7 +42,7 @@ function StatCard({ label, value, icon: Icon, color }: { label: string, value: n
     )
 }
 
-function Overview({ stats }: { stats: Stats | null }) {
+function Overview({ stats, setActiveTab }: { stats: Stats | null, setActiveTab: (tab: string) => void }) {
     if (!stats) return null;
 
     return (
@@ -49,14 +52,15 @@ function Overview({ stats }: { stats: Stats | null }) {
                 <p className="text-sm text-zinc-500">실시간 지표 및 플랫폼 상태</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                 <StatCard label="전체 커뮤니티" value={stats.totalUsers} icon={Users} color="text-blue-500" />
                 <StatCard label="승인 대기 중" value={stats.pendingUsers} icon={ShieldCheck} color="text-amber-500" />
-                <StatCard label="미션 업데이트" value={stats.totalNotices} icon={Bell} color="text-purple-500" />
+                <StatCard label="새 피드백/건의" value={stats.pendingFeedbacks ?? 0} icon={MessageSquare} color="text-emerald-400" />
+                <StatCard label="인스타 공지" value={stats.totalNotices} icon={Bell} color="text-purple-500" />
             </div>
 
             <div className="p-12 rounded-[40px] border border-white/5 bg-zinc-900/10 relative overflow-hidden">
-                <div className="absolute inset-0 bg-linear-to-tr from-blue-500/5 to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 to-transparent pointer-events-none" />
                 <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
                     <div className="space-y-2 text-center md:text-left">
                         <h3 className="text-xl font-light tracking-tight italic">&ldquo;이스라엘아 들으라 우리 하나님 여호와는 오직 유일한 여호와이시니 너는 마음을 다하고 뜻을 다하고 힘을 다하여 네 하나님 여호와를 사랑하라.&rdquo;</h3>
@@ -98,15 +102,16 @@ export default function AdminDashboardPage() {
     if (loading) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center bg-black gap-4">
-                <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
-                <p className="text-[10px] uppercase font-bold tracking-widest opacity-30">관리 센터 초기화 중</p>
+                <Loader2 className="animate-spin text-blue-500" size={32} />
+                <p className="text-zinc-500 text-xs tracking-widest uppercase">어드민 콘솔 초기화 중...</p>
             </div>
         )
     }
 
     return (
         <AdminLayout activeTab={activeTab} setActiveTab={setActiveTab}>
-            {activeTab === "overview" && <Overview stats={stats} />}
+            {activeTab === "overview" && <Overview stats={stats} setActiveTab={setActiveTab} />}
+            {activeTab === "feedback" && <FeedbackManager />}
             {activeTab === "users" && <UserManager />}
             {activeTab === "notices" && <NoticeManager />}
             {activeTab === "collab" && <CollabManager />}

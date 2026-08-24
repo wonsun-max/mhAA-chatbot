@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 
+export const dynamic = "force-dynamic"
+
 export async function GET() {
     const session = await getServerSession(authOptions)
 
@@ -11,10 +13,12 @@ export async function GET() {
     }
 
     try {
-        const [totalUsers, pendingUsers, totalNotices] = await Promise.all([
+        const [totalUsers, pendingUsers, totalNotices, pendingFeedbacks, totalFeedbacks] = await Promise.all([
             prisma.user.count(),
             prisma.user.count({ where: { status: "PENDING" } }),
-            prisma.notice.count()
+            prisma.notice.count(),
+            prisma.feedback.count({ where: { status: "PENDING" } }),
+            prisma.feedback.count(),
         ])
 
         return NextResponse.json({
@@ -22,6 +26,8 @@ export async function GET() {
                 totalUsers,
                 pendingUsers,
                 totalNotices,
+                pendingFeedbacks,
+                totalFeedbacks,
             }
         })
     } catch (error) {

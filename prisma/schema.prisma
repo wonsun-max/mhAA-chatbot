@@ -22,6 +22,7 @@ model User {
   nickname     String?    @unique
   qtGroup      String?
   chatLogs     ChatLog[]
+  feedbacks    Feedback[]
 
   @@index([email])
   @@index([status])
@@ -198,6 +199,33 @@ model KnowledgeChunk {
 
   @@unique([sourceType, sourceId, chunkIndex])
   @@index([sourceType, sourceId])
+}
+
+model Feedback {
+  id        String         @id @default(cuid())
+  type      FeedbackType   @default(IDEA)
+  content   String
+  contact   String?
+  status    FeedbackStatus @default(PENDING)
+  userId    String?
+  user      User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum FeedbackType {
+  IDEA
+  BUG
+}
+
+enum FeedbackStatus {
+  PENDING
+  REVIEWED
+  RESOLVED
 }
 
 enum UserRole {

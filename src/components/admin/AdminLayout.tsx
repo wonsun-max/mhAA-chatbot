@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Users, Bell, LayoutDashboard, ChevronLeft, type LucideIcon } from "lucide-react"
+import { Users, Bell, LayoutDashboard, ChevronLeft, MessageSquare, Calendar, type LucideIcon } from "lucide-react"
 import Link from "next/link"
 import { cn } from "../../lib/utils"
 
@@ -65,6 +65,12 @@ export function AdminLayout({
                         onClick={() => setActiveTab("overview")}
                     />
                     <SidebarItem
+                        icon={MessageSquare}
+                        label="피드백 & 건의함"
+                        active={activeTab === "feedback"}
+                        onClick={() => setActiveTab("feedback")}
+                    />
+                    <SidebarItem
                         icon={Users}
                         label="사용자"
                         active={activeTab === "users"}
@@ -77,7 +83,7 @@ export function AdminLayout({
                         onClick={() => setActiveTab("notices")}
                     />
                     <SidebarItem
-                        icon={LayoutDashboard} // Reuse icon or choose another, e.g., Calendar/School
+                        icon={Calendar}
                         label="콜라보"
                         active={activeTab === "collab"}
                         onClick={() => setActiveTab("collab")}
