@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { ArrowLeft, Youtube } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { authOptions } from "@/lib/auth";
 import { ChannelShelfSection } from "@/components/collab/VodMediaHubClient";
 
@@ -18,15 +18,47 @@ export interface ChannelGroup {
   name: string;
   handle: string;
   channelUrl: string;
-  channelId?: string;
+  channelId: string;
   videos: VideoItem[];
 }
 
-// Fetch live RSS feed for YouTube channels that have channel IDs
-async function fetchRssVideos(channelId: string): Promise<VideoItem[]> {
+// 4 Official MHA Channel Definitions with exact YouTube Channel IDs for Live Real-Time Ingestion
+const CHANNELS_CONFIG = [
+  {
+    id: "mha-official",
+    name: "Manila Hankuk Academy",
+    handle: "@ManilaHankukAcademy",
+    channelUrl: "https://www.youtube.com/@ManilaHankukAcademy",
+    channelId: "UCPqu4EoU8kdXPAqs03Zo9Xg",
+  },
+  {
+    id: "mha-hanain",
+    name: "한아인-MHA",
+    handle: "@MHA-Hanain",
+    channelUrl: "https://www.youtube.com/@MHA-Hanain",
+    channelId: "UCW8_5WjF6TtK3oiS0iVm1Sw",
+  },
+  {
+    id: "actualize-one",
+    name: "Actualize One",
+    handle: "@ActualizeOne",
+    channelUrl: "https://www.youtube.com/@ActualizeOne",
+    channelId: "UCHS47b0-RiFK0q97Bxjzi7g",
+  },
+  {
+    id: "mk-story",
+    name: "선교사자녀학교이야기",
+    handle: "@선교사자녀학교이야기",
+    channelUrl: "https://www.youtube.com/@선교사자녀학교이야기",
+    channelId: "UCg33V_2LECOK_4klpM6tN5w",
+  },
+];
+
+// Fetch live YouTube RSS feed for any channel ID (Automatic Real-Time Sync)
+async function fetchLiveYouTubeVideos(channelId: string): Promise<VideoItem[]> {
   try {
     const res = await fetch(`https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`, {
-      next: { revalidate: 3600 },
+      next: { revalidate: 1800 }, // Auto-revalidate every 30 minutes
     });
     if (!res.ok) return [];
     const xml = await res.text();
@@ -56,7 +88,7 @@ async function fetchRssVideos(channelId: string): Promise<VideoItem[]> {
     }
     return videos;
   } catch (error) {
-    console.error("[VOD] Failed to fetch channel RSS:", error);
+    console.error(`[VOD] Failed to fetch YouTube live feed for ${channelId}:`, error);
     return [];
   }
 }
@@ -68,41 +100,16 @@ export default async function VodPage() {
     redirect("/login?callbackUrl=/collab/vod");
   }
 
-  // 1. Live Hanain Channel Videos
-  const hanainRss = await fetchRssVideos("UCW8_5WjF6TtK3oiS0iVm1Sw");
-
-  // 2. Structured 4-Channel Shelves
-  const channelGroups: ChannelGroup[] = [
-    {
-      id: "mha-official",
-      name: "Manila Hankuk Academy",
-      handle: "@ManilaHankukAcademy",
-      channelUrl: "https://www.youtube.com/@ManilaHankukAcademy",
-      videos: [],
-    },
-    {
-      id: "mha-hanain",
-      name: "한아인-MHA",
-      handle: "@MHA-Hanain",
-      channelUrl: "https://www.youtube.com/@MHA-Hanain",
-      channelId: "UCW8_5WjF6TtK3oiS0iVm1Sw",
-      videos: hanainRss,
-    },
-    {
-      id: "actualize-one",
-      name: "Actualize One",
-      handle: "@ActualizeOne",
-      channelUrl: "https://www.youtube.com/@ActualizeOne",
-      videos: [],
-    },
-    {
-      id: "mk-story",
-      name: "선교사자녀학교이야기",
-      handle: "@선교사자녀학교이야기",
-      channelUrl: "https://www.youtube.com/@선교사자녀학교이야기",
-      videos: [],
-    },
-  ];
+  // Fetch real-time live uploads across all 4 channels concurrently
+  const channelGroups: ChannelGroup[] = await Promise.all(
+    CHANNELS_CONFIG.map(async (config) => {
+      const liveVideos = await fetchLiveYouTubeVideos(config.channelId);
+      return {
+        ...config,
+        videos: liveVideos,
+      };
+    })
+  );
 
   return (
     <div className="min-h-screen pt-32 pb-32 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-16">
@@ -121,14 +128,14 @@ export default async function VodPage() {
             마한아 <span className="font-bold text-white">VOD 채널</span>
           </h1>
           <p className="text-sm sm:text-base text-zinc-400 font-light">
-            마닐라한국아카데미 공식 및 학생 YouTube 채널의 영상 모음입니다.
+            마닐라한국아카데미 4대 공식 및 학생 YouTube 채널의 실시간 최신 영상입니다.
           </p>
         </div>
       </div>
 
       <div className="w-full h-px bg-white/5" />
 
-      {/* Channel Shelves Section by Section */}
+      {/* 4 Live Channel Shelves (Auto-updated from YouTube) */}
       <div className="space-y-20">
         {channelGroups.map((group) => (
           <ChannelShelfSection key={group.id} group={group} />
