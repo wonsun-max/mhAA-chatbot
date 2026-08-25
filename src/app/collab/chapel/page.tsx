@@ -1,20 +1,48 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { 
-  ChevronLeft, Calendar as CalendarIcon, Sparkles, 
-  Search, ShieldCheck, HeartHandshake, BookOpen, Clock, 
-  Layers, CheckCircle2, User, ChevronRight, Bookmark
+  ChevronLeft, Sparkles, Search, HeartHandshake, 
+  BookOpen, CheckCircle2, ChevronRight, Loader2
 } from "lucide-react";
-import { CHAPEL_SCHEDULE_2026_2, ChapelEvent } from "@/lib/faith-data";
+
+interface ChapelItem {
+  id: string;
+  month: number;
+  day: number;
+  dayOfWeek: string;
+  speaker: string;
+  organizer: string;
+  note?: string | null;
+  type: string;
+}
 
 export default function ChapelSchedulePage() {
+  const [events, setEvents] = useState<ChapelItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedFilter, setSelectedFilter] = useState<"ALL" | "MISSION" | "GRADE" | "SPECIAL">("ALL");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredEvents = CHAPEL_SCHEDULE_2026_2.filter((event) => {
+  useEffect(() => {
+    async function loadChapelData() {
+      try {
+        const res = await fetch("/api/collab/chapel");
+        const data = await res.json();
+        if (data.schedules) {
+          setEvents(data.schedules);
+        }
+      } catch (err) {
+        console.error("Failed to load chapel schedules:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadChapelData();
+  }, []);
+
+  const filteredEvents = events.filter((event) => {
     // 1. Category Filter
     if (selectedFilter === "MISSION" && event.type !== "MISSION") return false;
     if (selectedFilter === "GRADE" && event.type !== "GRADE") return false;
@@ -33,8 +61,7 @@ export default function ChapelSchedulePage() {
     return true;
   });
 
-  // Calculate upcoming chapel
-  const nextMissionEvent = CHAPEL_SCHEDULE_2026_2.find(e => e.type === "MISSION");
+  const nextMissionEvent = events.find(e => e.type === "MISSION");
 
   return (
     <div className="min-h-screen pt-24 sm:pt-32 pb-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-10 sm:space-y-12">
@@ -48,7 +75,7 @@ export default function ChapelSchedulePage() {
           <span>콜라보 허브로 돌아가기</span>
         </Link>
         <span className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono font-bold">
-          2026-2학기
+          2026-2학기 LIVE DB
         </span>
       </div>
 
@@ -66,7 +93,7 @@ export default function ChapelSchedulePage() {
         </p>
       </div>
 
-      {/* Quick Spotlight Banner (Mission Chapel Alert) */}
+      {/* Spotlight Banner */}
       {nextMissionEvent && (
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-900/30 via-indigo-900/20 to-purple-900/30 border border-blue-500/20 p-6 sm:p-8 backdrop-blur-xl shadow-2xl shadow-blue-500/5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 relative z-10">
@@ -105,7 +132,6 @@ export default function ChapelSchedulePage() {
 
       {/* Filters & Search Row */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        {/* Filter Pills */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
           <button
             onClick={() => setSelectedFilter("ALL")}
@@ -115,7 +141,7 @@ export default function ChapelSchedulePage() {
                 : "bg-zinc-900/60 text-zinc-400 hover:text-white border border-white/5"
             }`}
           >
-            전체 ({CHAPEL_SCHEDULE_2026_2.length}회)
+            전체 ({events.length}회)
           </button>
           <button
             onClick={() => setSelectedFilter("MISSION")}
@@ -126,7 +152,7 @@ export default function ChapelSchedulePage() {
             }`}
           >
             <HeartHandshake size={14} />
-            <span>선교 예배 (4회)</span>
+            <span>선교 예배</span>
           </button>
           <button
             onClick={() => setSelectedFilter("GRADE")}
@@ -137,7 +163,7 @@ export default function ChapelSchedulePage() {
             }`}
           >
             <BookOpen size={14} />
-            <span>학년 주관 (7회)</span>
+            <span>학년 주관</span>
           </button>
           <button
             onClick={() => setSelectedFilter("SPECIAL")}
@@ -165,90 +191,93 @@ export default function ChapelSchedulePage() {
         </div>
       </div>
 
-      {/* Timeline Event List */}
-      <div className="space-y-3">
-        {filteredEvents.length === 0 ? (
-          <div className="text-center py-16 bg-zinc-900/20 rounded-3xl border border-white/5 space-y-2">
-            <p className="text-sm text-zinc-400 font-bold">검색 결과가 없습니다</p>
-            <p className="text-xs text-zinc-600">다른 검색어나 필터를 선택해 보세요.</p>
-          </div>
-        ) : (
-          filteredEvents.map((item, index) => {
-            const isMission = item.type === "MISSION";
-            const isGrade = item.type === "GRADE";
-            const isExam = item.type === "EXAM";
-            const isSchool = item.type === "SCHOOL";
+      {/* Loading & Timeline Event List */}
+      {loading ? (
+        <div className="py-20 flex flex-col items-center justify-center space-y-3">
+          <Loader2 size={24} className="animate-spin text-blue-400" />
+          <p className="text-xs font-mono text-zinc-500">데이터베이스에서 채플 일정을 불러오는 중...</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {filteredEvents.length === 0 ? (
+            <div className="text-center py-16 bg-zinc-900/20 rounded-3xl border border-white/5 space-y-2">
+              <p className="text-sm text-zinc-400 font-bold">검색 결과가 없습니다</p>
+              <p className="text-xs text-zinc-600">다른 검색어나 필터를 선택해 보세요.</p>
+            </div>
+          ) : (
+            filteredEvents.map((item, index) => {
+              const isMission = item.type === "MISSION";
+              const isGrade = item.type === "GRADE";
+              const isExam = item.type === "EXAM";
 
-            return (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2, delay: index * 0.02 }}
-                className={`p-4 sm:p-5 rounded-2xl border transition-all duration-300 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group ${
-                  isMission
-                    ? "bg-blue-950/20 border-blue-500/20 hover:border-blue-500/40"
-                    : isGrade
-                    ? "bg-purple-950/20 border-purple-500/20 hover:border-purple-500/40"
-                    : isExam
-                    ? "bg-red-950/20 border-red-500/20 hover:border-red-500/40"
-                    : "bg-zinc-900/30 border-white/5 hover:border-white/15"
-                }`}
-              >
-                {/* Date & Title */}
-                <div className="flex items-center gap-4">
-                  {/* Date Badge */}
-                  <div className="w-14 h-14 rounded-2xl bg-zinc-950/80 border border-white/10 flex flex-col items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
-                    <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase">
-                      {item.month}월
-                    </span>
-                    <span className="text-base sm:text-lg font-black text-white leading-tight">
-                      {item.day}일
-                    </span>
-                    <span className="text-[9px] text-zinc-500 font-mono">
-                      ({item.dayOfWeek || "수"})
-                    </span>
-                  </div>
-
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      {isMission && (
-                        <span className="px-2 py-0.5 rounded-full bg-blue-500/20 border border-blue-500/30 text-blue-300 text-[10px] font-mono font-bold">
-                          선교예배
-                        </span>
-                      )}
-                      {isGrade && (
-                        <span className="px-2 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/30 text-purple-300 text-[10px] font-mono font-bold">
-                          학년주관
-                        </span>
-                      )}
-                      {item.note && (
-                        <span className="text-[11px] font-mono text-zinc-400 bg-white/5 px-2 py-0.5 rounded-md border border-white/5">
-                          {item.note}
-                        </span>
-                      )}
+              return (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2, delay: index * 0.02 }}
+                  className={`p-4 sm:p-5 rounded-2xl border transition-all duration-300 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group ${
+                    isMission
+                      ? "bg-blue-950/20 border-blue-500/20 hover:border-blue-500/40"
+                      : isGrade
+                      ? "bg-purple-950/20 border-purple-500/20 hover:border-purple-500/40"
+                      : isExam
+                      ? "bg-red-950/20 border-red-500/20 hover:border-red-500/40"
+                      : "bg-zinc-900/30 border-white/5 hover:border-white/15"
+                  }`}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-2xl bg-zinc-950/80 border border-white/10 flex flex-col items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
+                      <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase">
+                        {item.month}월
+                      </span>
+                      <span className="text-base sm:text-lg font-black text-white leading-tight">
+                        {item.day}일
+                      </span>
+                      <span className="text-[9px] text-zinc-500 font-mono">
+                        ({item.dayOfWeek || "수"})
+                      </span>
                     </div>
-                    <h4 className="text-base sm:text-lg font-bold text-white tracking-tight">
-                      {item.organizer}
-                    </h4>
-                  </div>
-                </div>
 
-                {/* Speaker Info */}
-                <div className="flex items-center justify-between sm:justify-end gap-3 pt-3 sm:pt-0 border-t sm:border-t-0 border-white/5">
-                  <div className="text-left sm:text-right">
-                    <span className="text-[10px] font-mono text-zinc-500 uppercase block">설교자</span>
-                    <span className="text-xs font-semibold text-zinc-300">{item.speaker}</span>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {isMission && (
+                          <span className="px-2 py-0.5 rounded-full bg-blue-500/20 border border-blue-500/30 text-blue-300 text-[10px] font-mono font-bold">
+                            선교예배
+                          </span>
+                        )}
+                        {isGrade && (
+                          <span className="px-2 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/30 text-purple-300 text-[10px] font-mono font-bold">
+                            학년주관
+                          </span>
+                        )}
+                        {item.note && (
+                          <span className="text-[11px] font-mono text-zinc-400 bg-white/5 px-2 py-0.5 rounded-md border border-white/5">
+                            {item.note}
+                          </span>
+                        )}
+                      </div>
+                      <h4 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                        {item.organizer}
+                      </h4>
+                    </div>
                   </div>
-                  <div className="w-8 h-8 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-zinc-500 group-hover:text-white transition-colors">
-                    <CheckCircle2 size={14} />
+
+                  <div className="flex items-center justify-between sm:justify-end gap-3 pt-3 sm:pt-0 border-t sm:border-t-0 border-white/5">
+                    <div className="text-left sm:text-right">
+                      <span className="text-[10px] font-mono text-zinc-500 uppercase block">설교자</span>
+                      <span className="text-xs font-semibold text-zinc-300">{item.speaker}</span>
+                    </div>
+                    <div className="w-8 h-8 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-zinc-500 group-hover:text-white transition-colors">
+                      <CheckCircle2 size={14} />
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            );
-          })
-        )}
-      </div>
+                </motion.div>
+              );
+            })
+          )}
+        </div>
+      )}
     </div>
   );
 }

@@ -217,6 +217,76 @@ model Feedback {
   @@index([createdAt])
 }
 
+model ChapelSchedule {
+  id        String   @id @default(cuid())
+  date      String   // "2026-09-02"
+  month     Int      // 9
+  day       Int      // 2
+  dayOfWeek String   // "수"
+  speaker   String   // "담당자" or "이은세"
+  organizer String   // "필리핀 1팀" or "11학년"
+  note      String?  // "선교 예배"
+  type      String   // "MISSION", "GRADE", "SPECIAL", "EXAM", "SCHOOL"
+  year      Int      @default(2026)
+  semester  String   @default("2")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([year, semester])
+  @@index([type])
+}
+
+model MissionTeam {
+  id          String              @id @default(cuid())
+  name        String              @unique // "글로벌팀", "동아시아팀", "필리핀 1팀", "필리핀 2팀"
+  leaderName  String              // "김현민"
+  leaderGrade Int                 // 11
+  chapelDate  String              // "11월 11일"
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  members     MissionTeamMember[]
+}
+
+model MissionTeamMember {
+  id        String      @id @default(cuid())
+  teamId    String
+  team      MissionTeam @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  name      String      // "황은호"
+  grade     Int         // 12
+  role      String      @default("팀원") // "팀장", "팀원"
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@index([teamId])
+  @@index([name])
+}
+
+model QtGroup {
+  id             Int             @id // 1, 2, 3, 4, 5, 6, 7, 8
+  name           String          // "1조"
+  leaderName     String          // "노하임"
+  leaderGrade    Int             // 11
+  subLeaderName  String          // "윤다애"
+  subLeaderGrade Int             // 12
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  members        QtGroupMember[]
+}
+
+model QtGroupMember {
+  id        String   @id @default(cuid())
+  groupId   Int
+  group     QtGroup  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  name      String   // "윤준서"
+  grade     Int      // 12
+  role      String   @default("조원") // "조장", "부조장", "조원"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([groupId])
+  @@index([name])
+}
+
 enum FeedbackType {
   IDEA
   BUG

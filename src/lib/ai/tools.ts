@@ -47,7 +47,7 @@ function toIsoDate(year: number, date: string): string | null {
 
 /**
  * Retrieval tools for the WITHUS AI Assistant.
- * Migrated from Airtable to Prisma/Neon for better performance and consistency.
+ * 100% Database-driven via Prisma / PostgreSQL.
  */
 export const aiTools = {
     getEvents: tool({
@@ -173,8 +173,6 @@ export const aiTools = {
             const requestedYear = year ?? getAcademicYear();
             const requestedSemester = semester ?? getAcademicSemester();
 
-            // Relax filters progressively so an imprecise semester/year argument
-            // never turns an existing exam cycle into an empty answer.
             let records = await prisma.examSchedule.findMany({
                 where: { ...baseWhere, year: requestedYear, semester: requestedSemester },
             });
@@ -200,7 +198,6 @@ export const aiTools = {
                 records = records.filter((record) => matchesExamGrade(grade, record.grades));
             }
 
-            // Attach ISO dates and sort chronologically (string sort breaks on "10/1" vs "4/24").
             return records
                 .map((record) => ({ ...record, isoDate: toIsoDate(record.year, record.date) }))
                 .sort((a, b) =>
@@ -208,11 +205,145 @@ export const aiTools = {
                 );
         },
     }),
+    getChapelSchedules: tool({
+        description: "Fetch Wednesday Chapel schedules from database (수요채플 계획표). Returns date, day, speaker, organizer (선교팀, 학년, 학생회, 교목실), and notes (선교예배, 개학식, 종업식 등).",
+        inputSchema: zodSchema(z.object({
+            query: z.string().optional().describe("Filter by organizer, speaker, or keyword (e.g., '필리핀 1팀', '11학년', '선교예배', '이은세')"),
+            type: z.enum(["MISSION", "GRADE", "SPECIAL", "EXAM", "SCHOOL", "ALL"]).optional().describe("Filter by chapel type: MISSION (선교예배), GRADE (학년주관), SPECIAL (특별예배), EXAM (시험기간)"),
+        })),
+        execute: async ({ query, type }) => {
+            const where: Prisma.ChapelScheduleWhereInput = {};
+            if (type && type !== "ALL") {
+                where.type = type;
+            }
+
+            let records = await prisma.chapelSchedule.findMany({
+                where,
+                orderBy: [{ month: 'asc' }, { day: 'asc' }]
+            });
+
+            if (query && query.trim()) {
+                const q = query.trim().toLowerCase();
+                records = records.filter(r => 
+                    r.organizer.toLowerCase().includes(q) ||
+                    r.speaker.toLowerCase().includes(q) ||
+                    (r.note && r.note.toLowerCase().includes(q)) ||
+                    `${r.month}월 ${r.day}일`.includes(q)
+                );
+            }
+
+            return records;
+        },
+    }),
+    getTeamMemberships: tool({
+        description: "Search student community membership in Mission Teams (4대 선교팀: 글로벌, 동아시아, 필리핀 1, 필리핀 2) and QT Groups (8대 QT조: 1조~8조). Query by student name to find their assigned mission team and QT group, or query by team/group name to get full member rosters.",
+        inputSchema: zodSchema(z.object({
+            studentName: z.string().optional().describe("Student's Korean name (e.g., '김현민', '하승민', '이원선') to get their team and QT group"),
+            missionTeamName: z.string().optional().describe("Mission team name (e.g., '글로벌팀', '동아시아팀', '필리핀 1팀', '필리핀 2팀') to get team leader and members"),
+            qtGroupName: z.string().optional().describe("QT group name (e.g., '1조', '2조', ..., '8조') to get group leader, sub-leader, and members"),
+        })),
+        execute: async ({ studentName, missionTeamName, qtGroupName }) => {
+            // 1. Search by student name
+            if (studentName && studentName.trim()) {
+                const name = studentName.trim();
+                const [missionMember, qtMember] = await Promise.all([
+                    prisma.missionTeamMember.findFirst({
+                        where: { name: { equals: name, mode: 'insensitive' } },
+                        include: { team: true },
+                    }),
+                    prisma.qtGroupMember.findFirst({
+                        where: { name: { equals: name, mode: 'insensitive' } },
+                        include: { group: true },
+                    }),
+                ]);
+
+                if (!missionMember && !qtMember) {
+                    return { found: false, message: `"${name}" 학생의 선교팀 및 QT조 편성 정보를 찾지 못했습니다.` };
+                }
+
+                return {
+                    found: true,
+                    name,
+                    grade: missionMember?.grade || qtMember?.grade || 0,
+                    missionTeam: missionMember ? {
+                        name: missionMember.team.name,
+                        role: missionMember.role,
+                        chapelDate: missionMember.team.chapelDate,
+                        teamLeader: `${missionMember.team.leaderName} (${missionMember.team.leaderGrade}학년)`,
+                    } : null,
+                    qtGroup: qtMember ? {
+                        name: qtMember.group.name,
+                        role: qtMember.role,
+                        leader: `${qtMember.group.leaderName} (${qtMember.group.leaderGrade}학년)`,
+                        subLeader: `${qtMember.group.subLeaderName} (${qtMember.group.subLeaderGrade}학년)`,
+                    } : null,
+                };
+            }
+
+            // 2. Search by Mission Team
+            if (missionTeamName && missionTeamName.trim()) {
+                const team = await prisma.missionTeam.findFirst({
+                    where: { name: { contains: missionTeamName.trim(), mode: 'insensitive' } },
+                    include: {
+                        members: {
+                            orderBy: [{ grade: 'desc' }, { name: 'asc' }],
+                        }
+                    }
+                });
+
+                if (!team) {
+                    return { found: false, message: `"${missionTeamName}" 선교팀을 찾지 못했습니다.` };
+                }
+
+                return {
+                    found: true,
+                    teamName: team.name,
+                    leader: `${team.leaderName} (${team.leaderGrade}학년)`,
+                    chapelDate: team.chapelDate,
+                    totalMembers: team.members.length,
+                    members: team.members.map(m => ({ name: m.name, grade: m.grade, role: m.role })),
+                };
+            }
+
+            // 3. Search by QT Group
+            if (qtGroupName && qtGroupName.trim()) {
+                const group = await prisma.qtGroup.findFirst({
+                    where: { name: { contains: qtGroupName.trim(), mode: 'insensitive' } },
+                    include: {
+                        members: {
+                            orderBy: [{ grade: 'desc' }, { name: 'asc' }],
+                        }
+                    }
+                });
+
+                if (!group) {
+                    return { found: false, message: `"${qtGroupName}" QT조를 찾지 못했습니다.` };
+                }
+
+                return {
+                    found: true,
+                    groupName: group.name,
+                    leader: `${group.leaderName} (${group.leaderGrade}학년)`,
+                    subLeader: `${group.subLeaderName} (${group.subLeaderGrade}학년)`,
+                    totalMembers: group.members.length,
+                    members: group.members.map(m => ({ name: m.name, grade: m.grade, role: m.role })),
+                };
+            }
+
+            // Default: return summary of all teams
+            const [teams, groups] = await Promise.all([
+                prisma.missionTeam.findMany({ select: { name: true, leaderName: true, leaderGrade: true, chapelDate: true } }),
+                prisma.qtGroup.findMany({ select: { name: true, leaderName: true, subLeaderName: true } }),
+            ]);
+
+            return { missionTeams: teams, qtGroups: groups };
+        },
+    }),
     searchSchoolInfo: tool({
         description:
             "Semantic search over official school notices/announcements (공지사항). " +
             "Use for questions about announcements, rules, policies, deadlines, or school information " +
-            "not covered by the calendar, meal, timetable, or exam tools. " +
+            "not covered by the calendar, meal, timetable, exam, chapel, or team tools. " +
             "Query in the user's language; returns the most relevant notice excerpts.",
         inputSchema: zodSchema(z.object({
             query: z.string().describe("Natural-language search query, e.g., '기숙사 규정' or 'uniform policy'"),

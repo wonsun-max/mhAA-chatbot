@@ -1,22 +1,94 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { 
-  ChevronLeft, Users, Sparkles, Search, 
-  HeartHandshake, BookOpen, Crown, Shield, 
-  ChevronRight, Calendar, UserCheck, CheckCircle2, X
+  ChevronLeft, Sparkles, Search, HeartHandshake, 
+  BookOpen, Crown, Shield, X, Loader2
 } from "lucide-react";
-import { MISSION_TEAMS, QT_GROUPS, findStudentMembership, MissionTeam, QtGroup } from "@/lib/faith-data";
+
+interface Member {
+  name: string;
+  grade: number;
+  role: string;
+}
+
+interface MissionTeamItem {
+  id: string;
+  name: string;
+  leaderName: string;
+  leaderGrade: number;
+  chapelDate: string;
+  members: Member[];
+}
+
+interface QtGroupItem {
+  id: number;
+  name: string;
+  leaderName: string;
+  leaderGrade: number;
+  subLeaderName: string;
+  subLeaderGrade: number;
+  members: Member[];
+}
+
+interface SearchResult {
+  name: string;
+  grade: number;
+  missionTeam: { name: string; role: string } | null;
+  qtGroup: { name: string; role: string } | null;
+}
 
 export default function TeamsCommunityPage() {
+  const [missionTeams, setMissionTeams] = useState<MissionTeamItem[]>([]);
+  const [qtGroups, setQtGroups] = useState<QtGroupItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
   const [activeTab, setActiveTab] = useState<"MISSION" | "QT">("MISSION");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedTeam, setSelectedTeam] = useState<MissionTeam | null>(null);
-  const [selectedQtGroup, setSelectedQtGroup] = useState<QtGroup | null>(null);
+  const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
+  const [searching, setSearching] = useState(false);
 
-  const searchResult = searchQuery.trim() ? findStudentMembership(searchQuery) : null;
+  // Load all teams and QT groups from DB API
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const res = await fetch("/api/collab/teams");
+        const data = await res.json();
+        if (data.missionTeams) setMissionTeams(data.missionTeams);
+        if (data.qtGroups) setQtGroups(data.qtGroups);
+      } catch (err) {
+        console.error("Failed to load teams data:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+
+  // Live search debounced against PostgreSQL API
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setSearchResult(null);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setSearching(true);
+      try {
+        const res = await fetch(`/api/collab/teams?query=${encodeURIComponent(searchQuery.trim())}`);
+        const data = await res.json();
+        setSearchResult(data.result || null);
+      } catch (err) {
+        console.error("Search failed:", err);
+      } finally {
+        setSearching(false);
+      }
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   return (
     <div className="min-h-screen pt-24 sm:pt-32 pb-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-10 sm:space-y-12">
@@ -30,7 +102,7 @@ export default function TeamsCommunityPage() {
           <span>콜라보 허브로 돌아가기</span>
         </Link>
         <span className="px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-mono font-bold">
-          2026 공동체 편성
+          2026 LIVE DB
         </span>
       </div>
 
@@ -44,7 +116,7 @@ export default function TeamsCommunityPage() {
           QT조 & 선교팀 편성표
         </h1>
         <p className="text-sm sm:text-base text-zinc-400 font-light max-w-2xl leading-relaxed">
-          마한아 4대 선교팀(글로벌, 동아시아, 필리핀 1·2)과 8개 QT조 편성 명단입니다. 이름을 검색해 내 소속을 0.1초 만에 확인하세요.
+          마한아 4대 선교팀과 8개 QT조 편성 명단입니다. 이름을 검색해 내 소속을 데이터베이스에서 실시간으로 조회하세요.
         </p>
       </div>
 
@@ -53,7 +125,7 @@ export default function TeamsCommunityPage() {
         <div className="space-y-1">
           <label className="text-[11px] font-mono font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
             <Search size={14} className="text-purple-400" />
-            <span>학생 이름으로 내 팀 & QT조 즉시 찾기</span>
+            <span>학생 이름으로 내 팀 & QT조 즉시 찾기 (PostgreSQL DB 연동)</span>
           </label>
           <div className="relative">
             <input
@@ -81,7 +153,12 @@ export default function TeamsCommunityPage() {
             animate={{ opacity: 1, y: 0 }}
             className="pt-2"
           >
-            {searchResult ? (
+            {searching ? (
+              <div className="p-4 rounded-xl bg-zinc-950/60 border border-white/5 flex items-center justify-center gap-2 text-xs text-zinc-400">
+                <Loader2 size={14} className="animate-spin text-purple-400" />
+                <span>데이터베이스 검색 중...</span>
+              </div>
+            ) : searchResult ? (
               <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-purple-950/40 to-blue-950/40 border border-purple-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3.5">
                   <div className="w-12 h-12 rounded-2xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-300 font-bold text-base shrink-0">
@@ -99,27 +176,25 @@ export default function TeamsCommunityPage() {
                       )}
                     </div>
                     <p className="text-xs text-zinc-400 mt-0.5">
-                      소속 정보를 찾았습니다
+                      DB 소속 정보를 찾았습니다
                     </p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3">
-                  {/* Mission Team Result */}
                   <div className="p-2.5 sm:px-4 sm:py-2 rounded-xl bg-black/40 border border-white/10 text-center sm:text-left">
                     <span className="text-[9px] font-mono text-zinc-500 uppercase block">선교팀</span>
                     <span className="text-xs sm:text-sm font-bold text-blue-300">
                       {searchResult.missionTeam?.name || "미지정"}
-                      {searchResult.missionRole && ` (${searchResult.missionRole})`}
+                      {searchResult.missionTeam?.role && ` (${searchResult.missionTeam.role})`}
                     </span>
                   </div>
 
-                  {/* QT Group Result */}
                   <div className="p-2.5 sm:px-4 sm:py-2 rounded-xl bg-black/40 border border-white/10 text-center sm:text-left">
                     <span className="text-[9px] font-mono text-zinc-500 uppercase block">QT조</span>
                     <span className="text-xs sm:text-sm font-bold text-purple-300">
                       {searchResult.qtGroup?.name || "미지정"}
-                      {searchResult.qtRole && ` (${searchResult.qtRole})`}
+                      {searchResult.qtGroup?.role && ` (${searchResult.qtGroup.role})`}
                     </span>
                   </div>
                 </div>
@@ -144,7 +219,7 @@ export default function TeamsCommunityPage() {
           }`}
         >
           <HeartHandshake size={16} />
-          <span>4대 선교팀 (80명)</span>
+          <span>4대 선교팀 ({missionTeams.length}개 팀)</span>
         </button>
 
         <button
@@ -156,145 +231,148 @@ export default function TeamsCommunityPage() {
           }`}
         >
           <BookOpen size={16} />
-          <span>8대 QT조 (1조~8조)</span>
+          <span>8대 QT조 ({qtGroups.length}개 조)</span>
         </button>
       </div>
 
-      {/* Tab 1: MISSION TEAMS (4 Teams Grid) */}
-      {activeTab === "MISSION" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {MISSION_TEAMS.map((team) => (
-            <div
-              key={team.id}
-              className="bg-zinc-900/30 backdrop-blur-xl border border-white/5 hover:border-white/15 rounded-3xl p-6 sm:p-7 space-y-6 transition-all duration-300 flex flex-col justify-between group shadow-xl"
-            >
-              <div>
-                {/* Team Card Header */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-2xl bg-zinc-950 border border-white/10 flex items-center justify-center text-blue-400 font-black shadow-inner">
-                      <HeartHandshake size={22} />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-white tracking-tight">
-                        {team.name}
-                      </h3>
-                      <span className="text-xs text-zinc-400 font-mono">
-                        총 {team.members.length + 1}명
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="text-right">
-                    <span className="text-[10px] font-mono text-zinc-500 block uppercase">선교 예배</span>
-                    <span className="text-xs font-mono font-bold text-blue-300">{team.chapelDate}</span>
-                  </div>
-                </div>
-
-                {/* Team Leader Box */}
-                <div className="p-3.5 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <Crown size={14} className="text-amber-400" />
-                    <span className="text-xs font-mono text-zinc-400 font-bold">팀장</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-white">{team.leader.name}</span>
-                    <span className="text-[10px] font-mono text-zinc-400 bg-white/10 px-1.5 py-0.5 rounded">
-                      {team.leader.grade}학년
-                    </span>
-                  </div>
-                </div>
-
-                {/* Team Members Tag Cloud */}
-                <div className="space-y-2">
-                  <span className="text-[11px] font-mono text-zinc-500 uppercase block font-bold">
-                    팀원 명단 ({team.members.length}명)
-                  </span>
-                  <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto pr-1">
-                    {team.members.map((m, idx) => (
-                      <span
-                        key={idx}
-                        className="px-2.5 py-1 rounded-xl bg-zinc-950/70 border border-white/5 text-xs text-zinc-300 font-medium flex items-center gap-1.5"
-                      >
-                        <span>{m.name}</span>
-                        <span className="text-[9px] font-mono text-zinc-500">{m.grade}</span>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
+      {loading ? (
+        <div className="py-20 flex flex-col items-center justify-center space-y-3">
+          <Loader2 size={24} className="animate-spin text-purple-400" />
+          <p className="text-xs font-mono text-zinc-500">데이터베이스에서 편성표를 불러오는 중...</p>
         </div>
-      )}
-
-      {/* Tab 2: QT GROUPS (8 Groups Grid) */}
-      {activeTab === "QT" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {QT_GROUPS.map((group) => (
-            <div
-              key={group.id}
-              className="bg-zinc-900/30 backdrop-blur-xl border border-white/5 hover:border-white/15 rounded-3xl p-6 space-y-5 transition-all duration-300 flex flex-col justify-between shadow-xl"
-            >
-              <div>
-                {/* Group Header */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-sm">
-                      {group.name}
+      ) : activeTab === "MISSION" ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {missionTeams.map((team) => {
+            const teamMembersOnly = team.members.filter(m => m.name !== team.leaderName);
+            return (
+              <div
+                key={team.id}
+                className="bg-zinc-900/30 backdrop-blur-xl border border-white/5 hover:border-white/15 rounded-3xl p-6 sm:p-7 space-y-6 transition-all duration-300 flex flex-col justify-between group shadow-xl"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-2xl bg-zinc-950 border border-white/10 flex items-center justify-center text-blue-400 font-black shadow-inner">
+                        <HeartHandshake size={22} />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold text-white tracking-tight">
+                          {team.name}
+                        </h3>
+                        <span className="text-xs text-zinc-400 font-mono">
+                          총 {team.members.length}명
+                        </span>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-white">QT {group.name}</h3>
-                      <span className="text-xs text-zinc-400 font-mono">
-                        총 {group.members.length + 2}명
+
+                    <div className="text-right">
+                      <span className="text-[10px] font-mono text-zinc-500 block uppercase">선교 예배</span>
+                      <span className="text-xs font-mono font-bold text-blue-300">{team.chapelDate}</span>
+                    </div>
+                  </div>
+
+                  <div className="p-3.5 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <Crown size={14} className="text-amber-400" />
+                      <span className="text-xs font-mono text-zinc-400 font-bold">팀장</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-white">{team.leaderName}</span>
+                      <span className="text-[10px] font-mono text-zinc-400 bg-white/10 px-1.5 py-0.5 rounded">
+                        {team.leaderGrade}학년
                       </span>
                     </div>
                   </div>
-                </div>
 
-                {/* Leader & Subleader Row */}
-                <div className="grid grid-cols-2 gap-2 mb-4">
-                  <div className="p-3 rounded-xl bg-white/5 border border-white/5">
-                    <div className="flex items-center gap-1.5 text-[10px] font-mono text-amber-400 mb-1">
-                      <Crown size={12} />
-                      <span>조장</span>
+                  <div className="space-y-2">
+                    <span className="text-[11px] font-mono text-zinc-500 uppercase block font-bold">
+                      팀원 명단 ({teamMembersOnly.length}명)
+                    </span>
+                    <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto pr-1">
+                      {teamMembersOnly.map((m, idx) => (
+                        <span
+                          key={idx}
+                          className="px-2.5 py-1 rounded-xl bg-zinc-950/70 border border-white/5 text-xs text-zinc-300 font-medium flex items-center gap-1.5"
+                        >
+                          <span>{m.name}</span>
+                          <span className="text-[9px] font-mono text-zinc-500">{m.grade}</span>
+                        </span>
+                      ))}
                     </div>
-                    <p className="text-xs font-bold text-white">
-                      {group.leader.name} <span className="text-[10px] text-zinc-400 font-normal">({group.leader.grade}학년)</span>
-                    </p>
-                  </div>
-
-                  <div className="p-3 rounded-xl bg-white/5 border border-white/5">
-                    <div className="flex items-center gap-1.5 text-[10px] font-mono text-blue-400 mb-1">
-                      <Shield size={12} />
-                      <span>부조장</span>
-                    </div>
-                    <p className="text-xs font-bold text-white">
-                      {group.subLeader.name} <span className="text-[10px] text-zinc-400 font-normal">({group.subLeader.grade}학년)</span>
-                    </p>
-                  </div>
-                </div>
-
-                {/* Members List */}
-                <div className="space-y-1.5">
-                  <span className="text-[10px] font-mono text-zinc-500 uppercase block font-bold">
-                    조원 ({group.members.length}명)
-                  </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {group.members.map((m, idx) => (
-                      <span
-                        key={idx}
-                        className="px-2 py-0.5 rounded-lg bg-zinc-950/70 border border-white/5 text-[11px] text-zinc-300 flex items-center gap-1"
-                      >
-                        <span>{m.name}</span>
-                        <span className="text-[9px] text-zinc-500 font-mono">{m.grade}</span>
-                      </span>
-                    ))}
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {qtGroups.map((group) => {
+            const groupMembersOnly = group.members.filter(
+              m => m.name !== group.leaderName && m.name !== group.subLeaderName
+            );
+            return (
+              <div
+                key={group.id}
+                className="bg-zinc-900/30 backdrop-blur-xl border border-white/5 hover:border-white/15 rounded-3xl p-6 space-y-5 transition-all duration-300 flex flex-col justify-between shadow-xl"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-11 h-11 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-sm">
+                        {group.name}
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-white">QT {group.name}</h3>
+                        <span className="text-xs text-zinc-400 font-mono">
+                          총 {group.members.length}명
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 mb-4">
+                    <div className="p-3 rounded-xl bg-white/5 border border-white/5">
+                      <div className="flex items-center gap-1.5 text-[10px] font-mono text-amber-400 mb-1">
+                        <Crown size={12} />
+                        <span>조장</span>
+                      </div>
+                      <p className="text-xs font-bold text-white">
+                        {group.leaderName} <span className="text-[10px] text-zinc-400 font-normal">({group.leaderGrade}학년)</span>
+                      </p>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-white/5 border border-white/5">
+                      <div className="flex items-center gap-1.5 text-[10px] font-mono text-blue-400 mb-1">
+                        <Shield size={12} />
+                        <span>부조장</span>
+                      </div>
+                      <p className="text-xs font-bold text-white">
+                        {group.subLeaderName} <span className="text-[10px] text-zinc-400 font-normal">({group.subLeaderGrade}학년)</span>
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <span className="text-[10px] font-mono text-zinc-500 uppercase block font-bold">
+                      조원 ({groupMembersOnly.length}명)
+                    </span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {groupMembersOnly.map((m, idx) => (
+                        <span
+                          key={idx}
+                          className="px-2 py-0.5 rounded-lg bg-zinc-950/70 border border-white/5 text-[11px] text-zinc-300 flex items-center gap-1"
+                        >
+                          <span>{m.name}</span>
+                          <span className="text-[9px] text-zinc-500 font-mono">{m.grade}</span>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
