@@ -52,6 +52,16 @@ export default function CalendarPage() {
     fetchEvents();
   }, []);
 
+  const [isAppleDevice, setIsAppleDevice] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && typeof navigator !== "undefined") {
+      const ua = navigator.userAgent || "";
+      const isApple = /iPhone|iPad|iPod|Macintosh|Mac OS X/i.test(ua);
+      setIsAppleDevice(isApple);
+    }
+  }, []);
+
   const today = new Date();
   const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
@@ -447,42 +457,70 @@ export default function CalendarPage() {
                   <button
                     type="button"
                     onClick={handleAppleCalendarWebSub}
-                    className="w-full p-4 rounded-2xl bg-zinc-950/80 border border-white/10 hover:border-white/30 text-left transition-all group flex items-center justify-between shadow-lg"
+                    className={`w-full p-4 rounded-2xl text-left transition-all group flex items-center justify-between shadow-lg ${
+                      isAppleDevice
+                        ? "bg-blue-950/30 border border-blue-500/40 hover:border-blue-500/60"
+                        : "bg-zinc-950/80 border border-white/10 hover:border-white/20"
+                    }`}
                   >
                     <div className="flex items-center gap-3.5">
-                      <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-white group-hover:scale-105 transition-transform">
+                      <div className={`w-10 h-10 rounded-xl border flex items-center justify-center group-hover:scale-105 transition-transform ${
+                        isAppleDevice
+                          ? "bg-blue-500/20 border-blue-500/30 text-blue-400"
+                          : "bg-white/5 border-white/10 text-zinc-400"
+                      }`}>
                         <CalendarIcon size={18} />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
                           <h4 className="text-xs font-bold text-white">Apple 캘린더에 추가</h4>
-                          <span className="px-2 py-0.5 rounded-full bg-white/10 text-[9px] font-bold text-white tracking-wide">iPhone / Mac</span>
+                          <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wide ${
+                            isAppleDevice
+                              ? "bg-blue-500/20 text-blue-300 border border-blue-500/30"
+                              : "bg-white/10 text-zinc-400"
+                          }`}>
+                            {isAppleDevice ? "추천 · iPhone / Mac" : "iPhone / Mac"}
+                          </span>
                         </div>
                         <p className="text-[11px] text-zinc-400 mt-0.5">아이폰 기본 캘린더 앱에서 1초 만에 실시간 구독</p>
                       </div>
                     </div>
-                    <ExternalLink size={14} className="text-zinc-500 group-hover:text-white transition-colors mr-1" />
+                    <ExternalLink size={14} className={`${isAppleDevice ? "text-blue-400" : "text-zinc-500 group-hover:text-white"} transition-colors mr-1`} />
                   </button>
 
                   {/* Google Calendar Button (Android / PC) */}
                   <button
                     type="button"
                     onClick={handleGoogleCalendarWebSub}
-                    className="w-full p-4 rounded-2xl bg-zinc-950/80 border border-blue-500/20 hover:border-blue-500/40 text-left transition-all group flex items-center justify-between shadow-lg"
+                    className={`w-full p-4 rounded-2xl text-left transition-all group flex items-center justify-between shadow-lg ${
+                      !isAppleDevice
+                        ? "bg-blue-950/30 border border-blue-500/40 hover:border-blue-500/60"
+                        : "bg-zinc-950/80 border border-white/10 hover:border-white/20"
+                    }`}
                   >
                     <div className="flex items-center gap-3.5">
-                      <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-105 transition-transform">
+                      <div className={`w-10 h-10 rounded-xl border flex items-center justify-center group-hover:scale-105 transition-transform ${
+                        !isAppleDevice
+                          ? "bg-blue-500/20 border-blue-500/30 text-blue-400"
+                          : "bg-white/5 border-white/10 text-zinc-400"
+                      }`}>
                         <CalendarIcon size={18} />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
                           <h4 className="text-xs font-bold text-white">Google 캘린더에 추가</h4>
-                          <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-[9px] font-bold text-blue-300 tracking-wide">Android / PC</span>
+                          <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wide ${
+                            !isAppleDevice
+                              ? "bg-blue-500/20 text-blue-300 border border-blue-500/30"
+                              : "bg-white/10 text-zinc-400"
+                          }`}>
+                            {!isAppleDevice ? "추천 · Android / PC" : "Android / PC"}
+                          </span>
                         </div>
                         <p className="text-[11px] text-zinc-400 mt-0.5">구글 캘린더 계정에 1클릭 실시간 동기화</p>
                       </div>
                     </div>
-                    <ExternalLink size={14} className="text-blue-400 group-hover:translate-x-0.5 transition-all mr-1" />
+                    <ExternalLink size={14} className={`${!isAppleDevice ? "text-blue-400" : "text-zinc-500 group-hover:text-white"} transition-colors mr-1`} />
                   </button>
                 </div>
 
