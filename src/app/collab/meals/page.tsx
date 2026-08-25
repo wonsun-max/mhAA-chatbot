@@ -74,8 +74,9 @@ export default function MealsPage() {
   };
 
   const handleGoogleCalendarWebSub = () => {
-    // Direct Google Calendar Web subscription with HTTPS feed URL
-    const googleSubUrl = `https://calendar.google.com/calendar/render?cid=${encodeURIComponent(feedUrl)}`;
+    // Google Calendar Web subscription requires webcal:// protocol in cid parameter
+    const webcalUrl = feedUrl.replace(/^https?:\/\//, "webcal://");
+    const googleSubUrl = `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(webcalUrl)}`;
     window.open(googleSubUrl, "_blank");
   };
 

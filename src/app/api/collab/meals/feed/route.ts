@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { generateIcsContent } from "@/lib/calendar-export";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET() {
     try {
         const meals = await prisma.schoolMeal.findMany({
@@ -23,7 +26,8 @@ export async function GET() {
             headers: {
                 "Content-Type": "text/calendar; charset=utf-8",
                 "Content-Disposition": 'inline; filename="mha-meals.ics"',
-                "Cache-Control": "public, max-age=1800, s-maxage=1800",
+                "Access-Control-Allow-Origin": "*",
+                "Cache-Control": "no-cache, no-store, must-revalidate",
             },
         });
     } catch (error) {

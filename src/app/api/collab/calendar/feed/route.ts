@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { generateIcsContent } from "@/lib/calendar-export";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET() {
     try {
         const events = await prisma.schoolCalendar.findMany({
@@ -24,7 +27,8 @@ export async function GET() {
             headers: {
                 "Content-Type": "text/calendar; charset=utf-8",
                 "Content-Disposition": 'inline; filename="mha-calendar.ics"',
-                "Cache-Control": "public, max-age=3600, s-maxage=3600",
+                "Access-Control-Allow-Origin": "*",
+                "Cache-Control": "no-cache, no-store, must-revalidate",
             },
         });
     } catch (error) {
