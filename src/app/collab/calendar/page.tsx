@@ -52,13 +52,18 @@ export default function CalendarPage() {
     fetchEvents();
   }, []);
 
-  const [isAppleDevice, setIsAppleDevice] = useState(false);
+  const [deviceType, setDeviceType] = useState<"apple" | "android" | "other">("other");
 
   useEffect(() => {
     if (typeof window !== "undefined" && typeof navigator !== "undefined") {
       const ua = navigator.userAgent || "";
-      const isApple = /iPhone|iPad|iPod|Macintosh|Mac OS X/i.test(ua);
-      setIsAppleDevice(isApple);
+      if (/iPhone|iPad|iPod|Macintosh|Mac OS X/i.test(ua)) {
+        setDeviceType("apple");
+      } else if (/Android/i.test(ua)) {
+        setDeviceType("android");
+      } else {
+        setDeviceType("other");
+      }
     }
   }, []);
 
@@ -450,78 +455,113 @@ export default function CalendarPage() {
               </div>
 
               <div className="space-y-4">
-                {/* 1-Click Dual Live Sync Options: Apple (iPhone/Mac) vs Google (Android/PC) */}
+                {/* 1-Click Multi-Platform Live Sync Options */}
                 <div className="space-y-2.5">
-                  <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider pl-1">원클릭 실시간 자동 동기화</p>
+                  <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider pl-1">원클릭 캘린더 동기화</p>
                   
-                  {/* Apple Calendar Button (iPhone / iPad / Mac) */}
+                  {/* Apple Calendar Button */}
                   <button
                     type="button"
                     onClick={handleAppleCalendarWebSub}
-                    className={`w-full p-4 rounded-2xl text-left transition-all group flex items-center justify-between shadow-lg ${
-                      isAppleDevice
+                    className={`w-full p-3.5 rounded-2xl text-left transition-all group flex items-center justify-between shadow-lg ${
+                      deviceType === "apple"
                         ? "bg-blue-950/30 border border-blue-500/40 hover:border-blue-500/60"
                         : "bg-zinc-950/80 border border-white/10 hover:border-white/20"
                     }`}
                   >
                     <div className="flex items-center gap-3.5">
-                      <div className={`w-10 h-10 rounded-xl border flex items-center justify-center group-hover:scale-105 transition-transform ${
-                        isAppleDevice
+                      <div className={`w-9 h-9 rounded-xl border flex items-center justify-center group-hover:scale-105 transition-transform ${
+                        deviceType === "apple"
                           ? "bg-blue-500/20 border-blue-500/30 text-blue-400"
                           : "bg-white/5 border-white/10 text-zinc-400"
                       }`}>
-                        <CalendarIcon size={18} />
+                        <CalendarIcon size={16} />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
                           <h4 className="text-xs font-bold text-white">Apple 캘린더에 추가</h4>
                           <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wide ${
-                            isAppleDevice
+                            deviceType === "apple"
                               ? "bg-blue-500/20 text-blue-300 border border-blue-500/30"
                               : "bg-white/10 text-zinc-400"
                           }`}>
-                            {isAppleDevice ? "추천 · iPhone / Mac" : "iPhone / Mac"}
+                            {deviceType === "apple" ? "추천 · iPhone / Mac" : "iPhone / Mac"}
                           </span>
                         </div>
                         <p className="text-[11px] text-zinc-400 mt-0.5">아이폰 기본 캘린더 앱에서 1초 만에 실시간 구독</p>
                       </div>
                     </div>
-                    <ExternalLink size={14} className={`${isAppleDevice ? "text-blue-400" : "text-zinc-500 group-hover:text-white"} transition-colors mr-1`} />
+                    <ExternalLink size={14} className={`${deviceType === "apple" ? "text-blue-400" : "text-zinc-500 group-hover:text-white"} transition-colors mr-1`} />
                   </button>
 
-                  {/* Google Calendar Button (Android / PC) */}
+                  {/* Samsung Calendar Button (Direct .ics open for Galaxy) */}
+                  <button
+                    type="button"
+                    onClick={() => handleDownloadIcs(false)}
+                    className={`w-full p-3.5 rounded-2xl text-left transition-all group flex items-center justify-between shadow-lg ${
+                      deviceType === "android"
+                        ? "bg-indigo-950/30 border border-indigo-500/40 hover:border-indigo-500/60"
+                        : "bg-zinc-950/80 border border-white/10 hover:border-white/20"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3.5">
+                      <div className={`w-9 h-9 rounded-xl border flex items-center justify-center group-hover:scale-105 transition-transform ${
+                        deviceType === "android"
+                          ? "bg-indigo-500/20 border-indigo-500/30 text-indigo-400"
+                          : "bg-white/5 border-white/10 text-zinc-400"
+                      }`}>
+                        <Download size={16} />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-xs font-bold text-white">삼성 캘린더에 추가</h4>
+                          <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wide ${
+                            deviceType === "android"
+                              ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
+                              : "bg-white/10 text-zinc-400"
+                          }`}>
+                            {deviceType === "android" ? "추천 · Galaxy 폰" : "Galaxy 폰"}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-zinc-400 mt-0.5">파일 1초 다운로드 후 삼성 캘린더 앱에 즉시 등록</p>
+                      </div>
+                    </div>
+                    <ExternalLink size={14} className={`${deviceType === "android" ? "text-indigo-400" : "text-zinc-500 group-hover:text-white"} transition-colors mr-1`} />
+                  </button>
+
+                  {/* Google Calendar Button */}
                   <button
                     type="button"
                     onClick={handleGoogleCalendarWebSub}
-                    className={`w-full p-4 rounded-2xl text-left transition-all group flex items-center justify-between shadow-lg ${
-                      !isAppleDevice
+                    className={`w-full p-3.5 rounded-2xl text-left transition-all group flex items-center justify-between shadow-lg ${
+                      deviceType === "other"
                         ? "bg-blue-950/30 border border-blue-500/40 hover:border-blue-500/60"
                         : "bg-zinc-950/80 border border-white/10 hover:border-white/20"
                     }`}
                   >
                     <div className="flex items-center gap-3.5">
-                      <div className={`w-10 h-10 rounded-xl border flex items-center justify-center group-hover:scale-105 transition-transform ${
-                        !isAppleDevice
+                      <div className={`w-9 h-9 rounded-xl border flex items-center justify-center group-hover:scale-105 transition-transform ${
+                        deviceType === "other"
                           ? "bg-blue-500/20 border-blue-500/30 text-blue-400"
                           : "bg-white/5 border-white/10 text-zinc-400"
                       }`}>
-                        <CalendarIcon size={18} />
+                        <CalendarIcon size={16} />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
                           <h4 className="text-xs font-bold text-white">Google 캘린더에 추가</h4>
                           <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wide ${
-                            !isAppleDevice
+                            deviceType === "other"
                               ? "bg-blue-500/20 text-blue-300 border border-blue-500/30"
                               : "bg-white/10 text-zinc-400"
                           }`}>
-                            {!isAppleDevice ? "추천 · Android / PC" : "Android / PC"}
+                            {deviceType === "other" ? "추천 · PC / Web" : "Android / PC"}
                           </span>
                         </div>
                         <p className="text-[11px] text-zinc-400 mt-0.5">구글 캘린더 계정에 1클릭 실시간 동기화</p>
                       </div>
                     </div>
-                    <ExternalLink size={14} className={`${!isAppleDevice ? "text-blue-400" : "text-zinc-500 group-hover:text-white"} transition-colors mr-1`} />
+                    <ExternalLink size={14} className={`${deviceType === "other" ? "text-blue-400" : "text-zinc-500 group-hover:text-white"} transition-colors mr-1`} />
                   </button>
                 </div>
 
