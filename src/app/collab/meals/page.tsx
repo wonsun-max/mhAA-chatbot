@@ -383,7 +383,7 @@ export default function MealsPage() {
                       <div>
                         <div className="flex items-center gap-2">
                           <h4 className="text-xs font-bold text-white">Apple 캘린더에 추가</h4>
-                          <span className="px-2 py-0.5 rounded-full bg-white/10 text-[9px] font-bold text-white tracking-wide">iPhone / Mac</span>
+                          <span className="px-2 py-0.5 rounded-full bg-white/10 text-[9px] font-bold text-white tracking-wide">애플 유저</span>
                         </div>
                         <p className="text-[11px] text-zinc-400 mt-0.5">아이폰 기본 캘린더 앱에서 1초 만에 급식표 실시간 구독</p>
                       </div>
@@ -404,7 +404,7 @@ export default function MealsPage() {
                       <div>
                         <div className="flex items-center gap-2">
                           <h4 className="text-xs font-bold text-white">Google 캘린더에 추가</h4>
-                          <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-[9px] font-bold text-emerald-300 tracking-wide">Android / PC</span>
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-[9px] font-bold text-emerald-300 tracking-wide">노트북 / 삼성폰</span>
                         </div>
                         <p className="text-[11px] text-zinc-400 mt-0.5">구글 캘린더 계정에 1클릭 실시간 동기화</p>
                       </div>
