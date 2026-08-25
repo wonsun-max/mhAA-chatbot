@@ -208,8 +208,8 @@ export default async function CollabPage() {
           <CollabCard
             href="/collab/chapel"
             title="수요채플 일정"
-            description="2026-2학기 매주 수요일 채플 주관(선교팀/학년) 및 설교자 일정표입니다."
-            badge="2026-2학기"
+            description="매주 수요일 채플 주관(선교팀/학년) 및 설교자 일정표입니다."
+            badge="채플 일정"
             icon={<Church className="w-6 h-6 text-indigo-400" />}
             accentColor="text-indigo-400"
             glowClass="bg-indigo-500/10"

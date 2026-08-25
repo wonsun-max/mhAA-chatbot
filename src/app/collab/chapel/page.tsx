@@ -75,7 +75,7 @@ export default function ChapelSchedulePage() {
           <span>콜라보 허브로 돌아가기</span>
         </Link>
         <span className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono font-bold">
-          2026-2학기 LIVE DB
+          채플 캘린더
         </span>
       </div>
 

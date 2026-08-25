@@ -102,7 +102,7 @@ export default function TeamsCommunityPage() {
           <span>콜라보 허브로 돌아가기</span>
         </Link>
         <span className="px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-mono font-bold">
-          2026 LIVE DB
+          공동체 편성
         </span>
       </div>
 
