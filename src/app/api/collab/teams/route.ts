@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { matchesStudentName } from "@/lib/hangul-search";
 
 export const dynamic = "force-dynamic";
 
@@ -8,34 +9,65 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const query = searchParams.get("query")?.trim();
 
-    // If search query is provided, perform live DB search across members
+    // 1. If search query is provided, perform Chosung + Substring + Given Name search across all DB members
     if (query) {
-      const [missionMember, qtMember] = await Promise.all([
-        prisma.missionTeamMember.findFirst({
-          where: { name: { equals: query, mode: "insensitive" } },
+      const [allMissionMembers, allQtMembers] = await Promise.all([
+        prisma.missionTeamMember.findMany({
           include: { team: true },
         }),
-        prisma.qtGroupMember.findFirst({
-          where: { name: { equals: query, mode: "insensitive" } },
+        prisma.qtGroupMember.findMany({
           include: { group: true },
         }),
       ]);
 
-      if (!missionMember && !qtMember) {
-        return NextResponse.json({ result: null });
-      }
+      // Collect unique student names matching query
+      const matchedNamesSet = new Set<string>();
 
-      return NextResponse.json({
-        result: {
-          name: query,
-          grade: missionMember?.grade || qtMember?.grade || 0,
-          missionTeam: missionMember ? { name: missionMember.team.name, role: missionMember.role } : null,
-          qtGroup: qtMember ? { name: qtMember.group.name, role: qtMember.role } : null,
-        },
+      allMissionMembers.forEach((m) => {
+        if (matchesStudentName(m.name, query)) {
+          matchedNamesSet.add(m.name);
+        }
       });
+
+      allQtMembers.forEach((q) => {
+        if (matchesStudentName(q.name, query)) {
+          matchedNamesSet.add(q.name);
+        }
+      });
+
+      const matchedResults = Array.from(matchedNamesSet).map((name) => {
+        const missionInfo = allMissionMembers.find((m) => m.name === name);
+        const qtInfo = allQtMembers.find((q) => q.name === name);
+
+        return {
+          name,
+          grade: missionInfo?.grade || qtInfo?.grade || 0,
+          missionTeam: missionInfo
+            ? {
+                name: missionInfo.team.name,
+                role: missionInfo.role,
+                chapelDate: missionInfo.team.chapelDate,
+                leaderName: missionInfo.team.leaderName,
+              }
+            : null,
+          qtGroup: qtInfo
+            ? {
+                name: qtInfo.group.name,
+                role: qtInfo.role,
+                leaderName: qtInfo.group.leaderName,
+                subLeaderName: qtInfo.group.subLeaderName,
+              }
+            : null,
+        };
+      });
+
+      // Sort by grade desc, then name asc
+      matchedResults.sort((a, b) => b.grade - a.grade || a.name.localeCompare(b.name, "ko"));
+
+      return NextResponse.json({ results: matchedResults });
     }
 
-    // Otherwise, return full lists of Mission Teams & QT Groups from DB
+    // 2. Otherwise, return full lists of Mission Teams & QT Groups from DB
     const [missionTeams, qtGroups] = await Promise.all([
       prisma.missionTeam.findMany({
         include: {

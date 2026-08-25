@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { 
   ChevronLeft, Sparkles, Search, HeartHandshake, 
-  BookOpen, Crown, Shield, X, Loader2
+  BookOpen, Crown, Shield, X, Loader2, UserCheck
 } from "lucide-react";
 
 interface Member {
@@ -33,11 +33,11 @@ interface QtGroupItem {
   members: Member[];
 }
 
-interface SearchResult {
+interface StudentResultItem {
   name: string;
   grade: number;
-  missionTeam: { name: string; role: string } | null;
-  qtGroup: { name: string; role: string } | null;
+  missionTeam: { name: string; role: string; chapelDate?: string; leaderName?: string } | null;
+  qtGroup: { name: string; role: string; leaderName?: string; subLeaderName?: string } | null;
 }
 
 export default function TeamsCommunityPage() {
@@ -47,7 +47,7 @@ export default function TeamsCommunityPage() {
 
   const [activeTab, setActiveTab] = useState<"MISSION" | "QT">("MISSION");
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
+  const [searchResults, setSearchResults] = useState<StudentResultItem[]>([]);
   const [searching, setSearching] = useState(false);
 
   // Load all teams and QT groups from DB API
@@ -67,10 +67,10 @@ export default function TeamsCommunityPage() {
     loadData();
   }, []);
 
-  // Live search debounced against PostgreSQL API
+  // Live search debounced against PostgreSQL API (supports Chosung, substring, given names)
   useEffect(() => {
     if (!searchQuery.trim()) {
-      setSearchResult(null);
+      setSearchResults([]);
       return;
     }
 
@@ -79,13 +79,13 @@ export default function TeamsCommunityPage() {
       try {
         const res = await fetch(`/api/collab/teams?query=${encodeURIComponent(searchQuery.trim())}`);
         const data = await res.json();
-        setSearchResult(data.result || null);
+        setSearchResults(data.results || []);
       } catch (err) {
         console.error("Search failed:", err);
       } finally {
         setSearching(false);
       }
-    }, 200);
+    }, 150);
 
     return () => clearTimeout(timer);
   }, [searchQuery]);
@@ -116,23 +116,28 @@ export default function TeamsCommunityPage() {
           QT조 & 선교팀 편성표
         </h1>
         <p className="text-sm sm:text-base text-zinc-400 font-light max-w-2xl leading-relaxed">
-          마한아 4대 선교팀과 8개 QT조 편성 명단입니다. 이름을 검색해 내 소속을 데이터베이스에서 실시간으로 조회하세요.
+          마한아 4대 선교팀과 8개 QT조 편성 명단입니다. 전체 이름, 성을 뺀 이름, 초성으로 내 소속을 0.1초 만에 검색하세요.
         </p>
       </div>
 
       {/* Smart Search Bar */}
       <div className="bg-zinc-900/40 backdrop-blur-xl border border-white/10 rounded-3xl p-5 sm:p-6 space-y-4 shadow-xl">
         <div className="space-y-1">
-          <label className="text-[11px] font-mono font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
-            <Search size={14} className="text-purple-400" />
-            <span>학생 이름으로 내 팀 & QT조 즉시 찾기 (PostgreSQL DB 연동)</span>
+          <label className="text-[11px] font-mono font-bold text-zinc-400 uppercase tracking-wider flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              <Search size={14} className="text-purple-400" />
+              <span>학생 이름 / 성 제외 / 초성 검색</span>
+            </span>
+            <span className="text-[10px] text-purple-400/80 font-normal">
+              초성(ㅇㅇㅅ, ㅎㅅㅁ) · 성 제외(원선, 승민) 지원
+            </span>
           </label>
           <div className="relative">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="학생 이름을 입력하세요 (예: 이원선, 하승민, 김현민, 박서정...)"
+              placeholder="이름/초성을 입력하세요 (예: 이원선, 원선, ㅇㅇㅅ, 하승민, 승민, ㅎㅅㅁ...)"
               className="w-full pl-4 pr-10 py-3.5 rounded-2xl bg-zinc-950/80 border border-white/10 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500 transition-all shadow-inner"
             />
             {searchQuery && (
@@ -146,62 +151,74 @@ export default function TeamsCommunityPage() {
           </div>
         </div>
 
-        {/* Live Search Result Card */}
+        {/* Live Search Results List */}
         {searchQuery.trim() && (
           <motion.div
             initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
-            className="pt-2"
+            className="pt-2 space-y-3"
           >
             {searching ? (
               <div className="p-4 rounded-xl bg-zinc-950/60 border border-white/5 flex items-center justify-center gap-2 text-xs text-zinc-400">
                 <Loader2 size={14} className="animate-spin text-purple-400" />
                 <span>데이터베이스 검색 중...</span>
               </div>
-            ) : searchResult ? (
-              <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-purple-950/40 to-blue-950/40 border border-purple-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-3.5">
-                  <div className="w-12 h-12 rounded-2xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-300 font-bold text-base shrink-0">
-                    {searchResult.name[0]}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h4 className="text-base sm:text-lg font-bold text-white">
-                        {searchResult.name}
-                      </h4>
-                      {searchResult.grade > 0 && (
-                        <span className="px-2 py-0.5 rounded-full bg-white/10 text-[10px] font-mono text-zinc-300">
-                          {searchResult.grade}학년
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-xs text-zinc-400 mt-0.5">
-                      DB 소속 정보를 찾았습니다
-                    </p>
-                  </div>
+            ) : searchResults.length > 0 ? (
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between text-[11px] font-mono text-zinc-400 px-1">
+                  <span>검색 결과 ({searchResults.length}명)</span>
                 </div>
+                <div className="grid grid-cols-1 gap-2.5">
+                  {searchResults.map((res, idx) => (
+                    <div
+                      key={idx}
+                      className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-purple-950/40 via-zinc-900/60 to-blue-950/40 border border-purple-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all hover:border-purple-500/50"
+                    >
+                      <div className="flex items-center gap-3.5">
+                        <div className="w-11 h-11 rounded-2xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-300 font-bold text-base shrink-0 shadow-inner">
+                          {res.name[0]}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h4 className="text-base font-bold text-white">
+                              {res.name}
+                            </h4>
+                            {res.grade > 0 && (
+                              <span className="px-2 py-0.5 rounded-full bg-white/10 text-[10px] font-mono text-zinc-300">
+                                {res.grade}학년
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[11px] text-zinc-400 mt-0.5">
+                            소속 정보
+                          </p>
+                        </div>
+                      </div>
 
-                <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3">
-                  <div className="p-2.5 sm:px-4 sm:py-2 rounded-xl bg-black/40 border border-white/10 text-center sm:text-left">
-                    <span className="text-[9px] font-mono text-zinc-500 uppercase block">선교팀</span>
-                    <span className="text-xs sm:text-sm font-bold text-blue-300">
-                      {searchResult.missionTeam?.name || "미지정"}
-                      {searchResult.missionTeam?.role && ` (${searchResult.missionTeam.role})`}
-                    </span>
-                  </div>
+                      <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3">
+                        <div className="p-2.5 sm:px-4 sm:py-2 rounded-xl bg-black/50 border border-white/10 text-center sm:text-left">
+                          <span className="text-[9px] font-mono text-zinc-500 uppercase block">선교팀</span>
+                          <span className="text-xs sm:text-sm font-bold text-blue-300">
+                            {res.missionTeam?.name || "미지정"}
+                            {res.missionTeam?.role && ` (${res.missionTeam.role})`}
+                          </span>
+                        </div>
 
-                  <div className="p-2.5 sm:px-4 sm:py-2 rounded-xl bg-black/40 border border-white/10 text-center sm:text-left">
-                    <span className="text-[9px] font-mono text-zinc-500 uppercase block">QT조</span>
-                    <span className="text-xs sm:text-sm font-bold text-purple-300">
-                      {searchResult.qtGroup?.name || "미지정"}
-                      {searchResult.qtGroup?.role && ` (${searchResult.qtGroup.role})`}
-                    </span>
-                  </div>
+                        <div className="p-2.5 sm:px-4 sm:py-2 rounded-xl bg-black/50 border border-white/10 text-center sm:text-left">
+                          <span className="text-[9px] font-mono text-zinc-500 uppercase block">QT조</span>
+                          <span className="text-xs sm:text-sm font-bold text-purple-300">
+                            {res.qtGroup?.name || "미지정"}
+                            {res.qtGroup?.role && ` (${res.qtGroup.role})`}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             ) : (
               <div className="p-4 rounded-xl bg-zinc-950/60 border border-white/5 text-center text-xs text-zinc-500">
-                &ldquo;{searchQuery}&rdquo; 학생의 편성 정보를 찾을 수 없습니다. 이름이 정확한지 확인해 주세요.
+                &ldquo;{searchQuery}&rdquo; 일치하는 학생 정보를 찾을 수 없습니다. 이름이나 초성을 다시 확인해 주세요.
               </div>
             )}
           </motion.div>

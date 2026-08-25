@@ -5,6 +5,7 @@ import type { Prisma } from "@prisma/client";
 import { getAcademicSemester, getAcademicYear } from "@/lib/academic-calendar";
 import { matchesExamGrade } from "@/lib/exam-grade";
 import { searchKnowledge } from "@/lib/ai/knowledge";
+import { matchesStudentName } from "@/lib/hangul-search";
 
 /**
  * Normalizes a date string to YYYY-MM-DD format.
@@ -47,7 +48,7 @@ function toIsoDate(year: number, date: string): string | null {
 
 /**
  * Retrieval tools for the WITHUS AI Assistant.
- * 100% Database-driven via Prisma / PostgreSQL.
+ * 100% Database-driven via Prisma / PostgreSQL with Hangul Chosung and substring search.
  */
 export const aiTools = {
     getEvents: tool({
@@ -236,48 +237,56 @@ export const aiTools = {
         },
     }),
     getTeamMemberships: tool({
-        description: "Search student community membership in Mission Teams (4대 선교팀: 글로벌, 동아시아, 필리핀 1, 필리핀 2) and QT Groups (8대 QT조: 1조~8조). Query by student name to find their assigned mission team and QT group, or query by team/group name to get full member rosters.",
+        description: "Search student community membership in Mission Teams (4대 선교팀: 글로벌, 동아시아, 필리핀 1, 필리핀 2) and QT Groups (8대 QT조: 1조~8조). Supports student full name (이원선), given name without family name (원선), and Chosung initials (ㅇㅇㅅ, ㅎㅅㅁ). Also supports team/group roster lookup.",
         inputSchema: zodSchema(z.object({
-            studentName: z.string().optional().describe("Student's Korean name (e.g., '김현민', '하승민', '이원선') to get their team and QT group"),
+            studentName: z.string().optional().describe("Student's name, given name, or Chosung (e.g., '이원선', '원선', 'ㅇㅇㅅ', '하승민', '승민', 'ㅎㅅㅁ')"),
             missionTeamName: z.string().optional().describe("Mission team name (e.g., '글로벌팀', '동아시아팀', '필리핀 1팀', '필리핀 2팀') to get team leader and members"),
             qtGroupName: z.string().optional().describe("QT group name (e.g., '1조', '2조', ..., '8조') to get group leader, sub-leader, and members"),
         })),
         execute: async ({ studentName, missionTeamName, qtGroupName }) => {
-            // 1. Search by student name
+            // 1. Search by student name (Full name, Given name, or Chosung)
             if (studentName && studentName.trim()) {
-                const name = studentName.trim();
-                const [missionMember, qtMember] = await Promise.all([
-                    prisma.missionTeamMember.findFirst({
-                        where: { name: { equals: name, mode: 'insensitive' } },
-                        include: { team: true },
-                    }),
-                    prisma.qtGroupMember.findFirst({
-                        where: { name: { equals: name, mode: 'insensitive' } },
-                        include: { group: true },
-                    }),
+                const query = studentName.trim();
+                const [allMissionMembers, allQtMembers] = await Promise.all([
+                    prisma.missionTeamMember.findMany({ include: { team: true } }),
+                    prisma.qtGroupMember.findMany({ include: { group: true } }),
                 ]);
 
-                if (!missionMember && !qtMember) {
-                    return { found: false, message: `"${name}" 학생의 선교팀 및 QT조 편성 정보를 찾지 못했습니다.` };
+                // Match by full name, given name, or Chosung
+                const matchedMission = allMissionMembers.filter(m => matchesStudentName(m.name, query));
+                const matchedQt = allQtMembers.filter(q => matchesStudentName(q.name, query));
+
+                const matchedNames = Array.from(new Set([
+                    ...matchedMission.map(m => m.name),
+                    ...matchedQt.map(q => q.name)
+                ]));
+
+                if (matchedNames.length === 0) {
+                    return { found: false, message: `"${query}" 학생의 선교팀 및 QT조 편성 정보를 찾지 못했습니다.` };
                 }
 
-                return {
-                    found: true,
-                    name,
-                    grade: missionMember?.grade || qtMember?.grade || 0,
-                    missionTeam: missionMember ? {
-                        name: missionMember.team.name,
-                        role: missionMember.role,
-                        chapelDate: missionMember.team.chapelDate,
-                        teamLeader: `${missionMember.team.leaderName} (${missionMember.team.leaderGrade}학년)`,
-                    } : null,
-                    qtGroup: qtMember ? {
-                        name: qtMember.group.name,
-                        role: qtMember.role,
-                        leader: `${qtMember.group.leaderName} (${qtMember.group.leaderGrade}학년)`,
-                        subLeader: `${qtMember.group.subLeaderName} (${qtMember.group.subLeaderGrade}학년)`,
-                    } : null,
-                };
+                const results = matchedNames.map(name => {
+                    const mM = allMissionMembers.find(m => m.name === name);
+                    const qM = allQtMembers.find(q => q.name === name);
+                    return {
+                        name,
+                        grade: mM?.grade || qM?.grade || 0,
+                        missionTeam: mM ? {
+                            name: mM.team.name,
+                            role: mM.role,
+                            chapelDate: mM.team.chapelDate,
+                            leader: `${mM.team.leaderName} (${mM.team.leaderGrade}학년)`,
+                        } : null,
+                        qtGroup: qM ? {
+                            name: qM.group.name,
+                            role: qM.role,
+                            leader: `${qM.group.leaderName} (${qM.group.leaderGrade}학년)`,
+                            subLeader: `${qM.group.subLeaderName} (${qM.group.subLeaderGrade}학년)`,
+                        } : null,
+                    };
+                });
+
+                return { found: true, totalMatched: results.length, students: results };
             }
 
             // 2. Search by Mission Team
