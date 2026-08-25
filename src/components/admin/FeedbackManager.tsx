@@ -211,7 +211,7 @@ export function FeedbackManager() {
                         placeholder="내용, 이메일, 닉네임 검색"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full bg-zinc-900/60 border border-white/5 rounded-2xl py-2.5 pl-11 pr-4 text-xs text-white focus:outline-none focus:ring-1 focus:ring-white/20"
+                        className="w-full bg-zinc-900/60 border border-white/5 rounded-2xl py-2.5 pl-11 pr-4 text-base sm:text-xs text-white focus:outline-none focus:ring-1 focus:ring-white/20"
                     />
                 </div>
             </div>
@@ -288,7 +288,7 @@ export function FeedbackManager() {
                                     </div>
 
                                     {/* Main Content Text */}
-                                    <p className="text-sm text-zinc-200 leading-relaxed whitespace-pre-wrap">
+                                    <p className="text-sm text-zinc-200 leading-relaxed whitespace-pre-wrap break-words overflow-hidden">
                                         {item.content}
                                     </p>
 

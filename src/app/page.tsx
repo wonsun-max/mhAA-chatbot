@@ -32,10 +32,10 @@ export default function Home() {
               WITHUS.
             </p>
             <div className="flex flex-wrap gap-4 pt-4">
-              <Link href="/chatbot" className="px-8 py-3 bg-white text-black text-[11px] uppercase tracking-[0.2em] font-bold hover:bg-zinc-200 transition-all">
+              <Link href="/chatbot" className="w-full sm:w-auto justify-center min-h-[44px] px-8 py-3 bg-white text-black text-[11px] uppercase tracking-[0.2em] font-bold hover:bg-zinc-200 transition-all">
                 대화 시작하기
               </Link>
-              <Link href="/notices" className="px-8 py-3 border border-white/10 text-[11px] uppercase tracking-[0.2em] font-light hover:bg-white/5 transition-all">
+              <Link href="/notices" className="w-full sm:w-auto justify-center min-h-[44px] px-8 py-3 border border-white/10 text-[11px] uppercase tracking-[0.2em] font-light hover:bg-white/5 transition-all">
                 포털 보기
               </Link>
             </div>
@@ -52,14 +52,14 @@ export default function Home() {
           >
             <div className="flex items-center gap-3 text-white/30">
               <Sparkles size={16} />
-              <span className="text-[10px] uppercase tracking-[0.3em]">오늘의 인사이트</span>
+              <span className="text-[11px] uppercase tracking-[0.3em]">오늘의 인사이트</span>
             </div>
 
             <blockquote className="space-y-4">
               <p className="text-xl md:text-2xl font-serif italic text-white/80 leading-relaxed font-light">
                 &ldquo;이스라엘아 들으라 우리 하나님 여호와는 오직 유일한 여호와이시니 너는 마음을 다하고 뜻을 다하고 힘을 다하여 네 하나님 여호와를 사랑하라.&rdquo;
               </p>
-              <p className="text-[10px] text-white/20 uppercase tracking-[0.4em] font-bold">신명기 6:4-5</p>
+              <p className="text-[11px] text-white/20 uppercase tracking-[0.4em] font-bold">신명기 6:4-5</p>
             </blockquote>
           </motion.div>
         </section>
@@ -68,17 +68,17 @@ export default function Home() {
         <NoticesFeed />
 
         {/* Footer Minimal */}
-        <footer className="py-24 space-y-8">
+        <footer className="py-12 md:py-24 space-y-8">
           <div className="space-y-2">
-            <p className="text-[9px] uppercase tracking-[0.5em] text-white/10 font-bold">WITHUS MHA (withusmha)</p>
-            <p className="text-[9px] text-white/10 font-light max-w-xs leading-loose">
+            <p className="text-[11px] uppercase tracking-[0.5em] text-white/10 font-bold">WITHUS MHA (withusmha)</p>
+            <p className="text-[11px] text-white/10 font-light max-w-xs leading-loose">
               마닐라한국아카데미(MHA) 학생들의 학교 생활 편의와 지능형 소통 지원을 위해 운영됩니다.
             </p>
           </div>
 
-          <div className="flex items-center gap-8 pt-8">
+          <div className="flex items-center gap-4 sm:gap-8 flex-wrap pt-8">
             {["공지사항", "개인정보처리방침", "이용약관"].map((l) => (
-              <Link key={l} href={`/${l === "공지사항" ? "notices" : l === "개인정보처리방침" ? "privacy" : "terms"}`} className="text-[9px] uppercase tracking-widest text-white/20 hover:text-white transition-colors">
+              <Link key={l} href={`/${l === "공지사항" ? "notices" : l === "개인정보처리방침" ? "privacy" : "terms"}`} className="text-[11px] uppercase tracking-widest text-white/20 hover:text-white transition-colors">
                 {l}
               </Link>
             ))}

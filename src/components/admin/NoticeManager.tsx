@@ -116,7 +116,7 @@ export function NoticeManager() {
                             </div>
                             <h3 className="font-medium text-lg text-white/90">{notice.title}</h3>
                         </div>
-                        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex items-center gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                             <button onClick={() => openEdit(notice)} className="p-2 text-zinc-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"><Edit3 size={18} /></button>
                             <button onClick={() => handleDelete(notice.id)} className="p-2 text-red-500/50 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"><Trash2 size={18} /></button>
                         </div>

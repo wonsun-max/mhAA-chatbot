@@ -107,7 +107,7 @@ export default function SignupPage() {
     const stepLabels = ["이메일", "코드 인증", "정보 입력", "완료"]
 
     return (
-        <div className="min-h-[100dvh] bg-black text-white flex items-center justify-center p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/10 via-black to-black overflow-y-auto">
+        <div className="min-h-[100dvh] bg-black text-white flex items-center justify-center p-4 sm:p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/10 via-black to-black overflow-y-auto">
             <div className="w-full max-w-md py-8">
                 <div className="text-center mb-6 md:mb-10">
                     <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">WITHUS</h1>
@@ -132,14 +132,14 @@ export default function SignupPage() {
                                     <span className={`text-[9px] uppercase tracking-wider ${isActive ? "text-blue-400" : "text-zinc-600"}`}>{label}</span>
                                 </div>
                                 {i < stepLabels.length - 1 && (
-                                    <div className={`w-8 h-px mx-2 mb-4 ${step > s ? "bg-green-500/50" : "bg-zinc-800"}`} />
+                                    <div className={`w-3 sm:w-8 h-px mx-1 sm:mx-2 mb-4 ${step > s ? "bg-green-500/50" : "bg-zinc-800"}`} />
                                 )}
                             </div>
                         )
                     })}
                 </div>
 
-                <div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-3xl p-8 shadow-2xl">
+                <div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-3xl p-5 sm:p-8 shadow-2xl">
                     <AnimatePresence mode="wait">
 
                         {/* ───── STEP 1: Email + Agreement ───── */}
@@ -221,7 +221,7 @@ export default function SignupPage() {
                                         maxLength={6}
                                         value={code}
                                         onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-                                        className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl py-4 px-4 text-center text-2xl tracking-[0.5em] font-bold focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                                        className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl py-4 px-4 text-center text-2xl tracking-[0.3em] sm:tracking-[0.5em] font-bold focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
                                         placeholder="000000"
                                     />
                                 </div>

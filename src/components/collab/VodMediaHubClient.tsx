@@ -22,7 +22,7 @@ export function ChannelShelfSection({ group }: { group: ChannelGroup }) {
                             {group.name}
                         </h2>
                     </div>
-                    <p className="text-xs text-zinc-500 font-mono pl-11">{group.handle}</p>
+                    <p className="text-xs text-zinc-500 font-mono pl-0 sm:pl-11">{group.handle}</p>
                 </div>
 
                 <a
@@ -112,7 +112,7 @@ export function ChannelShelfSection({ group }: { group: ChannelGroup }) {
                             </p>
                         </div>
 
-                        <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-black text-xs font-bold transition-all shadow-lg group-hover:bg-zinc-200">
+                        <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-black text-xs font-bold transition-all shadow-lg group-hover:bg-zinc-200 w-full sm:w-auto justify-center text-center">
                             <Youtube size={14} className="text-red-600" />
                             <span>YouTube에서 모든 영상 보기</span>
                             <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
@@ -131,7 +131,7 @@ export function ChannelShelfSection({ group }: { group: ChannelGroup }) {
                             initial={{ opacity: 0, scale: 0.96 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.96 }}
-                            className="w-full max-w-4xl bg-zinc-950 border border-white/10 rounded-3xl overflow-hidden shadow-2xl relative z-10 space-y-4 p-4 sm:p-6"
+                            className="w-full max-w-4xl bg-zinc-950 border border-white/10 rounded-3xl overflow-hidden shadow-2xl relative z-10 space-y-4 p-4 sm:p-6 max-h-[calc(100dvh-2rem)] overflow-y-auto"
                         >
                             {/* Modal Header */}
                             <div className="flex items-center justify-between pb-3 border-b border-white/5">
@@ -140,7 +140,7 @@ export function ChannelShelfSection({ group }: { group: ChannelGroup }) {
                                 </h4>
                                 <button
                                     onClick={() => setActiveVideo(null)}
-                                    className="p-1.5 text-zinc-400 hover:text-white rounded-xl hover:bg-white/5 transition-colors"
+                                    className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-zinc-400 hover:text-white rounded-xl hover:bg-white/5 transition-colors"
                                 >
                                     <X size={18} />
                                 </button>
@@ -158,7 +158,7 @@ export function ChannelShelfSection({ group }: { group: ChannelGroup }) {
                             </div>
 
                             {/* Modal Footer */}
-                            <div className="flex items-center justify-between pt-1">
+                            <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center justify-between pt-1">
                                 <span className="text-xs text-zinc-500 font-mono">{group.handle}</span>
                                 <a
                                     href={activeVideo.videoUrl}

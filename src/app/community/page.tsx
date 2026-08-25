@@ -91,7 +91,7 @@ export default function CommunityBoard() {
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-white/30 selection:text-white pt-24 pb-20">
-      <div className="max-w-[1000px] mx-auto px-6 lg:px-12">
+      <div className="max-w-[1000px] mx-auto px-4 sm:px-6 lg:px-12">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 md:mb-12 space-y-6 md:space-y-0 relative z-10">
           <div>
@@ -166,7 +166,7 @@ export default function CommunityBoard() {
                     key={post.id}
                   >
                     <Link href={`/community/${post.id}`} className="block">
-                      <div className="group grid grid-cols-1 md:grid-cols-12 gap-4 px-6 md:px-8 py-5 border-b border-white/[0.05] hover:bg-white/[0.04] transition-colors items-center relative overflow-hidden">
+                      <div className="group grid grid-cols-1 md:grid-cols-12 gap-4 px-4 py-4 md:px-8 md:py-5 border-b border-white/[0.05] hover:bg-white/[0.04] transition-colors items-center relative overflow-hidden">
                         
                         {/* Title & Mobile Meta */}
                         <div className="col-span-1 md:col-span-6 lg:col-span-7">
@@ -180,7 +180,7 @@ export default function CommunityBoard() {
                             )}
                           </h3>
                           {/* Mobile Only Meta */}
-                          <div className="flex items-center gap-4 mt-2 md:hidden text-xs text-white/40">
+                          <div className="flex items-center gap-2 sm:gap-4 flex-wrap mt-2 md:hidden text-xs text-white/40">
                             <span className="truncate max-w-[100px]">{post.authorNickname}</span>
                             <span>{formatDate(post.createdAt)}</span>
                             <div className="flex items-center gap-3 ml-auto">

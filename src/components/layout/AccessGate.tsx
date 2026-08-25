@@ -27,7 +27,7 @@ export function AccessGate({
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ delay: 0.1, type: "spring", stiffness: 100 }}
-                className="relative max-w-lg w-full glass p-10 md:p-12 rounded-[3rem] border border-white/10 shadow-2xl text-center space-y-8 overflow-hidden"
+                className="relative max-w-lg w-full glass p-6 sm:p-10 md:p-12 rounded-3xl sm:rounded-[3rem] border border-white/10 shadow-2xl text-center space-y-8 overflow-hidden max-h-[calc(100dvh-2rem)] overflow-y-auto"
             >
                 {/* Decorative Background Glow */}
                 <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-500/10 blur-[80px] rounded-full" />

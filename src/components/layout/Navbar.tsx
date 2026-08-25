@@ -121,7 +121,7 @@ export function Navbar() {
                         <div className="lg:hidden flex items-center">
                             <button
                                 onClick={() => setIsOpen(!isOpen)}
-                                className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/5 transition-colors"
+                                className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-white/60 hover:text-white hover:bg-white/5 transition-colors"
                             >
                                 {isOpen ? <X size={24} /> : <Menu size={24} />}
                             </button>
@@ -137,9 +137,9 @@ export function Navbar() {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="lg:hidden border-t border-white/5 bg-black/98 backdrop-blur-2xl overflow-hidden"
+                        className="lg:hidden border-t border-white/5 bg-black/98 backdrop-blur-2xl max-h-[calc(100dvh-5rem)] overflow-y-auto"
                     >
-                        <div className="px-8 pt-8 pb-12 space-y-6">
+                        <div className="px-6 sm:px-8 pt-8 pb-12 space-y-6">
                             {navLinks.map((link) => (
                                 <Link
                                     key={link.name}

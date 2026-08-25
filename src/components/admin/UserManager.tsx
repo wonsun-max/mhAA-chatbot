@@ -49,7 +49,7 @@ export function UserManager() {
 
     return (
         <div className="space-y-8">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                     <h2 className="text-2xl font-bold tracking-tight">사용자 승인</h2>
                     <p className="text-sm text-zinc-500">대기 중인 등록 관리</p>
@@ -84,7 +84,7 @@ export function UserManager() {
                         key={user.id}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="bg-zinc-900/20 border border-white/5 rounded-2xl p-6 flex items-center justify-between group hover:border-white/10 transition-colors"
+                        className="bg-zinc-900/20 border border-white/5 rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group hover:border-white/10 transition-colors"
                     >
                         <div className="flex items-center gap-4">
                             <div className="w-12 h-12 bg-blue-500/10 rounded-full flex items-center justify-center text-blue-500">

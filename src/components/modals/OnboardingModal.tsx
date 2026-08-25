@@ -184,7 +184,7 @@ export function OnboardingModal() {
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
                                     placeholder="홍길동"
-                                    className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                                    className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl py-3.5 pl-11 pr-4 text-base sm:text-sm text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
                                 />
                             </div>
                         </div>
@@ -201,7 +201,7 @@ export function OnboardingModal() {
                                     value={nickname}
                                     onChange={(e) => setNickname(e.target.value)}
                                     placeholder="사용할 닉네임 입력"
-                                    className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                                    className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl py-3.5 pl-11 pr-4 text-base sm:text-sm text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
                                 />
                             </div>
                         </div>
@@ -217,7 +217,7 @@ export function OnboardingModal() {
                                             required
                                             value={grade}
                                             onChange={(e) => setGrade(e.target.value)}
-                                            className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none appearance-none"
+                                            className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl py-3.5 pl-11 pr-4 text-base sm:text-sm text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none appearance-none"
                                         >
                                             <option value="">학년 선택</option>
                                             {grades.map((g) => (
@@ -234,7 +234,7 @@ export function OnboardingModal() {
                                         <select
                                             value={qtGroup}
                                             onChange={(e) => setQtGroup(e.target.value)}
-                                            className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none appearance-none"
+                                            className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl py-3.5 pl-11 pr-4 text-base sm:text-sm text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none appearance-none"
                                         >
                                             <option value="">QT조 선택 (선택 사항)</option>
                                             {qtGroups.map((group) => (

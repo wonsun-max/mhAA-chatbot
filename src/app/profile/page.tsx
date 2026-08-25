@@ -123,7 +123,7 @@ export default function ProfilePage() {
 
     if (!session) return null
 
-    const currentUser = session.user
+    const currentUser = session.user as any
 
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -149,7 +149,7 @@ export default function ProfilePage() {
                 <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/10 blur-[120px] rounded-full" />
             </div>
 
-            <div className="max-w-4xl mx-auto px-6 pt-32 pb-24 relative z-10">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-24 pb-16 relative z-10">
                 <motion.div
                     variants={containerVariants}
                     initial="hidden"
@@ -192,7 +192,7 @@ export default function ProfilePage() {
                     <div className="grid grid-cols-1 gap-8 md:gap-12">
                         {/* Main Account Section */}
                         <motion.div variants={itemVariants} className="space-y-6">
-                            <div className="glass-panel p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-white/5 bg-zinc-950/30 backdrop-blur-2xl">
+                            <div className="glass-panel p-5 sm:p-8 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-white/5 bg-zinc-950/30 backdrop-blur-2xl">
                                 <div className="flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-10">
                                     {/* Avatar Column */}
                                     <div className="flex flex-col items-center space-y-4">
@@ -239,13 +239,13 @@ export default function ProfilePage() {
                                                             <button 
                                                                 onClick={() => handleUpdate({ nickname: newNickname })}
                                                                 disabled={isSaving}
-                                                                className="p-2 bg-blue-500 rounded-xl hover:bg-blue-600 transition-colors"
+                                                                className="p-2.5 bg-blue-500 rounded-xl hover:bg-blue-600 transition-colors"
                                                             >
                                                                 <CheckCircle2 size={16} />
                                                             </button>
                                                             <button 
                                                                 onClick={() => setIsEditingNickname(false)}
-                                                                className="p-2 bg-zinc-800 rounded-xl hover:bg-zinc-700 transition-colors"
+                                                                className="p-2.5 bg-zinc-800 rounded-xl hover:bg-zinc-700 transition-colors"
                                                             >
                                                                 <X size={16} />
                                                             </button>
@@ -264,7 +264,7 @@ export default function ProfilePage() {
                                                                     setNewNickname(currentUser.nickname || "")
                                                                     setIsEditingNickname(true)
                                                                 }}
-                                                                className="p-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 bg-white/5 hover:bg-white/10 rounded-lg transition-all text-zinc-400 hover:text-white"
+                                                                className="p-2.5 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 bg-white/5 hover:bg-white/10 rounded-lg transition-all text-zinc-400 hover:text-white"
                                                             >
                                                                 <Edit3 size={14} />
                                                             </button>
@@ -299,13 +299,13 @@ export default function ProfilePage() {
                                                             <button 
                                                                 onClick={() => handleUpdate({ grade: newGrade })}
                                                                 disabled={isSaving}
-                                                                className="p-2 bg-blue-500 rounded-xl hover:bg-blue-600 transition-colors"
+                                                                className="p-2.5 bg-blue-500 rounded-xl hover:bg-blue-600 transition-colors"
                                                             >
                                                                 <CheckCircle2 size={16} />
                                                             </button>
                                                             <button 
                                                                 onClick={() => setIsEditingGrade(false)}
-                                                                className="p-2 bg-zinc-800 rounded-xl hover:bg-zinc-700 transition-colors"
+                                                                className="p-2.5 bg-zinc-800 rounded-xl hover:bg-zinc-700 transition-colors"
                                                             >
                                                                 <X size={16} />
                                                             </button>
@@ -324,7 +324,7 @@ export default function ProfilePage() {
                                                                     setNewGrade(currentUser.grade || "")
                                                                     setIsEditingGrade(true)
                                                                 }}
-                                                                className="p-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 bg-white/5 hover:bg-white/10 rounded-lg transition-all text-zinc-400 hover:text-white"
+                                                                className="p-2.5 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 bg-white/5 hover:bg-white/10 rounded-lg transition-all text-zinc-400 hover:text-white"
                                                             >
                                                                 <Edit3 size={14} />
                                                             </button>
@@ -359,13 +359,13 @@ export default function ProfilePage() {
                                                             <button 
                                                                 onClick={() => handleUpdate({ qtGroup: newQtGroup })}
                                                                 disabled={isSaving}
-                                                                className="p-2 bg-blue-500 rounded-xl hover:bg-blue-600 transition-colors"
+                                                                className="p-2.5 bg-blue-500 rounded-xl hover:bg-blue-600 transition-colors"
                                                             >
                                                                 <CheckCircle2 size={16} />
                                                             </button>
                                                             <button 
                                                                 onClick={() => setIsEditingQtGroup(false)}
-                                                                className="p-2 bg-zinc-800 rounded-xl hover:bg-zinc-700 transition-colors"
+                                                                className="p-2.5 bg-zinc-800 rounded-xl hover:bg-zinc-700 transition-colors"
                                                             >
                                                                 <X size={16} />
                                                             </button>
@@ -384,7 +384,7 @@ export default function ProfilePage() {
                                                                     setNewQtGroup(currentUser.qtGroup || "")
                                                                     setIsEditingQtGroup(true)
                                                                 }}
-                                                                className="p-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 bg-white/5 hover:bg-white/10 rounded-lg transition-all text-zinc-400 hover:text-white"
+                                                                className="p-2.5 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 bg-white/5 hover:bg-white/10 rounded-lg transition-all text-zinc-400 hover:text-white"
                                                             >
                                                                 <Edit3 size={14} />
                                                             </button>
@@ -479,7 +479,7 @@ export default function ProfilePage() {
                                             <Link 
                                                 key={post.id} 
                                                 href={`/community/${post.id}`}
-                                                className="flex flex-col md:flex-row md:items-center justify-between p-6 md:p-8 hover:bg-white/[0.02] transition-colors group"
+                                                className="flex flex-col md:flex-row md:items-center justify-between p-4 sm:p-6 md:p-8 hover:bg-white/[0.02] transition-colors group"
                                             >
                                                 <div className="space-y-2 flex-1">
                                                     <h4 className="text-lg font-bold text-zinc-200 group-hover:text-white transition-colors leading-tight">

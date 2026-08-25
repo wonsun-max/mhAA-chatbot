@@ -112,7 +112,7 @@ export default async function VodPage() {
   );
 
   return (
-    <div className="min-h-screen pt-32 pb-32 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-16">
+    <div className="min-h-screen pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-10">
       {/* Top Header */}
       <div className="space-y-6">
         <Link
@@ -136,7 +136,7 @@ export default async function VodPage() {
       <div className="w-full h-px bg-white/5" />
 
       {/* 4 Live Channel Shelves (Auto-updated from YouTube) */}
-      <div className="space-y-20">
+      <div className="space-y-12 sm:space-y-20">
         {channelGroups.map((group) => (
           <ChannelShelfSection key={group.id} group={group} />
         ))}

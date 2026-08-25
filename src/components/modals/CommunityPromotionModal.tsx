@@ -80,7 +80,7 @@ export function CommunityPromotionModal() {
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.95, opacity: 0, y: 10 }}
                         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                        className="relative w-full max-w-lg max-h-[calc(100vh-2rem)] overflow-y-auto rounded-3xl border border-white/10 bg-zinc-900/40 p-1 shadow-2xl backdrop-blur-2xl scrollbar-hide"
+                        className="relative w-full max-w-lg max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-3xl border border-white/10 bg-zinc-900/40 p-1 shadow-2xl backdrop-blur-2xl scrollbar-hide"
                     >
                         {/* Interactive AI-like Background Glows */}
                         <div className="absolute -top-32 -right-32 h-64 w-64 rounded-full bg-cyan-500/20 blur-[80px] pointer-events-none animate-pulse" />
@@ -157,13 +157,13 @@ export function CommunityPromotionModal() {
                             <div className="flex items-center justify-between pt-4">
                                 <button
                                     onClick={closeForADay}
-                                    className="text-xs text-zinc-500 hover:text-white transition-colors cursor-pointer"
+                                    className="text-xs text-zinc-500 hover:text-white transition-colors cursor-pointer py-2.5 min-h-[44px] flex items-center"
                                 >
                                     24시간 동안 보지 않기
                                 </button>
                                 <button
                                     onClick={closeBase}
-                                    className="text-sm font-medium text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                                    className="text-sm font-medium text-zinc-400 hover:text-white transition-colors cursor-pointer py-2.5 min-h-[44px] flex items-center"
                                 >
                                     닫기
                                 </button>

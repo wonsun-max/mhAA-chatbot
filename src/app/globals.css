@@ -23,6 +23,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 /* ── iOS Safe Area Utilities ── */
@@ -69,5 +70,5 @@ html {
 
 /* --- Maintained Utilities --- */
 @utility bento-card {
-  @apply glass rounded-2xl p-8 transition-all duration-300 hover:border-white/20 hover:bg-white/5;
+  @apply glass rounded-2xl p-5 sm:p-8 transition-all duration-300 hover:border-white/20 hover:bg-white/5;
 }

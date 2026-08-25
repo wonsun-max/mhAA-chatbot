@@ -15,9 +15,9 @@ export default async function CollabPage() {
   const qtGroup = session?.user?.qtGroup;
   
   return (
-    <div className="min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+    <div className="min-h-screen pt-24 sm:pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
       {/* Hero Section */}
-      <div className="text-center mb-20">
+      <div className="text-center mb-12 sm:mb-20">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/50 text-xs font-medium mb-6 tracking-wider uppercase">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
           School Life Hub
@@ -55,7 +55,7 @@ export default async function CollabPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Meal Service Card */}
         <Link href="/collab/meals" className="group">
-          <div className="h-full bg-zinc-900/30 backdrop-blur-sm rounded-[2.5rem] p-8 border border-white/5 hover:border-amber-500/30 transition-all duration-500 relative overflow-hidden">
+          <div className="h-full bg-zinc-900/30 backdrop-blur-sm rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-8 border border-white/5 hover:border-amber-500/30 transition-all duration-500 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 blur-[50px] rounded-full group-hover:bg-amber-500/10 transition-colors" />
             
             <div className="w-14 h-14 rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500">
@@ -65,7 +65,7 @@ export default async function CollabPage() {
             <div className="flex justify-between items-end">
               <div>
                 <h3 className="text-2xl font-bold text-white mb-2">오늘의 급식</h3>
-                <p className="text-zinc-500 font-medium text-sm leading-relaxed max-w-[240px]">
+                <p className="text-zinc-500 font-medium text-sm leading-relaxed max-w-xs sm:max-w-[240px]">
                   주간 식단표와 오늘의 점심 메뉴를 실시간으로 확인하세요.
                 </p>
               </div>
@@ -78,7 +78,7 @@ export default async function CollabPage() {
 
         {/* Academic Calendar Card */}
         <Link href="/collab/calendar" className="group">
-          <div className="h-full bg-zinc-900/30 backdrop-blur-sm rounded-[2.5rem] p-8 border border-white/5 hover:border-blue-500/30 transition-all duration-500 relative overflow-hidden">
+          <div className="h-full bg-zinc-900/30 backdrop-blur-sm rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-8 border border-white/5 hover:border-blue-500/30 transition-all duration-500 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 blur-[50px] rounded-full group-hover:bg-blue-500/10 transition-colors" />
             
             <div className="w-14 h-14 rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500">
@@ -88,7 +88,7 @@ export default async function CollabPage() {
             <div className="flex justify-between items-end">
               <div>
                 <h3 className="text-2xl font-bold text-white mb-2">학사일정</h3>
-                <p className="text-zinc-500 font-medium text-sm leading-relaxed max-w-[240px]">
+                <p className="text-zinc-500 font-medium text-sm leading-relaxed max-w-xs sm:max-w-[240px]">
                   월별 주요 학사일정과 학교 행사를 한눈에 파악하세요.
                 </p>
               </div>
@@ -101,7 +101,7 @@ export default async function CollabPage() {
 
         {/* Timetable Card */}
         <Link href="/collab/timetable" className="group">
-          <div className="h-full bg-zinc-900/30 backdrop-blur-sm rounded-[2.5rem] p-8 border border-white/5 hover:border-purple-500/30 transition-all duration-500 relative overflow-hidden">
+          <div className="h-full bg-zinc-900/30 backdrop-blur-sm rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-8 border border-white/5 hover:border-purple-500/30 transition-all duration-500 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 blur-[50px] rounded-full group-hover:bg-purple-500/10 transition-colors" />
             
             <div className="w-14 h-14 rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500">
@@ -111,7 +111,7 @@ export default async function CollabPage() {
             <div className="flex justify-between items-end">
               <div>
                 <h3 className="text-2xl font-bold text-white mb-2">시간표</h3>
-                <p className="text-zinc-500 font-medium text-sm leading-relaxed max-w-[240px]">
+                <p className="text-zinc-500 font-medium text-sm leading-relaxed max-w-xs sm:max-w-[240px]">
                   학년별 주간 수업 시간표를 쉽고 빠르게 확인하세요.
                 </p>
               </div>
@@ -124,7 +124,7 @@ export default async function CollabPage() {
 
         {/* Lunch Prayer Card */}
         <Link href="/collab/lunch-prayer" className="group">
-          <div className="h-full bg-zinc-900/30 backdrop-blur-sm rounded-[2.5rem] p-8 border border-white/5 hover:border-pink-500/30 transition-all duration-500 relative overflow-hidden">
+          <div className="h-full bg-zinc-900/30 backdrop-blur-sm rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-8 border border-white/5 hover:border-pink-500/30 transition-all duration-500 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-pink-500/5 blur-[50px] rounded-full group-hover:bg-pink-500/10 transition-colors" />
             
             <div className="w-14 h-14 rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500">
@@ -134,7 +134,7 @@ export default async function CollabPage() {
             <div className="flex justify-between items-end">
               <div>
                 <h3 className="text-2xl font-bold text-white mb-2">점심 기도실</h3>
-                <p className="text-zinc-500 font-medium text-sm leading-relaxed max-w-[240px]">
+                <p className="text-zinc-500 font-medium text-sm leading-relaxed max-w-xs sm:max-w-[240px]">
                   오늘의 점심기도 당번 조를 확인하고 순서를 놓치지 마세요.
                 </p>
               </div>
@@ -147,7 +147,7 @@ export default async function CollabPage() {
 
         {/* Exam Schedule Card */}
         <Link href="/collab/exams" className="group">
-          <div className="h-full bg-zinc-900/30 backdrop-blur-sm rounded-[2.5rem] p-8 border border-white/5 hover:border-rose-500/30 transition-all duration-500 relative overflow-hidden">
+          <div className="h-full bg-zinc-900/30 backdrop-blur-sm rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-8 border border-white/5 hover:border-rose-500/30 transition-all duration-500 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 blur-[50px] rounded-full group-hover:bg-rose-500/10 transition-colors" />
             
             <div className="w-14 h-14 rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500">
@@ -157,7 +157,7 @@ export default async function CollabPage() {
             <div className="flex justify-between items-end">
               <div>
                 <h3 className="text-2xl font-bold text-white mb-2">시험 일정</h3>
-                <p className="text-zinc-500 font-medium text-sm leading-relaxed max-w-[240px]">
+                <p className="text-zinc-500 font-medium text-sm leading-relaxed max-w-xs sm:max-w-[240px]">
                   중간/기말고사 시간표를 확인하고 시험 기간을 완벽하게 대비하세요.
                 </p>
               </div>
@@ -170,7 +170,7 @@ export default async function CollabPage() {
 
         {/* GPA Calculator Card */}
         <Link href="/collab/gpa" className="group">
-          <div className="h-full bg-zinc-900/30 backdrop-blur-sm rounded-[2.5rem] p-8 border border-white/5 hover:border-emerald-500/30 transition-all duration-500 relative overflow-hidden">
+          <div className="h-full bg-zinc-900/30 backdrop-blur-sm rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-8 border border-white/5 hover:border-emerald-500/30 transition-all duration-500 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 blur-[50px] rounded-full group-hover:bg-emerald-500/10 transition-colors" />
             
             <div className="w-14 h-14 rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500">
@@ -180,7 +180,7 @@ export default async function CollabPage() {
             <div className="flex justify-between items-end">
               <div>
                 <h3 className="text-2xl font-bold text-white mb-2">학점 계산기</h3>
-                <p className="text-zinc-500 font-medium text-sm leading-relaxed max-w-[240px]">
+                <p className="text-zinc-500 font-medium text-sm leading-relaxed max-w-xs sm:max-w-[240px]">
                   성적을 입력하고 4.5 만점 기준의 나의 평균 학점을 실시간으로 확인하세요.
                 </p>
               </div>
@@ -193,7 +193,7 @@ export default async function CollabPage() {
 
         {/* Broadcast VOD Card */}
         <Link href="/collab/vod" className="group">
-          <div className="h-full bg-zinc-900/30 backdrop-blur-sm rounded-[2.5rem] p-8 border border-white/5 hover:border-red-500/30 transition-all duration-500 relative overflow-hidden">
+          <div className="h-full bg-zinc-900/30 backdrop-blur-sm rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-8 border border-white/5 hover:border-red-500/30 transition-all duration-500 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 blur-[50px] rounded-full group-hover:bg-red-500/10 transition-colors" />
 
             <div className="w-14 h-14 rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500">
@@ -203,7 +203,7 @@ export default async function CollabPage() {
             <div className="flex justify-between items-end">
               <div>
                 <h3 className="text-2xl font-bold text-white mb-2">VOD</h3>
-                <p className="text-zinc-500 font-medium text-sm leading-relaxed max-w-[240px]">
+                <p className="text-zinc-500 font-medium text-sm leading-relaxed max-w-xs sm:max-w-[240px]">
                   학교 공식 채널의 채플·행사 영상 다시보기.
                 </p>
               </div>

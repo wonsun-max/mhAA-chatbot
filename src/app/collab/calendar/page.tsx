@@ -166,7 +166,7 @@ export default function CalendarPage() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white transition-all text-xs font-bold shadow-lg shadow-blue-500/5 active:scale-95"
         >
           <CalendarIcon size={14} />
-          <span>캘린더 실시간 연동 (iPhone / Android)</span>
+          <span className="hidden sm:inline">캘린더 실시간 연동 (iPhone / Android)</span><span className="sm:hidden">캘린더 연동</span>
         </button>
       </div>
 
@@ -197,7 +197,7 @@ export default function CalendarPage() {
             animate={{ opacity: 1, y: 0 }}
             className="mb-20 relative"
           >
-            <div className="bg-zinc-900/30 backdrop-blur-xl border border-white/5 rounded-[3rem] p-8 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-10 overflow-hidden relative group">
+            <div className="bg-zinc-900/30 backdrop-blur-xl border border-white/5 rounded-3xl sm:rounded-[3rem] p-6 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-10 overflow-hidden relative group">
                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 blur-[100px] rounded-full group-hover:bg-white/10 transition-colors" />
                
                <div className="flex-1 text-center md:text-left relative z-10">
@@ -218,7 +218,7 @@ export default function CalendarPage() {
                </div>
 
                <div className="relative z-10 flex flex-col sm:flex-row items-center gap-4">
-                  <div className="bg-white text-black rounded-[2.5rem] px-12 py-8 flex flex-col items-center shadow-2xl shadow-white/10">
+                  <div className="bg-white text-black rounded-[2.5rem] px-6 sm:px-12 py-6 sm:py-8 flex flex-col items-center shadow-2xl shadow-white/10">
                     <span className="text-[10px] font-black uppercase tracking-[0.2em] mb-1 opacity-50">Countdown</span>
                     <span className="text-5xl font-black tracking-tighter">
                       {getDDay(nearestEvent.startDate)}
@@ -276,7 +276,7 @@ export default function CalendarPage() {
 
       {/* Category & Filter Info */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-8 mb-16">
-         <div className="flex p-1 bg-zinc-900/40 backdrop-blur-xl rounded-2xl border border-white/5 w-fit">
+         <div className="flex p-1 bg-zinc-900/40 backdrop-blur-xl rounded-2xl border border-white/5 w-full sm:w-fit overflow-x-auto max-w-full scrollbar-hide">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat.key}
@@ -418,7 +418,7 @@ export default function CalendarPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="w-full max-w-lg bg-zinc-900 border border-zinc-800 rounded-3xl p-6 md:p-8 shadow-2xl space-y-6 relative overflow-y-auto max-h-[85vh] my-auto"
+              className="w-full max-w-lg bg-zinc-900 border border-zinc-800 rounded-3xl p-5 sm:p-8 shadow-2xl space-y-6 relative overflow-y-auto max-h-[85vh] my-auto"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -540,7 +540,7 @@ export default function CalendarPage() {
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
-        className="mt-24 p-10 rounded-[2.5rem] bg-zinc-900/30 border border-white/5 flex flex-col md:flex-row items-center gap-10 group"
+        className="mt-12 sm:mt-24 p-6 sm:p-10 rounded-3xl sm:rounded-[2.5rem] bg-zinc-900/30 border border-white/5 flex flex-col md:flex-row items-center gap-10 group"
       >
         <div className="w-20 h-20 bg-white/5 rounded-[2rem] flex items-center justify-center text-zinc-500 shrink-0 group-hover:scale-110 transition-transform duration-500">
            <Bell size={32} strokeWidth={1.5} />

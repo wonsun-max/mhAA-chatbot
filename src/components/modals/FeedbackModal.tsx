@@ -88,7 +88,7 @@ export function FeedbackModal({ isOpen, onClose, initialType = "IDEA" }: Feedbac
                             <button
                                 type="button"
                                 onClick={handleClose}
-                                className="p-2 text-zinc-500 hover:text-white rounded-xl hover:bg-white/5 transition-colors"
+                                className="p-2.5 text-zinc-500 hover:text-white rounded-xl hover:bg-white/5 transition-colors"
                             >
                                 <X size={18} />
                             </button>
@@ -157,7 +157,7 @@ export function FeedbackModal({ isOpen, onClose, initialType = "IDEA" }: Feedbac
                                                 ? "어떤 기능이나 아이디어가 추가되면 좋을까요?"
                                                 : "어떤 화면에서 어떤 문제가 발생했나요?"
                                         }
-                                        className="w-full bg-zinc-900/50 border border-white/10 focus:border-white/30 rounded-2xl p-4 text-sm text-white placeholder:text-zinc-600 focus:outline-none transition-colors resize-none leading-relaxed"
+                                        className="w-full bg-zinc-900/50 border border-white/10 focus:border-white/30 rounded-2xl p-4 text-base sm:text-sm text-white placeholder:text-zinc-600 focus:outline-none transition-colors resize-none leading-relaxed"
                                     />
                                 </div>
 

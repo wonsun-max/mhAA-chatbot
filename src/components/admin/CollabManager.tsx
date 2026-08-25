@@ -58,7 +58,7 @@ export function CollabManager() {
             </div>
 
             {/* Sub-navigation for Collab categories */}
-            <div className="flex gap-2 p-1 bg-white/5 rounded-xl border border-white/10 w-fit">
+            <div className="flex gap-2 p-1 bg-white/5 rounded-xl border border-white/10 w-fit overflow-x-auto scrollbar-hide max-w-full">
                 {(["meals", "calendar", "timetable", "exams"] as CollabTab[]).map((tab) => (
                     <button
                         key={tab}
@@ -224,8 +224,8 @@ function MealsAdmin() {
                     등록된 급식 데이터가 없습니다.
                 </div>
             ) : (
-                <div className="border border-white/5 rounded-2xl overflow-hidden">
-                    <table className="w-full text-sm text-left">
+                <div className="border border-white/5 rounded-2xl overflow-hidden overflow-x-auto">
+                    <table className="w-full text-sm text-left min-w-[600px]">
                         <thead className="bg-white/5 text-zinc-400 font-medium">
                             <tr>
                                 <th className="px-6 py-4">날짜</th>
@@ -402,8 +402,8 @@ function CalendarAdmin() {
                     등록된 학사 일정이 없습니다.
                 </div>
             ) : (
-                <div className="border border-white/5 rounded-2xl overflow-hidden">
-                    <table className="w-full text-sm text-left">
+                <div className="border border-white/5 rounded-2xl overflow-hidden overflow-x-auto">
+                    <table className="w-full text-sm text-left min-w-[600px]">
                         <thead className="bg-white/5 text-zinc-400 font-medium">
                             <tr>
                                 <th className="px-6 py-4">일정명</th>
@@ -628,8 +628,8 @@ function TimetableAdmin() {
                     {filterGrade ? `'${filterGrade}' 반에 등록된 시간표가 없습니다.` : "등록된 시간표 데이터가 없습니다."}
                 </div>
             ) : (
-                <div className="border border-white/5 rounded-2xl overflow-hidden">
-                    <table className="w-full text-sm text-left">
+                <div className="border border-white/5 rounded-2xl overflow-hidden overflow-x-auto">
+                    <table className="w-full text-sm text-left min-w-[600px]">
                         <thead className="bg-white/5 text-zinc-400 font-medium">
                             <tr>
                                 <th className="px-6 py-4">반</th>

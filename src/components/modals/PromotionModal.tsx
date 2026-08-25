@@ -50,7 +50,7 @@ export function PromotionModal() {
                         initial={{ scale: 0.9, opacity: 0, y: 20 }}
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                        className="relative w-full max-w-md max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border border-white/10 bg-white/5 p-6 md:p-8 shadow-2xl backdrop-blur-xl scrollbar-hide"
+                        className="relative w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl border border-white/10 bg-white/5 p-6 md:p-8 shadow-2xl backdrop-blur-xl scrollbar-hide"
                         style={{
                             boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
                         }}
@@ -99,13 +99,13 @@ export function PromotionModal() {
                             <div className="flex items-center justify-between pt-6 border-t border-white/10">
                                 <button
                                     onClick={closeForADay}
-                                    className="text-xs text-white/30 hover:text-white/80 transition-colors underline underline-offset-4 cursor-pointer"
+                                    className="text-xs text-white/30 hover:text-white/80 transition-colors underline underline-offset-4 cursor-pointer py-2.5 min-h-[44px] flex items-center"
                                 >
                                     1일 동안 보지 않기
                                 </button>
                                 <button
                                     onClick={closeBase}
-                                    className="text-sm font-medium text-white/50 hover:text-white transition-colors cursor-pointer"
+                                    className="text-sm font-medium text-white/50 hover:text-white transition-colors cursor-pointer py-2.5 min-h-[44px] flex items-center"
                                 >
                                     닫기
                                 </button>

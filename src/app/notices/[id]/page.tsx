@@ -110,7 +110,7 @@ export default function NoticeDetailPage({ params }: { params: Promise<{ id: str
                                 </div>
                             </div>
 
-                            <h1 className="text-3xl md:text-5xl font-extralight tracking-tight leading-[1.15] text-white/90">
+                            <h1 className="text-2xl sm:text-3xl md:text-5xl font-extralight tracking-tight leading-[1.15] text-white/90">
                                 {notice.title}
                             </h1>
                         </div>
@@ -158,7 +158,7 @@ export default function NoticeDetailPage({ params }: { params: Promise<{ id: str
                                         href={instagramPermalink}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 hover:from-purple-500 hover:via-pink-500 hover:to-orange-400 text-white text-xs font-bold transition-all shadow-xl shadow-pink-500/20 active:scale-95"
+                                        className="inline-flex w-full sm:w-auto justify-center text-center items-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 hover:from-purple-500 hover:via-pink-500 hover:to-orange-400 text-white text-xs font-bold transition-all shadow-xl shadow-pink-500/20 active:scale-95"
                                     >
                                         <Instagram size={15} />
                                         <span>인스타그램 앱에서 열기</span>
@@ -169,7 +169,7 @@ export default function NoticeDetailPage({ params }: { params: Promise<{ id: str
                         </div>
                     </div>
 
-                    <div className="pt-20 border-t border-white/5 flex items-center justify-between">
+                    <div className="pt-12 md:pt-20 border-t border-white/5 flex items-center justify-between">
                         <div className="flex items-center gap-4 text-white/10">
                             <Sparkles size={16} />
                             <span className="text-[10px] uppercase tracking-[0.5em] font-bold">WITHUS HUB INSIGHT</span>

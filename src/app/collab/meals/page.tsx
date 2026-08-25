@@ -108,7 +108,7 @@ export default function MealsPage() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white transition-all text-xs font-bold shadow-lg shadow-emerald-500/5 active:scale-95"
         >
           <Utensils size={14} />
-          <span>캘린더 실시간 연동 (iPhone / Android)</span>
+          <span className="hidden sm:inline">캘린더 실시간 연동 (iPhone / Android)</span><span className="sm:hidden">캘린더 연동</span>
         </button>
       </div>
 
@@ -140,7 +140,7 @@ export default function MealsPage() {
           transition={{ delay: 0.1 }}
           className="lg:col-span-8 group"
         >
-          <div className="h-full bg-zinc-900/30 backdrop-blur-xl border border-white/5 rounded-[3rem] p-8 sm:p-12 relative overflow-hidden transition-all duration-500 hover:border-white/10">
+          <div className="h-full bg-zinc-900/30 backdrop-blur-xl border border-white/5 rounded-3xl sm:rounded-[3rem] p-6 sm:p-12 relative overflow-hidden transition-all duration-500 hover:border-white/10">
             <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 blur-[100px] rounded-full group-hover:bg-emerald-500/10 transition-colors" />
 
             <div className="relative z-10">
@@ -175,7 +175,7 @@ export default function MealsPage() {
                 <div className="space-y-8">
                   <div className="flex flex-wrap gap-x-6 gap-y-4">
                     {todayMeal.menu.split(',').map((item, idx) => (
-                      <span key={idx} className="text-2xl sm:text-3xl text-white font-bold tracking-tight group-hover:text-emerald-400 transition-colors">
+                      <span key={idx} className="text-xl sm:text-2xl text-white font-bold tracking-tight group-hover:text-emerald-400 transition-colors">
                         {item.trim()}
                       </span>
                     ))}
@@ -289,7 +289,7 @@ export default function MealsPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 + 0.3 }}
-                className="group bg-zinc-900/30 backdrop-blur-sm border border-white/5 hover:border-white/20 rounded-[2.5rem] p-8 transition-all duration-500"
+                className="group bg-zinc-900/30 backdrop-blur-sm border border-white/5 hover:border-white/20 rounded-3xl sm:rounded-[2.5rem] p-5 sm:p-8 transition-all duration-500"
               >
                 <div className="flex justify-between items-start mb-6">
                   <div>
@@ -323,7 +323,7 @@ export default function MealsPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="mt-20 p-8 bg-zinc-900/30 border border-white/5 rounded-[2.5rem] flex flex-col md:flex-row items-center gap-8 group"
+        className="mt-12 sm:mt-20 p-6 sm:p-8 bg-zinc-900/30 border border-white/5 rounded-3xl sm:rounded-[2.5rem] flex flex-col md:flex-row items-center gap-8 group"
       >
         <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center text-zinc-600 shrink-0 group-hover:scale-110 transition-transform duration-500">
           <Info size={28} />
@@ -345,7 +345,7 @@ export default function MealsPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="w-full max-w-lg bg-zinc-900 border border-zinc-800 rounded-3xl p-6 md:p-8 shadow-2xl space-y-6 relative overflow-y-auto max-h-[85vh] my-auto"
+              className="w-full max-w-lg bg-zinc-900 border border-zinc-800 rounded-3xl p-5 sm:p-8 shadow-2xl space-y-6 relative overflow-y-auto max-h-[85vh] my-auto"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">

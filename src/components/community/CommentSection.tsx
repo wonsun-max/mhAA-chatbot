@@ -92,14 +92,14 @@ export function CommentSection({ postId, postAuthorId, comments, currentUserId, 
       if (!hasVisibleReplies && !isReply) return null // Hide deleted parents with no replies
       
       return (
-        <div className={`py-4 ${isReply ? 'ml-8 md:ml-12 pl-4 border-l-2 border-white/5 relative' : 'border-b border-white/[0.05]'}`}>
+        <div className={`py-4 ${isReply ? 'ml-3 sm:ml-8 md:ml-12 pl-2.5 sm:pl-4 border-l-2 border-white/5 relative' : 'border-b border-white/[0.05]'}`}>
           <p className="text-white/20 text-sm italic">삭제된 댓글입니다.</p>
         </div>
       )
     }
 
     return (
-      <div className={`py-4 group ${isReply ? 'ml-8 md:ml-12 pl-4 border-l-2 border-white/10 relative' : 'border-b border-white/[0.05]'}`}>
+      <div className={`py-4 group ${isReply ? 'ml-3 sm:ml-8 md:ml-12 pl-2.5 sm:pl-4 border-l-2 border-white/10 relative' : 'border-b border-white/[0.05]'}`}>
         {isReply && <CornerDownRight className="absolute -left-[2px] top-4 w-4 h-4 text-white/20 -translate-x-full" />}
         
         <div className="flex justify-between items-start mb-2">
@@ -118,7 +118,7 @@ export function CommentSection({ postId, postAuthorId, comments, currentUserId, 
           {canDelete && (
             <button 
               onClick={() => handleDelete(comment.id)} 
-              className="text-white/10 hover:text-red-400 transition-colors p-1"
+              className="text-white/10 hover:text-red-400 transition-colors p-2.5 min-w-[36px] min-h-[36px]"
             >
               <Trash2 size={13} />
             </button>

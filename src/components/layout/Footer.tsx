@@ -21,7 +21,7 @@ export function Footer() {
 
     return (
         <>
-            <footer className="relative bg-black/20 backdrop-blur-sm border-t border-white/5 py-16 overflow-hidden">
+            <footer className="relative bg-black/20 backdrop-blur-sm border-t border-white/5 py-12 sm:py-16 overflow-hidden">
                 <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
                         {/* Brand Section */}
@@ -88,11 +88,11 @@ export function Footer() {
                                     href="https://www.instagram.com/mha_withus/" 
                                     target="_blank" 
                                     rel="noopener noreferrer" 
-                                    className="p-2.5 bg-white/5 rounded-xl border border-white/10 text-gray-400 hover:text-white hover:border-white/20 transition-all"
+                                    className="p-3 min-w-[44px] min-h-[44px] bg-white/5 rounded-xl border border-white/10 text-gray-400 hover:text-white hover:border-white/20 transition-all flex items-center justify-center"
                                 >
                                     <Instagram size={18} />
                                 </a>
-                                <a href="mailto:wonsunpro123444@gmail.com" className="p-2.5 bg-white/5 rounded-xl border border-white/10 text-gray-400 hover:text-white hover:border-white/20 transition-all">
+                                <a href="mailto:wonsunpro123444@gmail.com" className="p-3 min-w-[44px] min-h-[44px] bg-white/5 rounded-xl border border-white/10 text-gray-400 hover:text-white hover:border-white/20 transition-all flex items-center justify-center">
                                     <Mail size={18} />
                                 </a>
                             </div>

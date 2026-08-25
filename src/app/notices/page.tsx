@@ -180,7 +180,7 @@ export default function NoticesPage() {
             <main className="max-w-6xl mx-auto px-4 md:px-8 pt-28 pb-32 space-y-12">
                 
                 {/* Instagram Channel Header Banner */}
-                <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-purple-950/40 via-zinc-900/80 to-zinc-950 border border-white/10 p-6 md:p-10 shadow-2xl backdrop-blur-xl">
+                <div className="relative overflow-hidden rounded-3xl md:rounded-[2.5rem] bg-gradient-to-br from-purple-950/40 via-zinc-900/80 to-zinc-950 border border-white/10 p-5 md:p-10 shadow-2xl backdrop-blur-xl">
                     <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-pink-500/10 via-purple-500/10 to-transparent blur-3xl pointer-events-none" />
 
                     <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
@@ -336,7 +336,7 @@ export default function NoticesPage() {
                                         {isAdmin && (
                                             <button
                                                 onClick={(e) => handleDeleteNotice(notice.id, e)}
-                                                className="p-2 text-zinc-600 hover:text-red-400 transition-colors rounded-lg hover:bg-white/5"
+                                                className="p-2.5 min-w-[40px] min-h-[40px] flex items-center justify-center text-zinc-600 hover:text-red-400 transition-colors rounded-lg hover:bg-white/5"
                                                 title="게시물 삭제"
                                             >
                                                 <Trash2 size={15} />

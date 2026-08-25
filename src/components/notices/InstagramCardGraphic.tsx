@@ -60,7 +60,7 @@ export function InstagramCardGraphic({
 
                 {/* Main Headline */}
                 <div className="flex-1 flex flex-col justify-center py-2 sm:py-3">
-                    <h3 className="text-lg sm:text-2xl font-black text-black tracking-tighter leading-[1.15] break-keep">
+                    <h3 className="text-lg sm:text-2xl font-black text-black tracking-tighter leading-[1.15] line-clamp-3 sm:line-clamp-4 break-words">
                         {title}
                     </h3>
                 </div>

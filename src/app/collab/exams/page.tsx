@@ -329,7 +329,7 @@ export default function ExamSchedulePage() {
       <div className="flex p-1 bg-zinc-900/40 backdrop-blur-xl rounded-[1.5rem] border border-white/5 mb-12 max-w-sm">
         <button
           onClick={() => setActiveExam("midterm")}
-          className={`flex-1 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all relative ${
+          className={`flex-1 py-4 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-widest transition-all relative ${
             activeExam === "midterm" ? "text-white" : "text-zinc-600 hover:text-zinc-400"
           }`}
         >
@@ -344,7 +344,7 @@ export default function ExamSchedulePage() {
         </button>
         <button
           onClick={() => setActiveExam("finals")}
-          className={`flex-1 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all relative ${
+          className={`flex-1 py-4 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-widest transition-all relative ${
             activeExam === "finals" ? "text-white" : "text-zinc-600 hover:text-zinc-400"
           }`}
         >
@@ -409,7 +409,7 @@ export default function ExamSchedulePage() {
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: (dayIdx * 4 + periodIdx) * 0.05 }}
-                          className={`group relative overflow-hidden bg-zinc-900/30 backdrop-blur-xl border transition-all duration-500 p-6 sm:p-8 rounded-[2.5rem] flex flex-col justify-between gap-6 ${
+                          className={`group relative overflow-hidden bg-zinc-900/30 backdrop-blur-xl border transition-all duration-500 p-5 sm:p-8 rounded-3xl sm:rounded-[2.5rem] flex flex-col justify-between gap-6 ${
                             active 
                               ? "border-rose-500/30 bg-rose-500/5 ring-1 ring-rose-500/20 shadow-2xl shadow-rose-500/10" 
                               : "border-white/5 hover:border-white/10"
@@ -417,7 +417,7 @@ export default function ExamSchedulePage() {
                         >
                           <div className="flex items-start justify-between relative z-10">
                             <div className="flex items-center gap-6">
-                              <div className={`flex flex-col items-center justify-center w-14 h-14 rounded-2xl border font-black transition-all ${
+                              <div className={`flex flex-col items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-2xl border font-black transition-all ${
                                 active 
                                   ? "bg-rose-500 border-rose-400 text-white shadow-xl shadow-rose-500/20" 
                                   : "bg-zinc-900 border-white/5 text-zinc-600 group-hover:text-zinc-400"
@@ -426,7 +426,7 @@ export default function ExamSchedulePage() {
                               </div>
                               
                               <div>
-                                <h4 className="text-2xl font-bold text-white tracking-tight flex items-center gap-3 mb-1">
+                                <h4 className="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-3 mb-1">
                                   {subject}
                                 </h4>
                                 <div className="flex items-center gap-2 text-xs text-zinc-500 font-medium font-mono">
@@ -497,7 +497,7 @@ export default function ExamSchedulePage() {
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
-        className="mt-20 p-10 rounded-[3rem] bg-zinc-900/30 border border-white/5 flex flex-col md:flex-row items-center gap-10 group"
+        className="mt-12 sm:mt-20 p-6 sm:p-10 rounded-3xl sm:rounded-[3rem] bg-zinc-900/30 border border-white/5 flex flex-col md:flex-row items-center gap-10 group"
       >
         <div className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center text-zinc-600 shrink-0 group-hover:scale-110 transition-transform duration-500">
            <Info size={32} strokeWidth={1.5} />

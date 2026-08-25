@@ -145,7 +145,7 @@ const GradeSelect = ({ id, value, onChange }: GradeSelectProps) => {
     <div className="shrink-0 relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className={`w-24 h-11 rounded-2xl border text-sm font-black flex items-center justify-center gap-1.5 transition-all ${
+        className={`w-20 sm:w-24 h-11 rounded-2xl border text-sm font-black flex items-center justify-center gap-1.5 transition-all ${
           colors
             ? `${colors.bg} ${colors.border} ${colors.text}`
             : "bg-zinc-950/60 border-white/10 text-zinc-600 hover:text-white hover:border-white/20"
@@ -321,12 +321,12 @@ export default function GpaCalculatorPage() {
 
       {/* Grade Selector + Controls */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-8">
-        <div className="flex items-center gap-2 p-1.5 bg-zinc-900/40 border border-white/5 rounded-[1.5rem] flex-wrap">
+        <div className="flex items-center gap-2 p-1.5 bg-zinc-900/40 border border-white/5 rounded-[1.5rem] overflow-x-auto scrollbar-hide">
           {GRADES.map((g) => (
             <button
               key={g}
               onClick={() => setSelectedGrade(g)}
-              className={`relative px-5 py-2.5 rounded-2xl text-sm font-black transition-all duration-300 ${
+              className={`relative shrink-0 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-2xl text-xs sm:text-sm font-black transition-all duration-300 ${
                 selectedGrade === g ? "text-white" : "text-zinc-600 hover:text-zinc-300"
               }`}
             >
@@ -562,7 +562,7 @@ export default function GpaCalculatorPage() {
           transition={{ delay: 0.15, type: "spring" }}
           className="w-full lg:w-[360px] shrink-0 sticky top-28"
         >
-          <div className="bg-zinc-900/60 backdrop-blur-2xl rounded-[3rem] border border-white/10 p-8 sm:p-10 relative overflow-hidden">
+          <div className="bg-zinc-900/60 backdrop-blur-2xl rounded-3xl sm:rounded-[3rem] border border-white/10 p-6 sm:p-10 relative overflow-hidden">
             <div className={`absolute top-0 right-0 w-56 h-56 blur-[80px] rounded-full opacity-20 transition-colors duration-700 ${ring.glow}`} />
 
             <div className="relative z-10 flex flex-col items-center">
