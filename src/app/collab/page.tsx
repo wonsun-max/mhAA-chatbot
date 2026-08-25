@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { 
   Utensils, CalendarDays, Clock, BookOpen, AlertCircle, 
-  ChevronRight, Pencil, Calculator, Clapperboard, Sparkles
+  ChevronRight, Pencil, Calculator, Clapperboard, Sparkles,
+  HeartHandshake, Church
 } from "lucide-react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -200,10 +201,30 @@ export default async function CollabPage() {
               신앙 & 미디어 허브
             </h2>
           </div>
-          <span className="text-xs text-zinc-500 font-mono hidden sm:inline">2 Services</span>
+          <span className="text-xs text-zinc-500 font-mono hidden sm:inline">4 Services</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <CollabCard
+            href="/collab/chapel"
+            title="수요채플 일정"
+            description="2026-2학기 매주 수요일 채플 주관(선교팀/학년) 및 설교자 일정표입니다."
+            badge="2026-2학기"
+            icon={<Church className="w-6 h-6 text-indigo-400" />}
+            accentColor="text-indigo-400"
+            glowClass="bg-indigo-500/10"
+          />
+
+          <CollabCard
+            href="/collab/teams"
+            title="QT조 & 선교팀"
+            description="마한아 4대 선교팀과 8개 QT조 편성 명단 및 내 소속을 확인하세요."
+            badge="공동체 조회"
+            icon={<HeartHandshake className="w-6 h-6 text-purple-400" />}
+            accentColor="text-purple-400"
+            glowClass="bg-purple-500/10"
+          />
+
           <CollabCard
             href="/collab/lunch-prayer"
             title="점심 기도실"
