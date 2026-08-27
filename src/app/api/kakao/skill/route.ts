@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { openai } from "@/lib/openai";
+import { getStudentMembershipFromDb } from "@/lib/faith-data";
+import { getLunchPrayerByDate } from "@/lib/lunch-prayer";
 
 export const dynamic = "force-dynamic";
 
@@ -62,15 +64,19 @@ interface KakaoQuickReply {
 
 const DEFAULT_QUICK_REPLIES: KakaoQuickReply[] = [
   { label: "🍱 오늘 급식", action: "message", messageText: "오늘 급식" },
-  { label: "🍱 내일 급식", action: "message", messageText: "내일 급식" },
+  { label: "⏰ 시간표", action: "message", messageText: "시간표" },
   { label: "⛪ 수요채플", action: "message", messageText: "수요채플" },
   { label: "📅 학사일정", action: "message", messageText: "학사일정" },
-  { label: "📝 시험 시간표", action: "message", messageText: "시험 시간표" },
-  { label: "⏰ 시간표", action: "message", messageText: "시간표" },
+  { label: "📝 시험시간표", action: "message", messageText: "시험 시간표" },
+  { label: "🤝 QT/선교팀", action: "message", messageText: "QT조 선교팀" },
+  { label: "🙏 점심기도실", action: "message", messageText: "점심 기도실" },
+  { label: "🎬 VOD 미디어", action: "message", messageText: "VOD" },
+  { label: "📊 GPA 계산기", action: "message", messageText: "GPA 계산기" },
+  { label: "💡 건의함", action: "message", messageText: "건의함" },
 ];
 
 /**
- * Formats a Date into YYYY-MM-DD string with optional day offset.
+ * Formats Date into YYYY-MM-DD string with day offset.
  */
 function getDateString(offsetDays = 0): { dateStr: string; month: number; day: number; dayOfWeek: string } {
   const d = new Date();
@@ -120,8 +126,11 @@ function buildKakaoResponse(outputs: any[], quickReplies = DEFAULT_QUICK_REPLIES
 /**
  * Handles incoming Kakao i OpenBuilder Skill Webhook requests.
  *
- * Provides real-time school information (Meals, Chapel, Calendar, Timetable, Exams)
- * directly from PostgreSQL via Prisma, with automated fallback to WITHUS AI knowledge.
+ * Covers 100% of WITHUS Collab Services:
+ * 1. Schedule & Campus: Timetable (All Grades 7-12), Calendar, Meals
+ * 2. Academics: Exams, GPA Calculator
+ * 3. Faith & Media: Chapel, Mission Teams & QT Groups, Lunch Prayer, VOD
+ * 4. Campus Community: Idea Portal (Feedback), Student Roster Lookup, AI Assistant
  */
 export async function POST(req: Request) {
   try {
@@ -131,21 +140,53 @@ export async function POST(req: Request) {
 
     const { dateStr: todayStr, month: todayMonth, day: todayDay, dayOfWeek: todayDayOfWeek } = getDateString(0);
 
-    // 1. Initial Test / Welcome / Help Intent
-    if (!rawUtterance || rawUtterance === "발화 내용" || utterance === "도움말" || utterance === "안녕" || utterance === "시작") {
+    // ==========================================
+    // 0. Welcome / Help / Collab Hub Overview Menu
+    // ==========================================
+    if (
+      !rawUtterance ||
+      rawUtterance === "발화 내용" ||
+      utterance === "도움말" ||
+      utterance === "안녕" ||
+      utterance === "시작" ||
+      utterance === "메뉴" ||
+      utterance === "전체메뉴" ||
+      utterance === "콜라보"
+    ) {
       return buildKakaoResponse([
         {
-          basicCard: {
-            title: "마닐라한국아카데미 WITHUS 챗봇",
-            description: "샬롬! 마한아 학교생활 도우미 챗봇입니다.\n\n급식, 수요채플, 학사일정, 시간표, 시험 정보 등을 카카오톡에서 실시간으로 확인해보세요!",
-            thumbnail: {
-              imageUrl: "https://mhawithus.shop/images/hero-premium.png",
-            },
-            buttons: [
+          carousel: {
+            type: "basicCard",
+            items: [
               {
-                action: "webLink",
-                label: "WITHUS 포털 바로가기",
-                webLinkUrl: "https://mhawithus.shop",
+                title: "📅 01 / 일정 & 학교 생활",
+                description: "• 시간표: 7~12학년 요일별 수업 시간표\n• 오늘의 급식: 실시간 점심 메뉴\n• 학사일정: 월별 주요 일정 및 D-Day",
+                thumbnail: {
+                  imageUrl: "https://mhawithus.shop/images/hero-premium.png",
+                },
+                buttons: [
+                  { action: "message", label: "🍱 오늘 급식", messageText: "오늘 급식" },
+                  { action: "message", label: "⏰ 시간표", messageText: "시간표" },
+                  { action: "message", label: "📅 학사일정", messageText: "학사일정" },
+                ],
+              },
+              {
+                title: "✍️ 02 / 시험 & 학업 관리",
+                description: "• 시험 일정표: 중간/기말고사 과목별 시간표\n• GPA 계산기: 4.5 만점 기준 내신 학점 산출\n• 학업 허브: 시험 대비 일정 총정리",
+                buttons: [
+                  { action: "message", label: "📝 시험 시간표", messageText: "시험 시간표" },
+                  { action: "message", label: "📊 GPA 계산기", messageText: "GPA 계산기" },
+                  { action: "webLink", label: "웹 허브 가기", webLinkUrl: "https://mhawithus.shop/collab" },
+                ],
+              },
+              {
+                title: "🕊️ 03 / 신앙 & 미디어 허브",
+                description: "• 수요채플: 매주 채플 주관 및 설교자\n• QT조 & 선교팀: 조원 명단 및 내 소속 조회\n• 점심 기도실: 오늘의 담당 QT조\n• VOD: 마한아 유튜브 공식 채널",
+                buttons: [
+                  { action: "message", label: "⛪ 수요채플", messageText: "수요채플" },
+                  { action: "message", label: "🤝 QT/선교팀", messageText: "선교팀" },
+                  { action: "message", label: "🙏 점심 기도실", messageText: "점심 기도실" },
+                ],
               },
             ],
           },
@@ -153,7 +194,140 @@ export async function POST(req: Request) {
       ]);
     }
 
+    // ==========================================
+    // 1. Timetable (시간표 - 7학년 ~ 12학년)
+    // ==========================================
+    if (utterance.includes("시간표") || utterance.includes("교시") || utterance.includes("수업")) {
+      // 1-A. Target Day of Week (Check if user specified a day)
+      let targetDay = todayDayOfWeek;
+      if (utterance.includes("월")) targetDay = "월";
+      else if (utterance.includes("화")) targetDay = "화";
+      else if (utterance.includes("수")) targetDay = "수";
+      else if (utterance.includes("목")) targetDay = "목";
+      else if (utterance.includes("금")) targetDay = "금";
+
+      const KOR_TO_ENG_DAY: Record<string, string> = {
+        "월": "MON",
+        "화": "TUE",
+        "수": "WED",
+        "목": "THU",
+        "금": "FRI",
+        "토": "MON",
+        "일": "MON",
+      };
+      const dbDay = KOR_TO_ENG_DAY[targetDay] || "MON";
+
+      // 1-B. Check Grade mentions (12, 11, 10, 9, 8, 7)
+      const has12 = utterance.includes("12") || utterance.includes("십이");
+      const has11 = utterance.includes("11") || utterance.includes("십일");
+      const has10 = utterance.includes("10") || utterance.includes("십");
+      const has9 = utterance.includes("9") || utterance.includes("구");
+      const has8 = utterance.includes("8") || utterance.includes("팔");
+      const has7 = utterance.includes("7") || utterance.includes("칠");
+
+      // Special handling for Grade 12 (has 12-1 and 12-2)
+      if (has12) {
+        const is12_1 = utterance.includes("12-1") || utterance.includes("12학년 1반") || utterance.includes("1반");
+        const is12_2 = utterance.includes("12-2") || utterance.includes("12학년 2반") || utterance.includes("2반");
+
+        const targetGrades = is12_1 ? ["12-1"] : is12_2 ? ["12-2"] : ["12-1", "12-2"];
+        const rows = await prisma.timetable.findMany({
+          where: {
+            grade: { in: targetGrades },
+            dayOfWeek: dbDay,
+          },
+          orderBy: [{ grade: "asc" }, { period: "asc" }],
+        });
+
+        if (rows.length > 0) {
+          const g1 = rows.filter(r => r.grade === "12-1");
+          const g2 = rows.filter(r => r.grade === "12-2");
+
+          const items: KakaoBasicCard[] = [];
+          if (g1.length > 0) {
+            items.push({
+              title: `⏰ [12-1반 ${targetDay}요일] 시간표`,
+              description: g1.map(r => `${r.period}교시: ${r.subject} (${r.teacher})`).join("\n"),
+              buttons: [
+                { action: "webLink", label: "전체 시간표 보기", webLinkUrl: "https://mhawithus.shop/collab/timetable" },
+              ],
+            });
+          }
+          if (g2.length > 0) {
+            items.push({
+              title: `⏰ [12-2반 ${targetDay}요일] 시간표`,
+              description: g2.map(r => `${r.period}교시: ${r.subject} (${r.teacher})`).join("\n"),
+              buttons: [
+                { action: "webLink", label: "전체 시간표 보기", webLinkUrl: "https://mhawithus.shop/collab/timetable" },
+              ],
+            });
+          }
+
+          if (items.length === 1) {
+            return buildKakaoResponse([{ basicCard: items[0] }]);
+          } else if (items.length > 1) {
+            return buildKakaoResponse([{ carousel: { type: "basicCard", items } }]);
+          }
+        }
+      }
+
+      // Handling for Grades 7, 8, 9, 10, 11
+      const matchedGrade = has11 ? "11" : has10 ? "10" : has9 ? "9" : has8 ? "8" : has7 ? "7" : null;
+
+      if (matchedGrade) {
+        const rows = await prisma.timetable.findMany({
+          where: {
+            grade: matchedGrade,
+            dayOfWeek: dbDay,
+          },
+          orderBy: { period: "asc" },
+        });
+
+        if (rows.length > 0) {
+          const lines = rows.map(r => `${r.period}교시: ${r.subject} (${r.teacher})`).join("\n");
+          return buildKakaoResponse([
+            {
+              basicCard: {
+                title: `⏰ [${matchedGrade}학년 ${targetDay}요일] 시간표`,
+                description: lines,
+                buttons: [
+                  { action: "webLink", label: "웹에서 시간표 보기", webLinkUrl: "https://mhawithus.shop/collab/timetable" },
+                ],
+              },
+            },
+          ]);
+        }
+      }
+
+      // If no grade was specified, guide user with quick reply buttons for each grade
+      return buildKakaoResponse(
+        [
+          {
+            basicCard: {
+              title: "⏰ 마한아 학년별 시간표 안내",
+              description: `확인하고 싶은 학년을 선택해 주세요.\n현재 요일(${todayDayOfWeek}요일) 기준으로 안내해 드립니다.`,
+              buttons: [
+                { action: "message", label: "12학년 시간표", messageText: "12학년 시간표" },
+                { action: "message", label: "11학년 시간표", messageText: "11학년 시간표" },
+                { action: "webLink", label: "전체 시간표 웹에서 보기", webLinkUrl: "https://mhawithus.shop/collab/timetable" },
+              ],
+            },
+          },
+        ],
+        [
+          { label: "12학년 시간표", action: "message", messageText: "12학년 시간표" },
+          { label: "11학년 시간표", action: "message", messageText: "11학년 시간표" },
+          { label: "10학년 시간표", action: "message", messageText: "10학년 시간표" },
+          { label: "9학년 시간표", action: "message", messageText: "9학년 시간표" },
+          { label: "8학년 시간표", action: "message", messageText: "8학년 시간표" },
+          { label: "7학년 시간표", action: "message", messageText: "7학년 시간표" },
+        ]
+      );
+    }
+
+    // ==========================================
     // 2. School Meals (급식 / 식단)
+    // ==========================================
     if (utterance.includes("급식") || utterance.includes("식단") || utterance.includes("점심") || utterance.includes("밥") || utterance.includes("메뉴")) {
       const isTomorrow = utterance.includes("내일") || utterance.includes("다음날");
       const target = isTomorrow ? getDateString(1) : { dateStr: todayStr, month: todayMonth, day: todayDay, dayOfWeek: todayDayOfWeek };
@@ -167,11 +341,11 @@ export async function POST(req: Request) {
           {
             basicCard: {
               title: `🍱 [${target.month}월 ${target.day}일 (${target.dayOfWeek})] 급식 안내`,
-              description: `해당 날짜의 등록된 급식 메뉴가 없습니다.\n주말/방학이거나 아직 식단표가 업데이트되지 않았을 수 있습니다.`,
+              description: `해당 날짜의 등록된 급식 메뉴가 없습니다.\n주말/휴일이거나 아직 식단표가 등록되지 않았을 수 있습니다.`,
               buttons: [
                 {
                   action: "webLink",
-                  label: "웹에서 전체 식단표 보기",
+                  label: "이번 달 전체 식단표 보기",
                   webLinkUrl: "https://mhawithus.shop/collab/meals",
                 },
               ],
@@ -180,7 +354,6 @@ export async function POST(req: Request) {
         ]);
       }
 
-      // Format menu text nicely
       const menuLines = meal.menu.split("\n").map(l => l.trim()).filter(Boolean).join(", ");
 
       return buildKakaoResponse([
@@ -200,7 +373,9 @@ export async function POST(req: Request) {
       ]);
     }
 
-    // 3. Wednesday Chapel Schedules (수요채플 / 예배)
+    // ==========================================
+    // 3. Wednesday Chapel (수요채플 일정표)
+    // ==========================================
     if (utterance.includes("채플") || utterance.includes("예배") || utterance.includes("선교예배") || utterance.includes("설교")) {
       const upcomingChapels = await prisma.chapelSchedule.findMany({
         where: { date: { gte: todayStr } },
@@ -240,8 +415,10 @@ export async function POST(req: Request) {
       ]);
     }
 
-    // 4. Academic Calendar (학사일정 / 일정 / 방학 / 휴일)
-    if (utterance.includes("학사일정") || utterance.includes("일정") || utterance.includes("방학") || utterance.includes("개학") || utterance.includes("행사") || utterance.includes("휴일")) {
+    // ==========================================
+    // 4. Academic Calendar (학사일정 / 행사 / 방학 / 휴일)
+    // ==========================================
+    if (utterance.includes("학사일정") || utterance.includes("일정") || utterance.includes("방학") || utterance.includes("개학") || utterance.includes("행사") || utterance.includes("휴일") || utterance.includes("공휴일")) {
       const events = await prisma.schoolCalendar.findMany({
         where: { endDate: { gte: todayStr } },
         orderBy: { startDate: "asc" },
@@ -280,7 +457,9 @@ export async function POST(req: Request) {
       ]);
     }
 
+    // ==========================================
     // 5. Exam Schedules (시험 / 중간고사 / 기말고사)
+    // ==========================================
     if (utterance.includes("시험") || utterance.includes("중간고사") || utterance.includes("기말고사")) {
       const examEvent = await prisma.schoolCalendar.findFirst({
         where: {
@@ -326,49 +505,27 @@ export async function POST(req: Request) {
       ]);
     }
 
-    // 6. Timetable (시간표 / 학년별 시간표)
-    if (utterance.includes("시간표") || utterance.includes("수업") || utterance.includes("교시")) {
-      // Extract grade if mentioned (e.g. "11", "12", "10", "9", "8", "7")
-      const gradeMatch = utterance.match(/(7|8|9|10|11|12)/);
-      const grade = gradeMatch ? gradeMatch[1] : "11";
+    // ==========================================
+    // 6. Lunch Prayer (점심 기도실)
+    // ==========================================
+    if (utterance.includes("기도실") || utterance.includes("기도") || utterance.includes("점심기도")) {
+      const prayerInfo = getLunchPrayerByDate(new Date());
 
-      const timetables = await prisma.timetable.findMany({
-        where: {
-          grade,
-          dayOfWeek: todayDayOfWeek,
-        },
-        orderBy: { period: "asc" },
-      });
-
-      if (timetables.length > 0) {
-        const lines = timetables.map(t => `${t.period}교시: ${t.subject} (${t.teacher})`).join("\n");
-        return buildKakaoResponse([
-          {
-            basicCard: {
-              title: `⏰ [${grade}학년 ${todayDayOfWeek}요일] 시간표`,
-              description: lines,
-              buttons: [
-                {
-                  action: "webLink",
-                  label: "전체 시간표 확인",
-                  webLinkUrl: "https://mhawithus.shop/collab/timetable",
-                },
-              ],
-            },
-          },
-        ]);
+      let description = "• 월·수·금: 교사·학생 누구나 자율 기도 (12:20 ~ 12:45)\n• 화·목: 지정된 QT조 및 신앙부 기도회 (12:25 ~ 12:45)\n• 장소: 도서관 방향 기도실";
+      if (prayerInfo && "qtGroup" in prayerInfo && prayerInfo.qtGroup) {
+        description = `오늘의 담당: [${prayerInfo.qtGroup}조]\n신앙부: ${prayerInfo.faithMembers?.join(", ") || "지정"}\n\n${description}`;
       }
 
       return buildKakaoResponse([
         {
           basicCard: {
-            title: `⏰ [${grade}학년] 시간표 안내`,
-            description: `오늘(${todayDayOfWeek}요일) 등록된 수업이 없거나 주말입니다.\n웹 허브에서 전 학년 시간표를 확인하실 수 있습니다.`,
+            title: `🙏 마한아 점심 기도실 안내`,
+            description,
             buttons: [
               {
                 action: "webLink",
-                label: "전체 시간표 보기",
-                webLinkUrl: "https://mhawithus.shop/collab/timetable",
+                label: "점심기도실 일정표 보기",
+                webLinkUrl: "https://mhawithus.shop/collab/lunch-prayer",
               },
             ],
           },
@@ -376,17 +533,19 @@ export async function POST(req: Request) {
       ]);
     }
 
-    // 7. Mission Teams & QT Groups (선교팀 / QT조)
+    // ==========================================
+    // 7. Mission Teams & QT Groups (선교팀 / QT조 & 학생 이름 검색)
+    // ==========================================
     if (utterance.includes("선교팀") || utterance.includes("qt") || utterance.includes("큐티") || utterance.includes("조장")) {
       return buildKakaoResponse([
         {
           basicCard: {
-            title: "🤝 마한아 4대 선교팀 & 8개 QT조",
-            description: "글로벌팀, 동아시아팀, 필리핀 1팀, 필리핀 2팀 및 1조~8조 명단과 조장을 확인하세요.",
+            title: "🤝 마한아 4대 선교팀 & 8대 QT조",
+            description: "• 4대 선교팀: 글로벌팀, 동아시아팀, 필리핀 1팀, 필리핀 2팀\n• 8개 QT조: 1조 ~ 8조\n\n학생 이름을 입력하시면 소속된 선교팀과 QT조를 바로 찾아드립니다! (예: '이원선 소속')",
             buttons: [
               {
                 action: "webLink",
-                label: "내 소속 및 명단 조회",
+                label: "내 소속 및 전체 명단 보기",
                 webLinkUrl: "https://mhawithus.shop/collab/teams",
               },
             ],
@@ -395,7 +554,101 @@ export async function POST(req: Request) {
       ]);
     }
 
-    // 8. General AI Assistant Fallback (with strict 3.5s timeout protection)
+    // ==========================================
+    // 8. MHA VOD Media Hub (YouTube 미디어)
+    // ==========================================
+    if (utterance.includes("vod") || utterance.includes("유튜브") || utterance.includes("영상") || utterance.includes("미디어") || utterance.includes("방송")) {
+      return buildKakaoResponse([
+        {
+          basicCard: {
+            title: "🎬 마한아 VOD 미디어 허브",
+            description: "마한아 4대 공식 및 학생 YouTube 채널의 실시간 영상들을 모아보세요.\n\n• Manila Hankuk Academy 공식 채널\n• 한아인-MHA 학생 채널\n• Actualize One & 선교사자녀학교이야기",
+            buttons: [
+              {
+                action: "webLink",
+                label: "VOD 미디어 허브 바로가기",
+                webLinkUrl: "https://mhawithus.shop/collab/vod",
+              },
+            ],
+          },
+        },
+      ]);
+    }
+
+    // ==========================================
+    // 9. GPA Calculator (GPA 학점 계산기)
+    // ==========================================
+    if (utterance.includes("gpa") || utterance.includes("학점") || utterance.includes("내신") || utterance.includes("성적")) {
+      return buildKakaoResponse([
+        {
+          basicCard: {
+            title: "📊 마한아 GPA 학점 계산기",
+            description: "학기별 과목 성적을 입력하고 4.5 만점 기준 내신 GPA를 실시간으로 간편하게 산출하세요.",
+            buttons: [
+              {
+                action: "webLink",
+                label: "GPA 계산기 실행하기",
+                webLinkUrl: "https://mhawithus.shop/collab/gpa",
+              },
+            ],
+          },
+        },
+      ]);
+    }
+
+    // ==========================================
+    // 10. Idea Portal / Feedback (건의함)
+    // ==========================================
+    if (utterance.includes("건의") || utterance.includes("피드백") || utterance.includes("아이디어") || utterance.includes("문의")) {
+      return buildKakaoResponse([
+        {
+          basicCard: {
+            title: "💡 마한아 학생 건의함 & 아이디어 포털",
+            description: "학교 생활 개선 아이디어나 건의사항이 있으신가요? 5초 만에 건의사항을 등록해 주세요!",
+            buttons: [
+              {
+                action: "webLink",
+                label: "건의함 바로가기",
+                webLinkUrl: "https://mhawithus.shop/collab",
+              },
+            ],
+          },
+        },
+      ]);
+    }
+
+    // ==========================================
+    // 11. Student Name Community Lookup (학생 이름 검색)
+    // ==========================================
+    // Check if the user is typing a student name (2~4 korean characters)
+    const cleanedName = rawUtterance.replace(/학생|소속|조|선교팀|어디|누구/g, "").trim();
+    if (cleanedName.length >= 2 && cleanedName.length <= 4) {
+      const studentInfo = await getStudentMembershipFromDb(cleanedName);
+      if (studentInfo) {
+        const missionText = studentInfo.missionTeam ? `${studentInfo.missionTeam.name} (${studentInfo.missionTeam.role})` : "미지정";
+        const qtText = studentInfo.qtGroup ? `${studentInfo.qtGroup.name} (${studentInfo.qtGroup.role})` : "미지정";
+
+        return buildKakaoResponse([
+          {
+            basicCard: {
+              title: `👤 [${studentInfo.name} 학생] 소속 조회`,
+              description: `• 학년: ${studentInfo.grade}학년\n• 선교팀: ${missionText}\n• QT조: ${qtText}\n${studentInfo.qtGroup?.leader ? `• 조장: ${studentInfo.qtGroup.leader}` : ""}`,
+              buttons: [
+                {
+                  action: "webLink",
+                  label: "전체 명단 확인",
+                  webLinkUrl: "https://mhawithus.shop/collab/teams",
+                },
+              ],
+            },
+          },
+        ]);
+      }
+    }
+
+    // ==========================================
+    // 12. General AI Assistant Fallback (with 3.5s Timeout Guard)
+    // ==========================================
     try {
       const aiPromise = openai.chat.completions.create({
         model: "gpt-4o-mini",
@@ -431,11 +684,11 @@ export async function POST(req: Request) {
         {
           basicCard: {
             title: "WITHUS 학사 도우미",
-            description: `"${rawUtterance}"에 대한 답변을 준비 중입니다.\n아래 버튼을 눌러 빠른 조회를 이용하시거나 웹 포털을 방문해 보세요.`,
+            description: `"${rawUtterance}"에 대한 정보를 찾고 계신가요?\n아래 버튼을 눌러 원하는 기능을 확인해 보세요.`,
             buttons: [
               {
                 action: "webLink",
-                label: "WITHUS 웹사이트 방문",
+                label: "WITHUS 웹 포털 방문",
                 webLinkUrl: "https://mhawithus.shop",
               },
             ],
