@@ -141,18 +141,51 @@ export async function POST(req: Request) {
     const { dateStr: todayStr, month: todayMonth, day: todayDay, dayOfWeek: todayDayOfWeek } = getDateString(0);
 
     // ==========================================
-    // 0. Welcome / Help / Collab Hub Overview Menu
+    // 0-A. Escape / Exit Intent (탈출 블록 / 취소 / 처음으로)
     // ==========================================
     if (
+      utterance === "취소" ||
+      utterance === "그만" ||
+      utterance === "종료" ||
+      utterance === "나가기" ||
+      utterance === "처음으로" ||
+      utterance === "탈출"
+    ) {
+      return buildKakaoResponse([
+        {
+          basicCard: {
+            title: "대화를 종료하고 메인으로 돌아갑니다 😊",
+            description: "궁금한 학교 생활 정보가 있으시면 언제든 다시 말씀해 주시거나, 아래 버튼을 눌러 빠르게 확인해 보세요!",
+            buttons: [
+              { action: "message", label: "🍱 오늘 급식", messageText: "오늘 급식" },
+              { action: "message", label: "⏰ 시간표", messageText: "시간표" },
+              { action: "message", label: "⛪ 수요채플", messageText: "수요채플" },
+            ],
+          },
+        },
+      ]);
+    }
+
+    // ==========================================
+    // 0-B. Welcome / Greetings / Collab Hub Overview Menu (웰컴 블록 / 하이 / 안녕)
+    // ==========================================
+    const isGreetingOrWelcome =
       !rawUtterance ||
       rawUtterance === "발화 내용" ||
-      utterance === "도움말" ||
+      utterance === "하이" ||
       utterance === "안녕" ||
+      utterance === "안녕하세요" ||
+      utterance === "반가워" ||
+      utterance === "hello" ||
+      utterance === "hi" ||
+      utterance === "도움말" ||
       utterance === "시작" ||
       utterance === "메뉴" ||
       utterance === "전체메뉴" ||
-      utterance === "콜라보"
-    ) {
+      utterance === "콜라보" ||
+      utterance === "웰컴";
+
+    if (isGreetingOrWelcome) {
       return buildKakaoResponse([
         {
           carousel: {
