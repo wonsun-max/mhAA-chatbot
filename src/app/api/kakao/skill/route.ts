@@ -141,8 +141,34 @@ export async function POST(req: Request) {
     const { dateStr: todayStr, month: todayMonth, day: todayDay, dayOfWeek: todayDayOfWeek } = getDateString(0);
 
     // ==========================================
-    // 0-A. Escape / Exit Intent (탈출 블록 / 취소 / 처음으로)
+    // 0-A. Escape / Exit Intent (탈출 블록 / 취소 / 처음으로 / ㅂ2 / 감사 / 바이)
     // ==========================================
+    const isThanksOrBye =
+      utterance === "ㅂ2" ||
+      utterance === "바이" ||
+      utterance.includes("바이") ||
+      utterance.includes("감사") ||
+      utterance.includes("고마") ||
+      utterance.includes("수고") ||
+      utterance === "bye" ||
+      utterance === "thanks";
+
+    if (isThanksOrBye) {
+      return buildKakaoResponse([
+        {
+          basicCard: {
+            title: "도움이 되셨길 바랍니다! 샬롬 🕊️",
+            description: "오늘 하루도 주님 안에서 승리하세요! 언제든 궁금한 점이 생기면 다시 불러주세요 😊",
+            buttons: [
+              { action: "message", label: "🍱 오늘 급식", messageText: "오늘 급식" },
+              { action: "message", label: "⏰ 시간표", messageText: "시간표" },
+              { action: "webLink", label: "WITHUS 포털 가기", webLinkUrl: "https://mhawithus.shop" },
+            ],
+          },
+        },
+      ]);
+    }
+
     if (
       utterance === "취소" ||
       utterance === "그만" ||
