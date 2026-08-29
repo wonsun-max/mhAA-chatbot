@@ -41,12 +41,23 @@ interface KakaoButton {
 }
 
 /**
+ * Kakao i OpenBuilder Skill v2.0 TextCard
+ * Complies with Kakao Speech Bubble Guide without requiring thumbnail.
+ */
+interface KakaoTextCard {
+  title?: string;
+  description: string;
+  buttons?: KakaoButton[];
+}
+
+/**
  * Kakao i OpenBuilder Skill v2.0 BasicCard
+ * Strict rule: thumbnail.imageUrl is MANDATORY per Kakao Guide 2461.
  */
 interface KakaoBasicCard {
   title?: string;
   description: string;
-  thumbnail?: {
+  thumbnail: {
     imageUrl: string;
     link?: { web: string };
   };
@@ -62,6 +73,8 @@ interface KakaoQuickReply {
   messageText: string;
 }
 
+const DEFAULT_BANNER_IMAGE = "https://mhawithus.shop/images/hero-premium.png";
+
 const DEFAULT_QUICK_REPLIES: KakaoQuickReply[] = [
   { label: "🍱 오늘 급식", action: "message", messageText: "오늘 급식" },
   { label: "⏰ 시간표", action: "message", messageText: "시간표" },
@@ -74,6 +87,45 @@ const DEFAULT_QUICK_REPLIES: KakaoQuickReply[] = [
   { label: "📊 GPA 계산기", action: "message", messageText: "GPA 계산기" },
   { label: "💡 건의함", action: "message", messageText: "건의함" },
 ];
+
+/**
+ * Helper to produce a standard compliant TextCard output.
+ */
+function textCardOutput(title: string | undefined, description: string, buttons?: KakaoButton[]) {
+  return {
+    textCard: {
+      ...(title ? { title } : {}),
+      description,
+      ...(buttons && buttons.length > 0 ? { buttons } : {}),
+    },
+  };
+}
+
+/**
+ * Helper to produce a standard compliant BasicCard output with mandatory thumbnail.
+ */
+function basicCardOutput(title: string | undefined, description: string, imageUrl: string, buttons?: KakaoButton[]) {
+  return {
+    basicCard: {
+      ...(title ? { title } : {}),
+      description,
+      thumbnail: { imageUrl },
+      ...(buttons && buttons.length > 0 ? { buttons } : {}),
+    },
+  };
+}
+
+/**
+ * Helper to produce a Carousel of TextCards (no image required, zero 2461 errors).
+ */
+function textCarouselOutput(items: KakaoTextCard[]) {
+  return {
+    carousel: {
+      type: "textCard",
+      items,
+    },
+  };
+}
 
 /**
  * Formats Date into YYYY-MM-DD string with day offset.
@@ -126,11 +178,9 @@ function buildKakaoResponse(outputs: any[], quickReplies = DEFAULT_QUICK_REPLIES
 /**
  * Handles incoming Kakao i OpenBuilder Skill Webhook requests.
  *
- * Covers 100% of WITHUS Collab Services:
- * 1. Schedule & Campus: Timetable (All Grades 7-12), Calendar, Meals
- * 2. Academics: Exams, GPA Calculator
- * 3. Faith & Media: Chapel, Mission Teams & QT Groups, Lunch Prayer, VOD
- * 4. Campus Community: Idea Portal (Feedback), Student Roster Lookup, AI Assistant
+ * Fully compliant with Kakao Speech Bubble Guide (No 2461 Missing Thumbnail errors):
+ * - Uses TextCard / Carousel(type: "textCard") for text-focused outputs.
+ * - Uses BasicCard ONLY when thumbnail.imageUrl is explicitly provided.
  */
 export async function POST(req: Request) {
   try {
@@ -155,17 +205,15 @@ export async function POST(req: Request) {
 
     if (isThanksOrBye) {
       return buildKakaoResponse([
-        {
-          basicCard: {
-            title: "도움이 되셨길 바랍니다! 샬롬 🕊️",
-            description: "오늘 하루도 주님 안에서 승리하세요! 언제든 궁금한 점이 생기면 다시 불러주세요 😊",
-            buttons: [
-              { action: "message", label: "🍱 오늘 급식", messageText: "오늘 급식" },
-              { action: "message", label: "⏰ 시간표", messageText: "시간표" },
-              { action: "webLink", label: "WITHUS 포털 가기", webLinkUrl: "https://mhawithus.shop" },
-            ],
-          },
-        },
+        textCardOutput(
+          "도움이 되셨길 바랍니다! 샬롬 🕊️",
+          "오늘 하루도 주님 안에서 승리하세요! 언제든 궁금한 점이 생기면 다시 불러주세요 😊",
+          [
+            { action: "message", label: "🍱 오늘 급식", messageText: "오늘 급식" },
+            { action: "message", label: "⏰ 시간표", messageText: "시간표" },
+            { action: "webLink", label: "WITHUS 포털 가기", webLinkUrl: "https://mhawithus.shop" },
+          ]
+        ),
       ]);
     }
 
@@ -178,17 +226,15 @@ export async function POST(req: Request) {
       utterance === "탈출"
     ) {
       return buildKakaoResponse([
-        {
-          basicCard: {
-            title: "대화를 종료하고 메인으로 돌아갑니다 😊",
-            description: "궁금한 학교 생활 정보가 있으시면 언제든 다시 말씀해 주시거나, 아래 버튼을 눌러 빠르게 확인해 보세요!",
-            buttons: [
-              { action: "message", label: "🍱 오늘 급식", messageText: "오늘 급식" },
-              { action: "message", label: "⏰ 시간표", messageText: "시간표" },
-              { action: "message", label: "⛪ 수요채플", messageText: "수요채플" },
-            ],
-          },
-        },
+        textCardOutput(
+          "대화를 종료하고 메인으로 돌아갑니다 😊",
+          "궁금한 학교 생활 정보가 있으시면 언제든 다시 말씀해 주시거나, 아래 버튼을 눌러 빠르게 확인해 보세요!",
+          [
+            { action: "message", label: "🍱 오늘 급식", messageText: "오늘 급식" },
+            { action: "message", label: "⏰ 시간표", messageText: "시간표" },
+            { action: "message", label: "⛪ 수요채플", messageText: "수요채플" },
+          ]
+        ),
       ]);
     }
 
@@ -221,7 +267,7 @@ export async function POST(req: Request) {
                 title: "📅 01 / 일정 & 학교 생활",
                 description: "• 시간표: 7~12학년 요일별 수업 시간표\n• 오늘의 급식: 실시간 점심 메뉴\n• 학사일정: 월별 주요 일정 및 D-Day",
                 thumbnail: {
-                  imageUrl: "https://mhawithus.shop/images/hero-premium.png",
+                  imageUrl: DEFAULT_BANNER_IMAGE,
                 },
                 buttons: [
                   { action: "message", label: "🍱 오늘 급식", messageText: "오늘 급식" },
@@ -232,6 +278,9 @@ export async function POST(req: Request) {
               {
                 title: "✍️ 02 / 시험 & 학업 관리",
                 description: "• 시험 일정표: 중간/기말고사 과목별 시간표\n• GPA 계산기: 4.5 만점 기준 내신 학점 산출\n• 학업 허브: 시험 대비 일정 총정리",
+                thumbnail: {
+                  imageUrl: DEFAULT_BANNER_IMAGE,
+                },
                 buttons: [
                   { action: "message", label: "📝 시험 시간표", messageText: "시험 시간표" },
                   { action: "message", label: "📊 GPA 계산기", messageText: "GPA 계산기" },
@@ -241,6 +290,9 @@ export async function POST(req: Request) {
               {
                 title: "🕊️ 03 / 신앙 & 미디어 허브",
                 description: "• 수요채플: 매주 채플 주관 및 설교자\n• QT조 & 선교팀: 조원 명단 및 내 소속 조회\n• 점심 기도실: 오늘의 담당 QT조\n• VOD: 마한아 유튜브 공식 채널",
+                thumbnail: {
+                  imageUrl: DEFAULT_BANNER_IMAGE,
+                },
                 buttons: [
                   { action: "message", label: "⛪ 수요채플", messageText: "수요채플" },
                   { action: "message", label: "🤝 QT/선교팀", messageText: "선교팀" },
@@ -257,7 +309,7 @@ export async function POST(req: Request) {
     // 1. Timetable (시간표 - 7학년 ~ 12학년)
     // ==========================================
     if (utterance.includes("시간표") || utterance.includes("교시") || utterance.includes("수업")) {
-      // 1-A. Target Day of Week (Check if user specified a day)
+      // 1-A. Target Day of Week
       let targetDay = todayDayOfWeek;
       if (utterance.includes("월")) targetDay = "월";
       else if (utterance.includes("화")) targetDay = "화";
@@ -284,7 +336,7 @@ export async function POST(req: Request) {
       const has8 = utterance.includes("8") || utterance.includes("팔");
       const has7 = utterance.includes("7") || utterance.includes("칠");
 
-      // Special handling for Grade 12 (has 12-1 and 12-2)
+      // Special handling for Grade 12 (12-1 and 12-2)
       if (has12) {
         const is12_1 = utterance.includes("12-1") || utterance.includes("12학년 1반") || utterance.includes("1반");
         const is12_2 = utterance.includes("12-2") || utterance.includes("12학년 2반") || utterance.includes("2반");
@@ -302,11 +354,11 @@ export async function POST(req: Request) {
           const g1 = rows.filter(r => r.grade === "12-1");
           const g2 = rows.filter(r => r.grade === "12-2");
 
-          const items: KakaoBasicCard[] = [];
+          const items: KakaoTextCard[] = [];
           if (g1.length > 0) {
             items.push({
               title: `⏰ [12-1반 ${targetDay}요일] 시간표`,
-              description: g1.map(r => `${r.period}교시: ${r.subject} (${r.teacher})`).join("\n"),
+              description: g1.map(r => `${r.period}교시: ${r.subject}`).join("\n"),
               buttons: [
                 { action: "webLink", label: "전체 시간표 보기", webLinkUrl: "https://mhawithus.shop/collab/timetable" },
               ],
@@ -315,7 +367,7 @@ export async function POST(req: Request) {
           if (g2.length > 0) {
             items.push({
               title: `⏰ [12-2반 ${targetDay}요일] 시간표`,
-              description: g2.map(r => `${r.period}교시: ${r.subject} (${r.teacher})`).join("\n"),
+              description: g2.map(r => `${r.period}교시: ${r.subject}`).join("\n"),
               buttons: [
                 { action: "webLink", label: "전체 시간표 보기", webLinkUrl: "https://mhawithus.shop/collab/timetable" },
               ],
@@ -323,9 +375,9 @@ export async function POST(req: Request) {
           }
 
           if (items.length === 1) {
-            return buildKakaoResponse([{ basicCard: items[0] }]);
+            return buildKakaoResponse([textCardOutput(items[0].title, items[0].description, items[0].buttons)]);
           } else if (items.length > 1) {
-            return buildKakaoResponse([{ carousel: { type: "basicCard", items } }]);
+            return buildKakaoResponse([textCarouselOutput(items)]);
           }
         }
       }
@@ -345,15 +397,11 @@ export async function POST(req: Request) {
         if (rows.length > 0) {
           const lines = rows.map(r => `${r.period}교시: ${r.subject} (${r.teacher})`).join("\n");
           return buildKakaoResponse([
-            {
-              basicCard: {
-                title: `⏰ [${matchedGrade}학년 ${targetDay}요일] 시간표`,
-                description: lines,
-                buttons: [
-                  { action: "webLink", label: "웹에서 시간표 보기", webLinkUrl: "https://mhawithus.shop/collab/timetable" },
-                ],
-              },
-            },
+            textCardOutput(
+              `⏰ [${matchedGrade}학년 ${targetDay}요일] 시간표`,
+              lines,
+              [{ action: "webLink", label: "웹에서 시간표 보기", webLinkUrl: "https://mhawithus.shop/collab/timetable" }]
+            ),
           ]);
         }
       }
@@ -361,17 +409,15 @@ export async function POST(req: Request) {
       // If no grade was specified, guide user with quick reply buttons for each grade
       return buildKakaoResponse(
         [
-          {
-            basicCard: {
-              title: "⏰ 마한아 학년별 시간표 안내",
-              description: `확인하고 싶은 학년을 선택해 주세요.\n현재 요일(${todayDayOfWeek}요일) 기준으로 안내해 드립니다.`,
-              buttons: [
-                { action: "message", label: "12학년 시간표", messageText: "12학년 시간표" },
-                { action: "message", label: "11학년 시간표", messageText: "11학년 시간표" },
-                { action: "webLink", label: "전체 시간표 웹에서 보기", webLinkUrl: "https://mhawithus.shop/collab/timetable" },
-              ],
-            },
-          },
+          textCardOutput(
+            "⏰ 마한아 학년별 시간표 안내",
+            `확인하고 싶은 학년을 선택해 주세요.\n현재 요일(${todayDayOfWeek}요일) 기준으로 안내해 드립니다.`,
+            [
+              { action: "message", label: "12학년 시간표", messageText: "12학년 시간표" },
+              { action: "message", label: "11학년 시간표", messageText: "11학년 시간표" },
+              { action: "webLink", label: "전체 시간표 웹에서 보기", webLinkUrl: "https://mhawithus.shop/collab/timetable" },
+            ]
+          ),
         ],
         [
           { label: "12학년 시간표", action: "message", messageText: "12학년 시간표" },
@@ -397,38 +443,34 @@ export async function POST(req: Request) {
 
       if (!meal || !meal.menu) {
         return buildKakaoResponse([
-          {
-            basicCard: {
-              title: `🍱 [${target.month}월 ${target.day}일 (${target.dayOfWeek})] 급식 안내`,
-              description: `해당 날짜의 등록된 급식 메뉴가 없습니다.\n주말/휴일이거나 아직 식단표가 등록되지 않았을 수 있습니다.`,
-              buttons: [
-                {
-                  action: "webLink",
-                  label: "이번 달 전체 식단표 보기",
-                  webLinkUrl: "https://mhawithus.shop/collab/meals",
-                },
-              ],
-            },
-          },
+          textCardOutput(
+            `🍱 [${target.month}월 ${target.day}일 (${target.dayOfWeek})] 급식 안내`,
+            "해당 날짜의 등록된 급식 메뉴가 없습니다.\n주말/휴일이거나 아직 식단표가 등록되지 않았을 수 있습니다.",
+            [
+              {
+                action: "webLink",
+                label: "이번 달 전체 식단표 보기",
+                webLinkUrl: "https://mhawithus.shop/collab/meals",
+              },
+            ]
+          ),
         ]);
       }
 
       const menuLines = meal.menu.split("\n").map(l => l.trim()).filter(Boolean).join(", ");
 
       return buildKakaoResponse([
-        {
-          basicCard: {
-            title: `🍱 [${target.month}월 ${target.day}일 (${target.dayOfWeek})] ${isTomorrow ? "내일" : "오늘"}의 급식`,
-            description: `메뉴: ${menuLines}`,
-            buttons: [
-              {
-                action: "webLink",
-                label: "이번 달 전체 식단 보기",
-                webLinkUrl: "https://mhawithus.shop/collab/meals",
-              },
-            ],
-          },
-        },
+        textCardOutput(
+          `🍱 [${target.month}월 ${target.day}일 (${target.dayOfWeek})] ${isTomorrow ? "내일" : "오늘"}의 급식`,
+          `메뉴: ${menuLines}`,
+          [
+            {
+              action: "webLink",
+              label: "이번 달 전체 식단 보기",
+              webLinkUrl: "https://mhawithus.shop/collab/meals",
+            },
+          ]
+        ),
       ]);
     }
 
@@ -452,9 +494,9 @@ export async function POST(req: Request) {
         ]);
       }
 
-      const items: KakaoBasicCard[] = upcomingChapels.map((c) => ({
+      const items: KakaoTextCard[] = upcomingChapels.map((c) => ({
         title: `⛪ [${c.month}월 ${c.day}일 (${c.dayOfWeek || "수"})] ${c.organizer} 주관`,
-        description: `설교자: ${c.speaker}\n구분: ${c.type === "MISSION" ? "선교예배" : c.type === "GRADE" ? "학년주관" : "특별예배"}${c.note ? `\n비고: ${c.note}` : ""}\nD-Day: ${getDDay(c.date, todayStr)}`,
+        description: `설교자: ${c.speaker}\n구분: ${c.type === "MISSION" ? "선교예배" : c.type === "GRADE" ? "학년주관" : "특별예배"}${c.note ? ` (${c.note})` : ""}\n카운트다운: ${getDDay(c.date, todayStr)}`,
         buttons: [
           {
             action: "webLink",
@@ -464,14 +506,7 @@ export async function POST(req: Request) {
         ],
       }));
 
-      return buildKakaoResponse([
-        {
-          carousel: {
-            type: "basicCard",
-            items,
-          },
-        },
-      ]);
+      return buildKakaoResponse([textCarouselOutput(items)]);
     }
 
     // ==========================================
@@ -494,7 +529,7 @@ export async function POST(req: Request) {
         ]);
       }
 
-      const items: KakaoBasicCard[] = events.map((evt) => ({
+      const items: KakaoTextCard[] = events.map((evt) => ({
         title: `📅 ${evt.name}`,
         description: `기간: ${evt.startDate} ~ ${evt.endDate}\n구분: ${evt.eventType}\n카운트다운: ${getDDay(evt.startDate, todayStr)}`,
         buttons: [
@@ -506,14 +541,7 @@ export async function POST(req: Request) {
         ],
       }));
 
-      return buildKakaoResponse([
-        {
-          carousel: {
-            type: "basicCard",
-            items,
-          },
-        },
-      ]);
+      return buildKakaoResponse([textCarouselOutput(items)]);
     }
 
     // ==========================================
@@ -531,36 +559,32 @@ export async function POST(req: Request) {
       if (examEvent) {
         const dday = getDDay(examEvent.startDate, todayStr);
         return buildKakaoResponse([
-          {
-            basicCard: {
-              title: `📝 [시험 일정] ${examEvent.name}`,
-              description: `기간: ${examEvent.startDate} ~ ${examEvent.endDate}\n카운트다운: ${dday}\n\n과목별 세부 시험 시간표를 웹에서 확인하세요.`,
-              buttons: [
-                {
-                  action: "webLink",
-                  label: "과목별 시험 시간표",
-                  webLinkUrl: "https://mhawithus.shop/collab/exams",
-                },
-              ],
-            },
-          },
+          textCardOutput(
+            `📝 [시험 일정] ${examEvent.name}`,
+            `기간: ${examEvent.startDate} ~ ${examEvent.endDate}\n카운트다운: ${dday}\n\n과목별 세부 시험 시간표를 웹에서 확인하세요.`,
+            [
+              {
+                action: "webLink",
+                label: "과목별 시험 시간표",
+                webLinkUrl: "https://mhawithus.shop/collab/exams",
+              },
+            ]
+          ),
         ]);
       }
 
       return buildKakaoResponse([
-        {
-          basicCard: {
-            title: "📝 시험 시간표 안내",
-            description: "현재 예정된 시험 일정이 없거나 시험 시간표가 준비 중입니다.",
-            buttons: [
-              {
-                action: "webLink",
-                label: "시험 정보 허브",
-                webLinkUrl: "https://mhawithus.shop/collab/exams",
-              },
-            ],
-          },
-        },
+        textCardOutput(
+          "📝 시험 시간표 안내",
+          "현재 예정된 시험 일정이 없거나 시험 시간표가 준비 중입니다.",
+          [
+            {
+              action: "webLink",
+              label: "시험 정보 허브",
+              webLinkUrl: "https://mhawithus.shop/collab/exams",
+            },
+          ]
+        ),
       ]);
     }
 
@@ -576,19 +600,17 @@ export async function POST(req: Request) {
       }
 
       return buildKakaoResponse([
-        {
-          basicCard: {
-            title: `🙏 마한아 점심 기도실 안내`,
-            description,
-            buttons: [
-              {
-                action: "webLink",
-                label: "점심기도실 일정표 보기",
-                webLinkUrl: "https://mhawithus.shop/collab/lunch-prayer",
-              },
-            ],
-          },
-        },
+        textCardOutput(
+          "🙏 마한아 점심 기도실 안내",
+          description,
+          [
+            {
+              action: "webLink",
+              label: "점심기도실 일정표 보기",
+              webLinkUrl: "https://mhawithus.shop/collab/lunch-prayer",
+            },
+          ]
+        ),
       ]);
     }
 
@@ -597,19 +619,17 @@ export async function POST(req: Request) {
     // ==========================================
     if (utterance.includes("선교팀") || utterance.includes("qt") || utterance.includes("큐티") || utterance.includes("조장")) {
       return buildKakaoResponse([
-        {
-          basicCard: {
-            title: "🤝 마한아 4대 선교팀 & 8대 QT조",
-            description: "• 4대 선교팀: 글로벌팀, 동아시아팀, 필리핀 1팀, 필리핀 2팀\n• 8개 QT조: 1조 ~ 8조\n\n학생 이름을 입력하시면 소속된 선교팀과 QT조를 바로 찾아드립니다! (예: '이원선 소속')",
-            buttons: [
-              {
-                action: "webLink",
-                label: "내 소속 및 전체 명단 보기",
-                webLinkUrl: "https://mhawithus.shop/collab/teams",
-              },
-            ],
-          },
-        },
+        textCardOutput(
+          "🤝 마한아 4대 선교팀 & 8대 QT조",
+          "• 4대 선교팀: 글로벌팀, 동아시아팀, 필리핀 1팀, 필리핀 2팀\n• 8개 QT조: 1조 ~ 8조\n\n학생 이름을 입력하시면 소속된 선교팀과 QT조를 바로 찾아드립니다! (예: '이원선 소속')",
+          [
+            {
+              action: "webLink",
+              label: "내 소속 및 전체 명단 보기",
+              webLinkUrl: "https://mhawithus.shop/collab/teams",
+            },
+          ]
+        ),
       ]);
     }
 
@@ -618,19 +638,18 @@ export async function POST(req: Request) {
     // ==========================================
     if (utterance.includes("vod") || utterance.includes("유튜브") || utterance.includes("영상") || utterance.includes("미디어") || utterance.includes("방송")) {
       return buildKakaoResponse([
-        {
-          basicCard: {
-            title: "🎬 마한아 VOD 미디어 허브",
-            description: "마한아 4대 공식 및 학생 YouTube 채널의 실시간 영상들을 모아보세요.\n\n• Manila Hankuk Academy 공식 채널\n• 한아인-MHA 학생 채널\n• Actualize One & 선교사자녀학교이야기",
-            buttons: [
-              {
-                action: "webLink",
-                label: "VOD 미디어 허브 바로가기",
-                webLinkUrl: "https://mhawithus.shop/collab/vod",
-              },
-            ],
-          },
-        },
+        basicCardOutput(
+          "🎬 마한아 VOD 미디어 허브",
+          "마한아 4대 공식 및 학생 YouTube 채널의 실시간 영상들을 모아보세요.\n\n• Manila Hankuk Academy\n• 한아인-MHA\n• Actualize One / 선교사자녀이야기",
+          DEFAULT_BANNER_IMAGE,
+          [
+            {
+              action: "webLink",
+              label: "VOD 미디어 허브 바로가기",
+              webLinkUrl: "https://mhawithus.shop/collab/vod",
+            },
+          ]
+        ),
       ]);
     }
 
@@ -639,19 +658,17 @@ export async function POST(req: Request) {
     // ==========================================
     if (utterance.includes("gpa") || utterance.includes("학점") || utterance.includes("내신") || utterance.includes("성적")) {
       return buildKakaoResponse([
-        {
-          basicCard: {
-            title: "📊 마한아 GPA 학점 계산기",
-            description: "학기별 과목 성적을 입력하고 4.5 만점 기준 내신 GPA를 실시간으로 간편하게 산출하세요.",
-            buttons: [
-              {
-                action: "webLink",
-                label: "GPA 계산기 실행하기",
-                webLinkUrl: "https://mhawithus.shop/collab/gpa",
-              },
-            ],
-          },
-        },
+        textCardOutput(
+          "📊 마한아 GPA 학점 계산기",
+          "학기별 과목 성적을 입력하고 4.5 만점 기준 내신 GPA를 실시간으로 간편하게 산출하세요.",
+          [
+            {
+              action: "webLink",
+              label: "GPA 계산기 실행하기",
+              webLinkUrl: "https://mhawithus.shop/collab/gpa",
+            },
+          ]
+        ),
       ]);
     }
 
@@ -660,26 +677,23 @@ export async function POST(req: Request) {
     // ==========================================
     if (utterance.includes("건의") || utterance.includes("피드백") || utterance.includes("아이디어") || utterance.includes("문의")) {
       return buildKakaoResponse([
-        {
-          basicCard: {
-            title: "💡 마한아 학생 건의함 & 아이디어 포털",
-            description: "학교 생활 개선 아이디어나 건의사항이 있으신가요? 5초 만에 건의사항을 등록해 주세요!",
-            buttons: [
-              {
-                action: "webLink",
-                label: "건의함 바로가기",
-                webLinkUrl: "https://mhawithus.shop/collab",
-              },
-            ],
-          },
-        },
+        textCardOutput(
+          "💡 마한아 학생 건의함 & 아이디어 포털",
+          "학교 생활 개선 아이디어나 건의사항이 있으신가요? 5초 만에 건의사항을 등록해 주세요!",
+          [
+            {
+              action: "webLink",
+              label: "건의함 바로가기",
+              webLinkUrl: "https://mhawithus.shop/collab",
+            },
+          ]
+        ),
       ]);
     }
 
     // ==========================================
     // 11. Student Name Community Lookup (학생 이름 검색)
     // ==========================================
-    // Check if the user is typing a student name (2~4 korean characters)
     const cleanedName = rawUtterance.replace(/학생|소속|조|선교팀|어디|누구/g, "").trim();
     if (cleanedName.length >= 2 && cleanedName.length <= 4) {
       const studentInfo = await getStudentMembershipFromDb(cleanedName);
@@ -688,19 +702,17 @@ export async function POST(req: Request) {
         const qtText = studentInfo.qtGroup ? `${studentInfo.qtGroup.name} (${studentInfo.qtGroup.role})` : "미지정";
 
         return buildKakaoResponse([
-          {
-            basicCard: {
-              title: `👤 [${studentInfo.name} 학생] 소속 조회`,
-              description: `• 학년: ${studentInfo.grade}학년\n• 선교팀: ${missionText}\n• QT조: ${qtText}\n${studentInfo.qtGroup?.leader ? `• 조장: ${studentInfo.qtGroup.leader}` : ""}`,
-              buttons: [
-                {
-                  action: "webLink",
-                  label: "전체 명단 확인",
-                  webLinkUrl: "https://mhawithus.shop/collab/teams",
-                },
-              ],
-            },
-          },
+          textCardOutput(
+            `👤 [${studentInfo.name} 학생] 소속 조회`,
+            `• 학년: ${studentInfo.grade}학년\n• 선교팀: ${missionText}\n• QT조: ${qtText}\n${studentInfo.qtGroup?.leader ? `• 조장: ${studentInfo.qtGroup.leader}` : ""}`,
+            [
+              {
+                action: "webLink",
+                label: "전체 명단 확인",
+                webLinkUrl: "https://mhawithus.shop/collab/teams",
+              },
+            ]
+          ),
         ]);
       }
     }
@@ -740,19 +752,17 @@ export async function POST(req: Request) {
       ]);
     } catch {
       return buildKakaoResponse([
-        {
-          basicCard: {
-            title: "WITHUS 학사 도우미",
-            description: `"${rawUtterance}"에 대한 정보를 찾고 계신가요?\n아래 버튼을 눌러 원하는 기능을 확인해 보세요.`,
-            buttons: [
-              {
-                action: "webLink",
-                label: "WITHUS 웹 포털 방문",
-                webLinkUrl: "https://mhawithus.shop",
-              },
-            ],
-          },
-        },
+        textCardOutput(
+          "WITHUS 학사 도우미",
+          `"${rawUtterance}"에 대한 정보를 찾고 계신가요?\n아래 버튼을 눌러 원하는 기능을 확인해 보세요.`,
+          [
+            {
+              action: "webLink",
+              label: "WITHUS 웹 포털 방문",
+              webLinkUrl: "https://mhawithus.shop",
+            },
+          ]
+        ),
       ]);
     }
   } catch (error) {
