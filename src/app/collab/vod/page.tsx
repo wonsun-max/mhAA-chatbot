@@ -59,6 +59,10 @@ async function fetchLiveYouTubeVideos(channelId: string): Promise<VideoItem[]> {
   try {
     const res = await fetch(`https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`, {
       next: { revalidate: 1800 }, // Auto-revalidate every 30 minutes
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+        "Accept": "application/rss+xml, application/atom+xml, text/xml, application/xml, */*",
+      },
     });
     if (!res.ok) return [];
     const xml = await res.text();

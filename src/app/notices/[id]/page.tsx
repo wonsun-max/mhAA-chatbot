@@ -140,7 +140,12 @@ export default function NoticeDetailPage({ params }: { params: Promise<{ id: str
                     ) : coverImageUrl ? (
                         <div className="relative max-w-[480px] sm:max-w-[500px] mx-auto rounded-[2rem] overflow-hidden border border-white/10 bg-zinc-950 shadow-2xl aspect-[4/5]">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={coverImageUrl} alt={notice.title} className="w-full h-full object-cover" />
+                            <img
+                                src={coverImageUrl}
+                                alt={notice.title}
+                                referrerPolicy="no-referrer"
+                                className="w-full h-full object-cover"
+                            />
                         </div>
                     ) : null}
 

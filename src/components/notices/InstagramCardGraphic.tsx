@@ -22,13 +22,18 @@ export function InstagramCardGraphic({
     aspectRatio = "square",
     className = "",
 }: InstagramCardGraphicProps) {
-    if (imageUrl) {
+    const [imageError, setImageError] = React.useState(false);
+
+    // If an image URL exists and has not failed to load, render the photo with no-referrer
+    if (imageUrl && !imageError) {
         return (
             <div className={`relative w-full overflow-hidden bg-zinc-950 ${aspectRatio === "square" ? "aspect-square" : "aspect-[4/3]"} ${className}`}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                     src={imageUrl}
                     alt={title}
+                    referrerPolicy="no-referrer"
+                    onError={() => setImageError(true)}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 opacity-60 group-hover:opacity-40 transition-opacity" />

@@ -118,6 +118,26 @@ export const authOptions: NextAuthOptions = {
                 if (session?.grade !== undefined) token.grade = session.grade;
                 if (session?.role !== undefined) token.role = session.role;
                 if (session?.status !== undefined) token.status = session.status;
+
+                // Sync with latest DB user data to guarantee freshness
+                if (token.id) {
+                    try {
+                        const freshUser = await prisma.user.findUnique({
+                            where: { id: token.id },
+                            select: { status: true, role: true, name: true, nickname: true, grade: true, qtGroup: true }
+                        });
+                        if (freshUser) {
+                            token.status = freshUser.status;
+                            token.role = freshUser.role;
+                            if (freshUser.name) token.name = freshUser.name;
+                            token.nickname = freshUser.nickname;
+                            token.grade = freshUser.grade;
+                            token.qtGroup = freshUser.qtGroup;
+                        }
+                    } catch (e) {
+                        console.error("[JWT Fresh Sync Error]:", e);
+                    }
+                }
             }
             return token;
         },
