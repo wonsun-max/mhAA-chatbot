@@ -46,35 +46,35 @@ export function InstagramCardGraphic({
 
     // Dynamic MHA Signature Yellow Window Card Generator
     return (
-        <div className={`relative w-full overflow-hidden bg-[#fdb526] p-3 sm:p-4 flex items-center justify-center select-none ${aspectRatio === "square" ? "aspect-square" : "aspect-[4/3]"} ${className}`}>
+        <div className={`relative w-full overflow-hidden bg-[#fdb526] p-2.5 sm:p-3 flex select-none ${aspectRatio === "square" ? "aspect-square" : "aspect-[4/3]"} ${className}`}>
             {/* White Window Box */}
-            <div className="relative w-full h-full bg-white rounded-2xl sm:rounded-3xl border-2 border-black/90 p-3 sm:p-4 flex flex-col justify-between shadow-[0_8px_20px_rgba(0,0,0,0.15)] overflow-hidden">
+            <div className="relative w-full h-full bg-white rounded-xl sm:rounded-2xl border-[1.5px] border-black/90 p-2.5 sm:p-3 flex flex-col justify-between shadow-[0_4px_16px_rgba(0,0,0,0.12)] overflow-hidden">
                 
                 {/* Window Header Bar */}
-                <div className="flex items-center justify-between pb-2 border-b-2 border-black/90">
+                <div className="flex items-center justify-between pb-1.5 border-b border-black/10 shrink-0">
                     <div className="flex items-center gap-1.5">
-                        <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f56] border border-black/30 inline-block" />
-                        <span className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e] border border-black/30 inline-block" />
-                        <span className="w-2.5 h-2.5 rounded-full bg-[#27c93f] border border-black/30 inline-block" />
+                        <span className="w-2 h-2 rounded-full bg-[#ff5f56] border border-black/20 inline-block" />
+                        <span className="w-2 h-2 rounded-full bg-[#ffbd2e] border border-black/20 inline-block" />
+                        <span className="w-2 h-2 rounded-full bg-[#27c93f] border border-black/20 inline-block" />
                     </div>
-                    <span className="text-[10px] sm:text-xs font-mono font-bold text-black tracking-tight">
+                    <span className="text-[10px] font-mono font-bold text-zinc-800 tracking-tight">
                         MHA_withus
                     </span>
-                    <div className="w-6" />
+                    <Instagram size={11} className="text-zinc-400" />
                 </div>
 
                 {/* Main Headline */}
-                <div className="flex-1 flex flex-col justify-center py-2 sm:py-3">
-                    <h3 className="text-lg sm:text-2xl font-black text-black tracking-tighter leading-[1.15] line-clamp-3 sm:line-clamp-4 break-words">
+                <div className="flex-1 flex flex-col justify-center py-1.5 min-h-0 overflow-hidden">
+                    <h3 className="text-xs sm:text-sm font-black text-black tracking-tight leading-snug line-clamp-3 break-words">
                         {title}
                     </h3>
                 </div>
 
-                {/* Bottom Graphic Star Accent */}
-                <div className="flex items-center justify-between pt-1 text-[9px] font-mono text-zinc-500 font-bold">
-                    <span className="uppercase tracking-widest text-[#f59e0b]">OFFICIAL POST</span>
+                {/* Bottom Graphic Accent */}
+                <div className="flex items-center justify-between pt-1.5 border-t border-black/10 shrink-0 text-[8px] sm:text-[9px] font-mono font-bold text-zinc-500">
+                    <span className="uppercase tracking-wider text-[#d97706]">OFFICIAL POST</span>
                     <div className="flex items-center gap-1 text-black/70">
-                        <Instagram size={12} />
+                        <Instagram size={10} />
                         <span>WITHUS</span>
                     </div>
                 </div>
