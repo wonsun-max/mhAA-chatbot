@@ -159,11 +159,17 @@ export default function NoticesPage() {
     )
 
     const extractImage = (content: string) => {
+        // 1. If notice links to an Instagram post, load the authentic first slide cover photo via proxy
+        const shortcodeMatch = content.match(/\/p\/([a-zA-Z0-9_-]+)/);
+        if (shortcodeMatch && shortcodeMatch[1]) {
+            return `/api/instagram/thumbnail?code=${shortcodeMatch[1]}`;
+        }
+
+        // 2. Fallback to embedded markdown image if available and unexpired
         const match = content.match(/!\[.*?\]\((https?:\/\/[^\s)]+)\)/);
         if (!match) return null;
         const url = match[1];
 
-        // Detect expired Instagram CDN image tokens to prevent 403 network errors
         const oeMatch = url.match(/[?&]oe=([0-9a-fA-F]+)/);
         if (oeMatch) {
             const expiresAt = parseInt(oeMatch[1], 16) * 1000;
