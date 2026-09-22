@@ -35,15 +35,26 @@ export async function GET(req: Request) {
         }
 
         const html = await pageRes.text();
-        const match =
-            html.match(/property="og:image"\s+content="([^"]+)"/) ||
-            html.match(/content="([^"]+)"\s+property="og:image"/);
 
-        if (!match || !match[1]) {
-            return new NextResponse("No cover image found", { status: 404 });
+        // 1. Prioritize uncropped full-resolution 1080x1350 image URL (stp=dst-jpg_e35_tt6)
+        const uncroppedMatch = html.match(/https:\/\/[^"'\s\\]+stp=dst-jpg_e35_tt6[^"'\s\\]*/);
+        let rawImageUrl = uncroppedMatch
+            ? uncroppedMatch[0].replace(/\\u0026/g, "&").replace(/&amp;/g, "&")
+            : null;
+
+        // 2. Fallback to standard og:image if full resolution tag is not present
+        if (!rawImageUrl) {
+            const match =
+                html.match(/property="og:image"\s+content="([^"]+)"/) ||
+                html.match(/content="([^"]+)"\s+property="og:image"/);
+            if (match && match[1]) {
+                rawImageUrl = match[1].replace(/&amp;/g, "&");
+            }
         }
 
-        const rawImageUrl = match[1].replace(/&amp;/g, "&");
+        if (!rawImageUrl) {
+            return new NextResponse("No cover image found", { status: 404 });
+        }
 
         // Fetch the fresh image from Meta CDN
         const imageRes = await fetch(rawImageUrl, {

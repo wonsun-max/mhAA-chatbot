@@ -315,7 +315,7 @@ export default function NoticesPage() {
                                         <InstagramCardGraphic
                                             title={notice.title}
                                             imageUrl={imgUrl}
-                                            aspectRatio="square"
+                                            aspectRatio="portrait"
                                         />
 
                                         {/* Caption Content */}

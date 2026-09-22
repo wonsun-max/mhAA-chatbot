@@ -112,7 +112,7 @@ export function NoticesFeed() {
                   <InstagramCardGraphic
                     title={notice.title}
                     imageUrl={imgUrl}
-                    aspectRatio="square"
+                    aspectRatio="portrait"
                   />
 
                   <div className="p-5 space-y-1.5">

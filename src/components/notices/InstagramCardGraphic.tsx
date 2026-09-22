@@ -6,39 +6,46 @@ import { Instagram } from "lucide-react";
 interface InstagramCardGraphicProps {
     title: string;
     imageUrl?: string | null;
-    aspectRatio?: "square" | "video" | "wide";
+    aspectRatio?: "square" | "portrait" | "video" | "wide";
     className?: string;
 }
 
 /**
  * Renders an authentic MHA Instagram-styled card.
- * If a real imageUrl exists, it displays the image with glass overlay.
- * If no imageUrl exists, it dynamically generates the signature MHA Yellow Window Card
- * (with macOS header dots, 'MHA_withus' window title, and bold layout) matching @mha_withus.
+ * Uses 4:5 portrait ratio matching official Instagram carousel posts (1080x1350),
+ * completely eliminating zoomed-in cropping and overflows.
  */
 export function InstagramCardGraphic({
     title,
     imageUrl,
-    aspectRatio = "square",
+    aspectRatio = "portrait",
     className = "",
 }: InstagramCardGraphicProps) {
     const [imageError, setImageError] = React.useState(false);
 
-    // If an image URL exists and has not failed to load, render the photo with no-referrer
+    const aspectClass =
+        aspectRatio === "portrait"
+            ? "aspect-[4/5]"
+            : aspectRatio === "square"
+            ? "aspect-square"
+            : aspectRatio === "video"
+            ? "aspect-video"
+            : "aspect-[4/3]";
+
+    // If an image URL exists and has not failed to load, render the photo cleanly
     if (imageUrl && !imageError) {
         return (
-            <div className={`relative w-full overflow-hidden bg-zinc-950 ${aspectRatio === "square" ? "aspect-square" : "aspect-[4/3]"} ${className}`}>
+            <div className={`relative w-full overflow-hidden bg-zinc-950 ${aspectClass} ${className}`}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                     src={imageUrl}
                     alt={title}
                     referrerPolicy="no-referrer"
                     onError={() => setImageError(true)}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.02]"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 opacity-60 group-hover:opacity-40 transition-opacity" />
-                <div className="absolute top-4 right-4 p-2 rounded-full bg-black/60 backdrop-blur-md text-white">
-                    <Instagram size={14} />
+                <div className="absolute top-2.5 right-2.5 p-1.5 rounded-full bg-black/50 backdrop-blur-md text-white/90 shadow-md">
+                    <Instagram size={12} />
                 </div>
             </div>
         );
@@ -46,7 +53,7 @@ export function InstagramCardGraphic({
 
     // Dynamic MHA Signature Yellow Window Card Generator
     return (
-        <div className={`relative w-full overflow-hidden bg-[#fdb526] p-2.5 sm:p-3 flex select-none ${aspectRatio === "square" ? "aspect-square" : "aspect-[4/3]"} ${className}`}>
+        <div className={`relative w-full overflow-hidden bg-[#fdb526] p-2.5 sm:p-3 flex select-none ${aspectClass} ${className}`}>
             {/* White Window Box */}
             <div className="relative w-full h-full bg-white rounded-xl sm:rounded-2xl border-[1.5px] border-black/90 p-2.5 sm:p-3 flex flex-col justify-between shadow-[0_4px_16px_rgba(0,0,0,0.12)] overflow-hidden">
                 
