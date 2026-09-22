@@ -70,9 +70,15 @@ export default function NoticeDetailPage({ params }: { params: Promise<{ id: str
     const instaLinkMatch = notice.content.match(/https?:\/\/(www\.)?instagram\.com\/p\/[a-zA-Z0-9_-]+/);
     const instagramPermalink = instaLinkMatch ? instaLinkMatch[0] : (shortcode ? `https://www.instagram.com/p/${shortcode}` : "https://www.instagram.com/mha_withus");
 
-    // Extract cover image
+    // Extract cover image (validating expiration token)
     const imageMatch = notice.content.match(/!\[.*?\]\((https?:\/\/[^\s)]+)\)/);
-    const coverImageUrl = imageMatch ? imageMatch[1] : null;
+    let coverImageUrl = imageMatch ? imageMatch[1] : null;
+    if (coverImageUrl) {
+        const oeMatch = coverImageUrl.match(/[?&]oe=([0-9a-fA-F]+)/);
+        if (oeMatch && parseInt(oeMatch[1], 16) * 1000 < Date.now()) {
+            coverImageUrl = null;
+        }
+    }
 
     // Clean text without markdown image/link tags
     const cleanContent = notice.content

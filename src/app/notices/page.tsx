@@ -160,7 +160,18 @@ export default function NoticesPage() {
 
     const extractImage = (content: string) => {
         const match = content.match(/!\[.*?\]\((https?:\/\/[^\s)]+)\)/);
-        return match ? match[1] : null;
+        if (!match) return null;
+        const url = match[1];
+
+        // Detect expired Instagram CDN image tokens to prevent 403 network errors
+        const oeMatch = url.match(/[?&]oe=([0-9a-fA-F]+)/);
+        if (oeMatch) {
+            const expiresAt = parseInt(oeMatch[1], 16) * 1000;
+            if (expiresAt < Date.now()) {
+                return null;
+            }
+        }
+        return url;
     };
 
     const extractLink = (content: string) => {
