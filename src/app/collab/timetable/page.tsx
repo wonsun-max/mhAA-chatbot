@@ -168,6 +168,15 @@ export default function TimetablePage() {
       .sort((a, b) => Number(a.period) - Number(b.period));
   }, [timetable, activeTab]);
 
+  const gridPeriods = useMemo(() => {
+    const base = new Set<number>([1, 2, 3, 4, 5, 6, 7]);
+    timetable.forEach((t) => {
+      const p = Number.parseInt(t.period, 10);
+      if (!Number.isNaN(p)) base.add(p);
+    });
+    return Array.from(base).sort((a, b) => a - b);
+  }, [timetable]);
+
   if (loading && timetable.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black">
@@ -378,11 +387,11 @@ export default function TimetablePage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {[1, 2, 3, 4, 5, 6, 7].map(period => (
+                    {gridPeriods.map(period => (
                       <tr key={period}>
                         <td className="text-center py-4">
                            <div className="text-2xl font-black text-zinc-800">{period}</div>
-                           <div className="text-[8px] font-black text-zinc-700 uppercase tracking-tighter">Period</div>
+                           <div className="text-[8px] font-black text-zinc-700 uppercase tracking-tighter">{period === 0 ? "QT" : "Period"}</div>
                         </td>
                         {DAYS.map(day => {
                           const entry = timetable.find(t => t.dayOfWeek === day.key && parseInt(t.period) === period);

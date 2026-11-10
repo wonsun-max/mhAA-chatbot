@@ -13,7 +13,8 @@ import {
 import Link from "next/link";
 import type { Session } from "next-auth";
 import { getAcademicSemester, getAcademicYear } from "@/lib/academic-calendar";
-import { matchesExamGrade, simplifyGradeLabel } from "@/lib/exam-grade";
+import { matchesExamGrade } from "@/lib/exam-grade";
+import { formatGrade } from "@/lib/utils";
 
 /**
  * Interface for a specific exam subject per period.
@@ -57,7 +58,7 @@ interface ExamScheduleEntry {
 
 type SessionUser = Session["user"];
 
-const GRADES = ["7", "8", "9", "10", "11", "12"];
+const GRADES = ["7", "8", "9", "10", "11", "12-1", "12-2"];
 
 const SUBJECT_ICONS: Record<string, React.ReactNode> = {
   "수학": <Calculator size={18} />,
@@ -128,12 +129,26 @@ export default function ExamSchedulePage() {
   useEffect(() => {
     const sessionUser: SessionUser | undefined = session?.user;
     if (sessionUser?.grade) {
-      const simpleGrade = simplifyGradeLabel(sessionUser.grade);
-      if (GRADES.includes(simpleGrade)) {
-        setSelectedGrade(simpleGrade);
+      if (GRADES.includes(sessionUser.grade)) {
+        setSelectedGrade(sessionUser.grade);
+      } else if (sessionUser.grade === "12") {
+        setSelectedGrade("12-1");
       }
     }
   }, [session]);
+
+  /**
+   * Parses "M/D" or "YYYY-MM-DD" into a comparable numeric timestamp.
+   */
+  const parseExamDate = (dateStr: string): number => {
+    if (dateStr.includes("-")) {
+      const t = Date.parse(dateStr);
+      return Number.isNaN(t) ? 0 : t;
+    }
+    const [m, d] = dateStr.split("/").map(Number);
+    if (!m || !d) return 0;
+    return new Date(currentAcademicYear, m - 1, d).getTime();
+  };
 
   /**
    * Transforms flat API data into nested UI structure and filters for the selected grade.
@@ -168,23 +183,10 @@ export default function ExamSchedulePage() {
       });
     });
 
-    // 2. Filter for specific grade and inject Self-Study
-    const formattedDays = Array.from(daysMap.values()).sort((a, b) => a.date.localeCompare(b.date));
-
-    if (formattedDays.length > 0) {
-      const lastDay = formattedDays[formattedDays.length - 1];
-      const today = new Date();
-      const dateStr = lastDay.date;
-      const lastDate = dateStr.includes("-")
-        ? new Date(dateStr)
-        : new Date(today.getFullYear(), Number(dateStr.split("/")[0]) - 1, Number(dateStr.split("/")[1]));
-      
-      lastDate.setHours(23, 59, 59, 999);
-
-      if (today.getTime() > lastDate.getTime()) {
-        return [];
-      }
-    }
+    // 2. Sort numerically by month/day and filter for specific grade + inject Self-Study
+    const formattedDays = Array.from(daysMap.values()).sort(
+      (a, b) => parseExamDate(a.date) - parseExamDate(b.date)
+    );
 
     return formattedDays.map(day => ({
       ...day,
@@ -215,6 +217,7 @@ export default function ExamSchedulePage() {
    * Checks if the given time range is the current period today.
    */
   const isCurrentPeriod = (dateStr: string, timeRange: string) => {
+    if (!timeRange) return false;
     const today = new Date();
     const normalizedDate = dateStr.includes("-")
       ? new Date(dateStr)
@@ -228,7 +231,11 @@ export default function ExamSchedulePage() {
       return false;
     }
 
-    const [start, end] = timeRange.split(" - ");
+    const parts = timeRange.split(/\s*-\s*/);
+    if (parts.length < 2) return false;
+    const [start, end] = parts;
+    if (!start.includes(":") || !end.includes(":")) return false;
+
     const [sH, sM] = start.split(":").map(Number);
     const [eH, eM] = end.split(":").map(Number);
 
@@ -246,7 +253,12 @@ export default function ExamSchedulePage() {
    * Calculates progress percentage for an ongoing exam.
    */
   const getProgress = (timeRange: string) => {
-    const [start, end] = timeRange.split(" - ");
+    if (!timeRange) return 0;
+    const parts = timeRange.split(/\s*-\s*/);
+    if (parts.length < 2) return 0;
+    const [start, end] = parts;
+    if (!start.includes(":") || !end.includes(":")) return 0;
+
     const [sH, sM] = start.split(":").map(Number);
     const [eH, eM] = end.split(":").map(Number);
 
@@ -302,7 +314,7 @@ export default function ExamSchedulePage() {
                 onChange={(e) => setSelectedGrade(e.target.value)}
                 className="bg-transparent text-white text-sm font-black pr-8 py-2 outline-none appearance-none cursor-pointer"
               >
-                {GRADES.map(g => <option key={g} value={g} className="bg-zinc-900">{g}학년</option>)}
+                {GRADES.map(g => <option key={g} value={g} className="bg-zinc-900">{formatGrade(g)}</option>)}
               </select>
             </div>
 

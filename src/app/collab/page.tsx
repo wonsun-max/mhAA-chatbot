@@ -88,8 +88,8 @@ export default async function CollabPage() {
         </p>
       </div>
 
-      {/* Warning Notification for QT Group */}
-      {session?.user && !qtGroup && (
+      {/* Warning Notification for QT Group (Students Only) */}
+      {session?.user?.role === "STUDENT" && !qtGroup && (
         <div className="group">
           <div className="bg-zinc-900/40 backdrop-blur-xl border border-red-500/20 rounded-3xl p-6 flex flex-col sm:flex-row items-center gap-6 transition-all duration-300 hover:border-red-500/40 shadow-xl">
             <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center flex-shrink-0 text-red-400">

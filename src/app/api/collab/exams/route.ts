@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { getAcademicSemester, getAcademicYear } from "@/lib/academic-calendar"
+import { getApprovedSession } from "@/lib/auth"
+import { logger } from "@/lib/logger"
 
 /**
  * Handle GET: Fetch exam schedule for students
@@ -8,6 +10,11 @@ import { getAcademicSemester, getAcademicYear } from "@/lib/academic-calendar"
  */
 export async function GET(req: Request) {
     try {
+        const session = await getApprovedSession()
+        if (!session) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        }
+
         const { searchParams } = new URL(req.url)
         const year = Number(searchParams.get("year") || getAcademicYear())
         const semester = searchParams.get("semester") || getAcademicSemester()
@@ -54,7 +61,7 @@ export async function GET(req: Request) {
 
         return NextResponse.json({ exams })
     } catch (error) {
-        console.error("Error fetching exams:", error)
+        logger.error("Error fetching exams", error)
         return NextResponse.json({ error: "Failed to fetch exams" }, { status: 500 })
     }
 }

@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import type { Prisma } from "@prisma/client";
-import { authOptions } from "@/lib/auth";
+import { getApprovedSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { logger } from "@/lib/logger";
 
 export async function GET(req: Request) {
-    const session = await getServerSession(authOptions);
+    const session = await getApprovedSession();
 
     if (!session?.user) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -28,7 +28,7 @@ export async function GET(req: Request) {
 
         return NextResponse.json({ timetables });
     } catch (error) {
-        console.error("Error fetching timetables:", error);
+        logger.error("Error fetching timetables", error);
         return NextResponse.json({ error: "Failed to fetch timetables" }, { status: 500 });
     }
 }

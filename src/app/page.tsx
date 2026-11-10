@@ -2,9 +2,12 @@ import Link from "next/link"
 import { Sparkles } from "lucide-react"
 import { HeroSection } from "@/components/home/HeroSection"
 import { NoticesFeed } from "@/components/home/NoticesFeed"
+import { getDailyContent } from "@/lib/daily-content"
 import * as motion from "framer-motion/client"
 
 export default function Home() {
+  const { verse } = getDailyContent()
+
   return (
     <div className="flex flex-col md:flex-row min-h-screen min-h-[100dvh] bg-black text-white selection:bg-blue-500/30 overflow-x-hidden">
       {/* Texture Overlay */}
@@ -57,9 +60,9 @@ export default function Home() {
 
             <blockquote className="space-y-4">
               <p className="text-xl md:text-2xl font-serif italic text-white/80 leading-relaxed font-light">
-                &ldquo;이스라엘아 들으라 우리 하나님 여호와는 오직 유일한 여호와이시니 너는 마음을 다하고 뜻을 다하고 힘을 다하여 네 하나님 여호와를 사랑하라.&rdquo;
+                &ldquo;{verse.verse}&rdquo;
               </p>
-              <p className="text-[11px] text-white/20 uppercase tracking-[0.4em] font-bold">신명기 6:4-5</p>
+              <p className="text-[11px] text-white/20 uppercase tracking-[0.4em] font-bold">{verse.ref}</p>
             </blockquote>
           </motion.div>
         </section>

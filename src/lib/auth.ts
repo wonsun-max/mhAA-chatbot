@@ -1,7 +1,9 @@
 import type { NextAuthOptions } from "next-auth";
+import { getServerSession } from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { prisma } from "./prisma";
+import { logger } from "./logger";
 import bcrypt from "bcryptjs";
 
 export const authOptions: NextAuthOptions = {
@@ -135,7 +137,7 @@ export const authOptions: NextAuthOptions = {
                             token.qtGroup = freshUser.qtGroup;
                         }
                     } catch (e) {
-                        console.error("[JWT Fresh Sync Error]:", e);
+                        logger.error("[JWT Fresh Sync Error]", e);
                     }
                 }
             }
@@ -175,3 +177,26 @@ export const authOptions: NextAuthOptions = {
         }
     }
 };
+
+/**
+ * Retrieves the current server session only if the user is authenticated and APPROVED (or ADMIN).
+ * Returns null if unauthenticated, PENDING, or SUSPENDED.
+ */
+export async function getApprovedSession() {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) return null;
+    if (session.user.status !== "APPROVED" && session.user.role !== "ADMIN") {
+        return null;
+    }
+    return session;
+}
+
+/**
+ * Retrieves the current server session only if the user has the ADMIN role.
+ * Returns null otherwise.
+ */
+export async function getAdminSession() {
+    const session = await getServerSession(authOptions);
+    if (!session?.user || session.user.role !== "ADMIN") return null;
+    return session;
+}

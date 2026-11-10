@@ -1,11 +1,18 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { matchesStudentName } from "@/lib/hangul-search";
+import { getApprovedSession } from "@/lib/auth";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
   try {
+    const session = await getApprovedSession();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(req.url);
     const query = searchParams.get("query")?.trim();
 
@@ -89,7 +96,7 @@ export async function GET(req: Request) {
 
     return NextResponse.json({ missionTeams, qtGroups });
   } catch (error) {
-    console.error("[API Teams] Error:", error);
+    logger.error("[API Teams] Error", error);
     return NextResponse.json({ error: "Failed to fetch teams and groups" }, { status: 500 });
   }
 }

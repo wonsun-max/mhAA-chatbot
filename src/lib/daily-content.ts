@@ -56,66 +56,15 @@ export const DAILY_VERSES = [
     { ref: "마태복음 11:28", verse: "수고하고 무거운 짐 진 자들아 다 내게로 오라 내가 너희를 쉬게 하리라" }
 ];
 
-export const DAILY_WORDS = [
-    { word: "vary", meaning: "바꾸다, 변경하다", example: "Prices vary according to the season." },
-    { word: "varied", meaning: "다양한", example: "The menu is varied and offers many choices." },
-    { word: "dwindle", meaning: "서서히 줄어들다", example: "Their savings began to dwindle." },
-    { word: "release", meaning: "풀어주다, 해방시키다", example: "The prisoner was released yesterday." },
-    { word: "irresistible", meaning: "억누를 수 없는, 매력적인", example: "The chocolate cake was irresistible." },
-    { word: "ascertain", meaning: "확정하다, 확인하다", example: "We need to ascertain the facts." },
-    { word: "consummate", meaning: "완료하다, 완성하다", example: "He is a consummate professional." },
-    { word: "intimidate", meaning: "위협하다", example: "Don't let them intimidate you." },
-    { word: "tilt", meaning: "기울이다", example: "He tilted his head to one side." },
-    { word: "multiply", meaning: "늘리다, 증대시키다", example: "The population began to multiply rapidly." },
-    { word: "finance", meaning: "자금을 공급하다", example: "The project was financed by the government." },
-    { word: "confer", meaning: "상의하다, 수여하다", example: "The degree was conferred upon him." },
-    { word: "dangle", meaning: "매달리다", example: "A set of keys dangled from his belt." },
-    { word: "steep", meaning: "적시다, 담그다", example: "Steep the tea for five minutes." },
-    { word: "assign", meaning: "배정하다, 지정하다", example: "The teacher assigned a lot of homework." },
-    { word: "threaten", meaning: "위협하다", example: "The clouds threatened rain." },
-    { word: "crown", meaning: "올리다, 왕관을 씌우다", example: "She was crowned queen of the festival." },
-    { word: "archaic", meaning: "구식의, 오래된", example: "The law is now archaic." },
-    { word: "hue", meaning: "색상", example: "The sky had a golden hue at sunset." },
-    { word: "subdue", meaning: "진압하다, 억제하다", example: "He managed to subdue his anger." },
-    { word: "pare", meaning: "깎다, 줄이다", example: "Pare the apples before cooking." },
-    { word: "reassure", meaning: "안심시키다", example: "She reassured him that everything would be fine." },
-    { word: "discharge", meaning: "방출하다, 수행하다", example: "He was discharged from the hospital." },
-    { word: "infirm", meaning: "허약한, 쇠약한", example: "She is elderly and infirm." },
-    { word: "utilize", meaning: "이용하다, 활용하다", example: "We should utilize our resources efficiently." },
-    { word: "patron", meaning: "고객, 후원자", example: "He is a regular patron of the library." },
-    { word: "crest", meaning: "정상, 절정", example: "They reached the crest of the hill." },
-    { word: "fluid", meaning: "유동적인", example: "The situation is still fluid." },
-    { word: "tranquil", meaning: "차분한, 평온한", example: "The lake was calm and tranquil." },
-    { word: "inauspicious", meaning: "불운한, 불길한", example: "It was an inauspicious start to the day." },
-    { word: "incise", meaning: "자르다, 새기다", example: "The design was incised into the stone." },
-    { word: "capitalize", meaning: "이용하다, 활용하다", example: "Try to capitalize on your strengths." },
-    { word: "mammoth", meaning: "거대한", example: "Cleaning the house was a mammoth task." },
-    { word: "inert", meaning: "비활성의, 움직이지 않는", example: "The chemically inert gas is safe." },
-    { word: "obsolete", meaning: "쓸모없게 된, 구식의", example: "CDs are becoming obsolete." },
-    { word: "net", meaning: "최종적인, 순수한", example: "What is the net profit of the company?" },
-    { word: "sterile", meaning: "불모의, 살균된", example: "The operating room must be sterile." },
-    { word: "shard", meaning: "파편", example: "Be careful of the glass shards." },
-    { word: "sediment", meaning: "침전물", example: "There was sediment at the bottom of the bottle." },
-    { word: "decimate", meaning: "대량으로 죽이다, 파괴하다", example: "The disease decimated the population." },
-    { word: "drastic", meaning: "강력한, 과감한", example: "We need to take drastic measures." },
-    { word: "lethal", meaning: "치명적인", example: "The snake's venom is lethal." },
-    { word: "lucrative", meaning: "수익성이 좋은", example: "This is a very lucrative business." },
-    { word: "obscure", meaning: "불분명한, 가리다", example: "The meaning of the sentence is obscure." },
-    { word: "prominent", meaning: "뛰어난, 유명한", example: "He is a prominent figure in the community." },
-    { word: "pronounced", meaning: "뚜렷한, 현저한", example: "She has a pronounced accent." },
-    { word: "advocate", meaning: "지지하다, 옹호하다", example: "He advocates for human rights." },
-    { word: "comprise", meaning: "구성하다, 포함하다", example: "The committee comprises ten members." },
-    { word: "disperse", meaning: "흩어지게 하다", example: "The crowd began to disperse." },
-    { word: "exploit", meaning: "이용하다, 착취하다", example: "Don't exploit the workers." }
-];
-
+/**
+ * Returns deterministic daily scripture and vocabulary word synchronized to
+ * Asia/Manila (UTC+8) school local time.
+ */
 export function getDailyContent() {
     const today = new Date();
-    // Use KST (UTC+9) for consistent date calculation
-    const kstDate = new Date(today.getTime() + (9 * 60 * 60 * 1000));
-    
-    // Use an arbitrary epoch or just days since Unix epoch to ensure it increments daily
-    const daysSinceEpoch = Math.floor(kstDate.getTime() / 86400000);
+    // Use Asia/Manila (UTC+8) for consistent date calculation across client & server
+    const manilaEpochMs = today.getTime() + (8 * 60 * 60 * 1000);
+    const daysSinceEpoch = Math.floor(manilaEpochMs / 86400000);
     
     const verse = DAILY_VERSES[daysSinceEpoch % DAILY_VERSES.length];
     const word = DAILY_WORDS_365[daysSinceEpoch % DAILY_WORDS_365.length];

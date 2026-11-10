@@ -1,13 +1,17 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth"; // Verify path to authOptions
+import { getApprovedSession } from "@/lib/auth";
 import { postSchema } from "@/lib/validations";
 import { logger } from "@/lib/logger";
 import type { Prisma } from "@prisma/client";
 
 export async function GET(req: Request) {
   try {
+    const session = await getApprovedSession();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(req.url);
     const page = Math.max(Number.parseInt(searchParams.get("page") || "1", 10), 1);
     const limit = Math.min(Math.max(Number.parseInt(searchParams.get("limit") || "20", 10), 1), 100);
@@ -58,15 +62,9 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getApprovedSession();
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // Only approved users can post
-    const status = session.user.status;
-    if (status && status !== "APPROVED") {
-      return NextResponse.json({ error: "Access denied" }, { status: 403 });
     }
 
     const body = await req.json();

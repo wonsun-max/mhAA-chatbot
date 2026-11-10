@@ -10,6 +10,7 @@ import { UserManager } from "@/components/admin/UserManager"
 import { NoticeManager } from "@/components/admin/NoticeManager"
 import { CollabManager } from "@/components/admin/CollabManager"
 import { FeedbackManager } from "@/components/admin/FeedbackManager"
+import { getDailyContent } from "@/lib/daily-content"
 
 interface Stats {
     totalUsers: number
@@ -42,8 +43,9 @@ function StatCard({ label, value, icon: Icon, color }: { label: string, value: n
     )
 }
 
-function Overview({ stats, setActiveTab }: { stats: Stats | null, setActiveTab: (tab: string) => void }) {
+function Overview({ stats }: { stats: Stats | null, setActiveTab: (tab: string) => void }) {
     if (!stats) return null;
+    const { verse } = getDailyContent();
 
     return (
         <div className="space-y-12">
@@ -63,8 +65,8 @@ function Overview({ stats, setActiveTab }: { stats: Stats | null, setActiveTab: 
                 <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 to-transparent pointer-events-none" />
                 <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
                     <div className="space-y-2 text-center md:text-left">
-                        <h3 className="text-xl font-light tracking-tight italic">&ldquo;이스라엘아 들으라 우리 하나님 여호와는 오직 유일한 여호와이시니 너는 마음을 다하고 뜻을 다하고 힘을 다하여 네 하나님 여호와를 사랑하라.&rdquo;</h3>
-                        <p className="text-xs text-white/20 uppercase tracking-[0.4em] font-bold">신명기 6:4-5</p>
+                        <h3 className="text-xl font-light tracking-tight italic">&ldquo;{verse.verse}&rdquo;</h3>
+                        <p className="text-xs text-white/20 uppercase tracking-[0.4em] font-bold">{verse.ref}</p>
                     </div>
                 </div>
             </div>
@@ -80,6 +82,7 @@ export default function AdminDashboardPage() {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
+        if (status === "loading") return
         if (status === "unauthenticated" || session?.user?.role !== "ADMIN") {
             router.push("/")
         } else if (status === "authenticated") {

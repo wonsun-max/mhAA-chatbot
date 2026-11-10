@@ -4,6 +4,7 @@ import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Loader2, Mail, Lock, User, GraduationCap, ChevronRight, CheckCircle2, ShieldCheck } from "lucide-react"
 import Link from "next/link"
+import { formatGrade } from "@/lib/utils"
 
 export default function SignupPage() {
     // step 1 = email + agreement
@@ -321,7 +322,7 @@ export default function SignupPage() {
                                                     className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none appearance-none"
                                                 >
                                                     <option value="">학년 선택</option>
-                                                    {grades.map(g => <option key={g} value={g}>{g}학년</option>)}
+                                                    {grades.map(g => <option key={g} value={g}>{formatGrade(g)}</option>)}
                                                 </select>
                                             </div>
                                         </div>

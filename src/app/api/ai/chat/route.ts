@@ -1,13 +1,13 @@
 import { streamText, type ModelMessage, stepCountIs } from "ai";
 import { openai } from "@ai-sdk/openai";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getApprovedSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { CHATBOT_SYSTEM_PROMPT } from "@/lib/openai";
 import { aiTools } from "@/lib/ai/tools";
 import { getDailyContent } from "@/lib/daily-content";
 import { getMealOrder } from "@/lib/meal-utils";
 import { lunchPrayerSchedule } from "@/lib/lunch-prayer";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -46,10 +46,10 @@ function convertToModelMessages(rawMessages: RawClientMessage[]): ModelMessage[]
 
 export async function POST(req: Request) {
     try {
-        const session = await getServerSession(authOptions);
+        const session = await getApprovedSession();
         if (!session?.user?.id) {
             return new Response(
-                JSON.stringify({ error: "Unauthorized: Access requires a valid WITHUS session." }),
+                JSON.stringify({ error: "Unauthorized: Access requires an approved WITHUS session." }),
                 { status: 401, headers: { 'Content-Type': 'application/json' } }
             );
         }
@@ -155,7 +155,7 @@ ${lunchPrayerSchedule.map(s => {
                         },
                     });
                 } catch (logError) {
-                    console.error('[ChatLog] Failed to save:', logError);
+                    logger.error("[ChatLog] Failed to save", logError);
                 }
             },
         });
@@ -164,7 +164,7 @@ ${lunchPrayerSchedule.map(s => {
 
     } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : "Unknown error";
-        console.error("[ChatAPI] Processing Error:", error);
+        logger.error("[ChatAPI] Processing Error", error);
         return new Response(
             JSON.stringify({ error: "System Error: The AI core encountered an unexpected disruption.", details: errorMessage }),
             {

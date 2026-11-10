@@ -1,14 +1,18 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
+import { getApprovedSession } from "@/lib/auth";
+import { logger } from "@/lib/logger";
 
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getApprovedSession();
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { id } = await params;
 
     const existingPost = await prisma.post.findUnique({
@@ -38,6 +42,16 @@ export async function GET(
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
 
+    // Mask soft-deleted comment payloads before sending over network
+    const sanitizedPost = {
+      ...post,
+      comments: post.comments.map((c) =>
+        c.isDeleted
+          ? { ...c, content: "", authorNickname: null }
+          : c
+      ),
+    };
+
     let hasLiked = false;
     if (session?.user?.id) {
       const like = await prisma.postLike.findUnique({
@@ -51,9 +65,9 @@ export async function GET(
       hasLiked = !!like;
     }
 
-    return NextResponse.json({ post, hasLiked });
+    return NextResponse.json({ post: sanitizedPost, hasLiked });
   } catch (error) {
-    console.error("Failed to fetch post:", error);
+    logger.error("Failed to fetch post", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }
@@ -66,7 +80,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getApprovedSession();
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -91,7 +105,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Failed to delete post:", error);
+    logger.error("Failed to delete post", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

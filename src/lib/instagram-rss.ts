@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/prisma";
+import { indexSource } from "@/lib/ai/knowledge";
+import { logger } from "@/lib/logger";
 
 export interface ParsedRssItem {
     guid: string;
@@ -66,7 +68,7 @@ export async function syncInstagramFromRss(rssUrl = DEFAULT_INSTAGRAM_FEED_URL) 
                 };
             });
         } catch (e) {
-            console.error("JSON parse error in RSS feed:", e);
+            logger.error("JSON parse error in RSS feed", e);
         }
     }
 
@@ -97,7 +99,7 @@ export async function syncInstagramFromRss(rssUrl = DEFAULT_INSTAGRAM_FEED_URL) 
         formattedContent += `\n\n[Instagram 원본 게시물 보기](${item.link})`;
 
         if (!existingNotice) {
-            await prisma.notice.create({
+            const created = await prisma.notice.create({
                 data: {
                     title: item.title,
                     content: formattedContent,
@@ -108,8 +110,11 @@ export async function syncInstagramFromRss(rssUrl = DEFAULT_INSTAGRAM_FEED_URL) 
                 },
             });
             insertedCount++;
-        } else {
-            // Update existing notice with real image and full content if missing
+            indexSource("NOTICE", created.id, item.title, item.description || item.title).catch((err) =>
+                logger.error("Failed to index Instagram notice", err)
+            );
+        } else if (existingNotice.title !== item.title || existingNotice.content !== formattedContent) {
+            // Update existing notice only when content or title has changed
             await prisma.notice.update({
                 where: { id: existingNotice.id },
                 data: {
@@ -120,6 +125,9 @@ export async function syncInstagramFromRss(rssUrl = DEFAULT_INSTAGRAM_FEED_URL) 
                 },
             });
             updatedCount++;
+            indexSource("NOTICE", existingNotice.id, item.title, item.description || item.title).catch((err) =>
+                logger.error("Failed to re-index Instagram notice", err)
+            );
         }
     }
 

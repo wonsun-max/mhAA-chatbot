@@ -1,10 +1,20 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { logger } from "@/lib/logger";
 import bcrypt from "bcryptjs";
 
+/**
+ * Registers a new PENDING user account (STUDENT or TEACHER only).
+ * Validates email verification code and prevents privilege escalation.
+ */
 export async function POST(request: Request) {
     try {
         const { email, code, name, nickname, grade, password, qtGroup, role = "STUDENT" } = await request.json();
+
+        // Strictly block privilege escalation (e.g. role === "ADMIN")
+        if (role !== "STUDENT" && role !== "TEACHER") {
+            return NextResponse.json({ error: "올바르지 않은 역할입니다." }, { status: 400 });
+        }
 
         // Basic validation for all roles
         if (!email || !code || !name || !nickname || !password) {
@@ -58,14 +68,14 @@ export async function POST(request: Request) {
         // Create user
         const user = await prisma.user.create({
             data: {
-                email,
-                name,
-                nickname,
+                email: email.trim(),
+                name: name.trim(),
+                nickname: nickname.trim(),
                 grade: role === "STUDENT" ? grade : null,
                 passwordHash,
                 qtGroup: role === "STUDENT" ? qtGroup : null,
                 status: "PENDING", // Require admin approval
-                role,              // Use selected role
+                role,              // Validated STUDENT or TEACHER
             },
         });
 
@@ -80,7 +90,7 @@ export async function POST(request: Request) {
             user: { id: user.id, email: user.email, name: user.name }
         });
     } catch (error) {
-        console.error("Error in register route:", error);
+        logger.error("Error in register route", error);
         return NextResponse.json({ error: "서버 오류가 발생했습니다." }, { status: 500 });
     }
 }

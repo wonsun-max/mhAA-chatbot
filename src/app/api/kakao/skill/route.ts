@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { openai } from "@/lib/openai";
 import { getStudentMembershipFromDb } from "@/lib/faith-data";
 import { getLunchPrayerByDate } from "@/lib/lunch-prayer";
+import { toManilaTime } from "@/lib/utils";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -74,6 +76,9 @@ interface KakaoQuickReply {
 }
 
 const DEFAULT_BANNER_IMAGE = "https://mhawithus.shop/images/hero-premium.png";
+const KAKAO_CARD_SCHEDULE_IMAGE = "https://mhawithus.shop/images/kakao/card-schedule.jpg";
+const KAKAO_CARD_EXAM_IMAGE = "https://mhawithus.shop/images/kakao/card-exam.jpg";
+const KAKAO_CARD_FAITH_IMAGE = "https://mhawithus.shop/images/kakao/card-faith.jpg";
 
 const DEFAULT_QUICK_REPLIES: KakaoQuickReply[] = [
   { label: "🍱 오늘 급식", action: "message", messageText: "오늘 급식" },
@@ -128,10 +133,10 @@ function textCarouselOutput(items: KakaoTextCard[]) {
 }
 
 /**
- * Formats Date into YYYY-MM-DD string with day offset.
+ * Formats Date into YYYY-MM-DD string in Asia/Manila (UTC+8) time with day offset.
  */
 function getDateString(offsetDays = 0): { dateStr: string; month: number; day: number; dayOfWeek: string } {
-  const d = new Date();
+  const d = toManilaTime();
   if (offsetDays !== 0) {
     d.setDate(d.getDate() + offsetDays);
   }
@@ -267,7 +272,7 @@ export async function POST(req: Request) {
                 title: "📅 01 / 일정 & 학교 생활",
                 description: "• 시간표: 7~12학년 요일별 수업 시간표\n• 오늘의 급식: 실시간 점심 메뉴\n• 학사일정: 월별 주요 일정 및 D-Day",
                 thumbnail: {
-                  imageUrl: DEFAULT_BANNER_IMAGE,
+                  imageUrl: KAKAO_CARD_SCHEDULE_IMAGE,
                 },
                 buttons: [
                   { action: "message", label: "🍱 오늘 급식", messageText: "오늘 급식" },
@@ -279,7 +284,7 @@ export async function POST(req: Request) {
                 title: "✍️ 02 / 시험 & 학업 관리",
                 description: "• 시험 일정표: 중간/기말고사 과목별 시간표\n• GPA 계산기: 4.5 만점 기준 내신 학점 산출\n• 학업 허브: 시험 대비 일정 총정리",
                 thumbnail: {
-                  imageUrl: DEFAULT_BANNER_IMAGE,
+                  imageUrl: KAKAO_CARD_EXAM_IMAGE,
                 },
                 buttons: [
                   { action: "message", label: "📝 시험 시간표", messageText: "시험 시간표" },
@@ -291,7 +296,7 @@ export async function POST(req: Request) {
                 title: "🕊️ 03 / 신앙 & 미디어 허브",
                 description: "• 수요채플: 매주 채플 주관 및 설교자\n• QT조 & 선교팀: 조원 명단 및 내 소속 조회\n• 점심 기도실: 오늘의 담당 QT조\n• VOD: 마한아 유튜브 공식 채널",
                 thumbnail: {
-                  imageUrl: DEFAULT_BANNER_IMAGE,
+                  imageUrl: KAKAO_CARD_FAITH_IMAGE,
                 },
                 buttons: [
                   { action: "message", label: "⛪ 수요채플", messageText: "수요채플" },
@@ -592,7 +597,7 @@ export async function POST(req: Request) {
     // 6. Lunch Prayer (점심 기도실)
     // ==========================================
     if (utterance.includes("기도실") || utterance.includes("기도") || utterance.includes("점심기도")) {
-      const prayerInfo = getLunchPrayerByDate(new Date());
+      const prayerInfo = getLunchPrayerByDate(toManilaTime());
 
       let description = "• 월·수·금: 교사·학생 누구나 자율 기도 (12:20 ~ 12:45)\n• 화·목: 지정된 QT조 및 신앙부 기도회 (12:25 ~ 12:45)\n• 장소: 도서관 방향 기도실";
       if (prayerInfo && "qtGroup" in prayerInfo && prayerInfo.qtGroup) {
@@ -766,7 +771,7 @@ export async function POST(req: Request) {
       ]);
     }
   } catch (error) {
-    console.error("[Kakao Skill Error]", error);
+    logger.error("[Kakao Skill Error]", error);
     return buildKakaoResponse([
       {
         simpleText: {

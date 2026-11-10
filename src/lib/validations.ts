@@ -20,22 +20,34 @@ export const postSchema = z.object({
  * User Profile Update Schema
  */
 export const profileSchema = z.object({
+  name: z
+    .string()
+    .min(2, "성명은 최소 2자 이상이어야 합니다.")
+    .max(30, "성명은 30자 이하여야 합니다.")
+    .trim()
+    .optional(),
   nickname: z
     .string()
-    .min(2, "Nickname must be at least 2 characters")
-    .max(20, "Nickname must be less than 20 characters")
-    .regex(/^[a-zA-Z0-9가-힣\s]+$/, "Nickname can only contain letters, numbers, and Korean characters")
+    .min(2, "닉네임은 최소 2자 이상이어야 합니다.")
+    .max(20, "닉네임은 20자 이하여야 합니다.")
+    .trim()
     .optional(),
-  grade: z.string().optional(),
-  qtGroup: z.string().optional(),
+  role: z.enum(["STUDENT", "TEACHER"]).optional(),
+  grade: z.string().nullable().optional(),
+  qtGroup: z.string().nullable().optional(),
+  currentPassword: z.string().optional(),
+  newPassword: z.string().min(6, "비밀번호는 최소 6자 이상이어야 합니다.").optional(),
 });
 
 /**
- * Shared Registration Schema
+ * Shared Registration Schema (Strictly disallows ADMIN self-registration)
  */
 export const registerSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-  name: z.string().min(1, "Name is required"),
-  grade: z.string().optional(),
+  email: z.string().email("유효한 이메일 주소를 입력해주세요.").trim(),
+  password: z.string().min(6, "비밀번호는 최소 6자 이상이어야 합니다."),
+  name: z.string().min(2, "성명을 2자 이상 입력해주세요.").trim(),
+  nickname: z.string().min(2, "닉네임은 최소 2자 이상이어야 합니다.").trim(),
+  role: z.enum(["STUDENT", "TEACHER"]).default("STUDENT"),
+  grade: z.string().nullable().optional(),
+  qtGroup: z.string().nullable().optional(),
 });

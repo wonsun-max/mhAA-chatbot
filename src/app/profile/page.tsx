@@ -13,6 +13,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { formatGrade } from "@/lib/utils"
 
 interface UserStats {
     memberSince: string
@@ -273,7 +274,8 @@ export default function ProfilePage() {
                                                 </AnimatePresence>
                                             </div>
 
-                                            {/* Grade Field */}
+                                            {/* Grade Field (Students Only) */}
+                                            {currentUser.role === "STUDENT" && (
                                             <div className="space-y-2 md:space-y-3">
                                                 <label className="text-[9px] md:text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
                                                     <GraduationCap size={12} /> 학년/반
@@ -293,7 +295,7 @@ export default function ProfilePage() {
                                                             >
                                                                 <option value="" className="bg-zinc-900">학년 선택</option>
                                                                 {grades.map(g => (
-                                                                    <option key={g} value={g} className="bg-zinc-900">{g}학년</option>
+                                                                    <option key={g} value={g} className="bg-zinc-900">{formatGrade(g)}</option>
                                                                 ))}
                                                             </select>
                                                             <button 
@@ -317,7 +319,7 @@ export default function ProfilePage() {
                                                             className="flex items-center justify-between group h-[38px]"
                                                         >
                                                             <span className="text-lg md:text-xl font-bold tracking-tight">
-                                                                {currentUser.grade ? `${currentUser.grade}학년` : "미지정"}
+                                                                {formatGrade(currentUser.grade)}
                                                             </span>
                                                             <button 
                                                                 onClick={() => {
@@ -332,8 +334,10 @@ export default function ProfilePage() {
                                                     )}
                                                 </AnimatePresence>
                                             </div>
+                                            )}
 
-                                            {/* QT Group Field */}
+                                            {/* QT Group Field (Students Only) */}
+                                            {currentUser.role === "STUDENT" && (
                                             <div className="space-y-2 md:space-y-3">
                                                 <label className="text-[9px] md:text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
                                                     <Hash size={12} /> QT조
@@ -392,6 +396,7 @@ export default function ProfilePage() {
                                                     )}
                                                 </AnimatePresence>
                                             </div>
+                                            )}
 
                                             {/* Static Info: Email */}
                                             <div className="space-y-3">

@@ -8,14 +8,14 @@ interface AccessGateProps {
     title?: string
     description?: string
     loginUrl?: string
-    externalUrl?: string
+    signupUrl?: string
 }
 
 export function AccessGate({
     title = "접근 권한이 필요합니다",
     description = "이 섹션의 지능형 기능을 이용하시려면 로그인이 필요합니다.",
     loginUrl = "/login",
-    externalUrl = "https://mhawithus.shop/signup"
+    signupUrl = "/signup"
 }: AccessGateProps) {
     return (
         <motion.div 
@@ -62,15 +62,13 @@ export function AccessGate({
                             <div className="h-px flex-1 bg-white/5" />
                         </div>
 
-                        <a 
-                            href={externalUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        <Link 
+                            href={signupUrl}
                             className="flex items-center justify-center gap-2 w-full py-4 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-2xl font-bold text-sm transition-all active:scale-[0.98]"
                         >
                             <Globe size={18} className="text-blue-400" />
-                            공식 포털에서 계정 요청
-                        </a>
+                            새 계정 가입 신청하기
+                        </Link>
                     </div>
                 </div>
 

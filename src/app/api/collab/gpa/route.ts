@@ -1,9 +1,16 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getAcademicSemester, getAcademicYear } from "@/lib/academic-calendar";
+import { getApprovedSession } from "@/lib/auth";
+import { logger } from "@/lib/logger";
 
 export async function GET(req: Request) {
     try {
+        const session = await getApprovedSession();
+        if (!session) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
         const { searchParams } = new URL(req.url);
         const grade = searchParams.get("grade");
         const year = Number(searchParams.get("year") || getAcademicYear());
@@ -36,7 +43,7 @@ export async function GET(req: Request) {
 
         return NextResponse.json({ subjects, year, semester });
     } catch (error) {
-        console.error("Error fetching GPA subjects:", error);
+        logger.error("Error fetching GPA subjects", error);
         return NextResponse.json({ error: "Failed to fetch subjects" }, { status: 500 });
     }
 }

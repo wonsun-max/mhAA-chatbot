@@ -3,22 +3,24 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { indexSource, removeFromIndex } from "@/lib/ai/knowledge";
+import { logger } from "@/lib/logger";
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const { id } = await params;
+        const session = await getServerSession(authOptions);
         
         const notice = await prisma.notice.findUnique({
             where: { id },
         });
 
-        if (!notice) {
+        if (!notice || (!notice.isVisible && session?.user?.role !== "ADMIN")) {
             return NextResponse.json({ error: "Notice not found" }, { status: 404 });
         }
 
         return NextResponse.json(notice);
     } catch (error) {
-        console.error("Failed to fetch notice:", error);
+        logger.error("Failed to fetch notice", error);
         return NextResponse.json({ error: "Failed to fetch notice" }, { status: 500 });
     }
 }

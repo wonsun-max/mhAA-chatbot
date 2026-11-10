@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
+import { getApprovedSession } from "@/lib/auth";
+import { logger } from "@/lib/logger";
 
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getApprovedSession();
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -51,7 +51,7 @@ export async function POST(
       return NextResponse.json({ liked: true, count: newCount });
     }
   } catch (error) {
-    console.error("Failed to toggle like:", error);
+    logger.error("Failed to toggle like", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

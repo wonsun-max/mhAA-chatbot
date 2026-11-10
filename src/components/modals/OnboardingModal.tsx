@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { User, GraduationCap, Sparkles, Loader2 } from "lucide-react";
+import { formatGrade } from "@/lib/utils";
 
 /**
  * Mandatory Onboarding Modal for completing required profile information
@@ -29,7 +30,12 @@ export function OnboardingModal() {
     useEffect(() => {
         if (status === "authenticated" && session?.user) {
             const user = session.user;
-            const isStudent = user.role !== "TEACHER";
+            // Admins do not require student/teacher onboarding
+            if (user.role === "ADMIN") {
+                setOpen(false);
+                return;
+            }
+            const isStudent = user.role === "STUDENT";
             
             // Check if mandatory details are missing based on role
             const isMissing =
@@ -221,7 +227,7 @@ export function OnboardingModal() {
                                         >
                                             <option value="">학년 선택</option>
                                             {grades.map((g) => (
-                                                <option key={g} value={g}>{g}학년</option>
+                                                <option key={g} value={g}>{formatGrade(g)}</option>
                                             ))}
                                         </select>
                                     </div>

@@ -108,9 +108,6 @@ export function CommentSection({ postId, postAuthorId, comments, currentUserId, 
             {isAuthor && (
               <span className="text-[10px] bg-blue-400/10 text-blue-400 px-1.5 py-0.5 rounded uppercase font-bold tracking-tighter">Author</span>
             )}
-            {currentUserRole === "ADMIN" && (
-              <span className="text-[10px] bg-red-400/10 text-red-400 px-1.5 py-0.5 rounded uppercase font-bold tracking-tighter">Admin</span>
-            )}
             <span className="text-[11px] text-white/30">
               {new Date(comment.createdAt).toLocaleDateString()} {new Date(comment.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
             </span>
