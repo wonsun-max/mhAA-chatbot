@@ -1,6 +1,7 @@
 "use client"
 
 import { ChatInterface } from "@/components/chat/ChatInterface"
+import { ChatbotSuspendedGate } from "@/components/chat/ChatbotSuspendedGate"
 import { motion } from "framer-motion"
 import { useSession } from "next-auth/react"
 import { Loader2 } from "lucide-react"
@@ -31,10 +32,13 @@ export default function ChatbotPage() {
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="h-full w-full"
+                    aria-hidden="true"
+                    inert
+                    className="h-full w-full pointer-events-none select-none"
                 >
                     <ChatInterface />
                 </motion.div>
+                <ChatbotSuspendedGate />
             </div>
         </main>
     )
